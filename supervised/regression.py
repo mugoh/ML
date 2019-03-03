@@ -1,6 +1,7 @@
 """
     This module contains the regression models
 """
+import numpy
 
 
 class Regression:
@@ -14,3 +15,23 @@ class Regression:
         step_rate: The length of the step to be used in updating the weights
 
         """
+        self.iters = no_of_iters
+        self.learning_factor = step_rate
+        self.training_errs = []
+
+    def set_up_weights(self, features_count):
+        """
+            Sets up the weights to utilize. This is done
+            in a random manner
+        """
+
+        threshold = 1 / pow(features_count, 0.5)
+        self.weights = numpy.random.uniform(-threshold,
+                                            threshold, (features_count))
+
+    def fit_constants(self, x_value, y_value):
+        """
+            Insert constant 1 values for the bias weights
+        """
+        ndarrray = numpy.insert(x_value, 0, 1, axis=1)
+        self.set_up_weights(ndarrray.shape[1])
