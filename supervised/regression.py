@@ -35,3 +35,12 @@ class Regression:
         """
         ndarrray = numpy.insert(x_value, 0, 1, axis=1)
         self.set_up_weights(ndarrray.shape[1])
+
+        # Descent of gradient for number of iters
+
+        for i in xrange(self.iters):
+            y_prediction = x_value.dot(self.weights)
+
+            ms_error = numpy.mean(0.5 * (y_value - y_prediction) ** 2 +
+                                  self.regularization(self.weights))
+            self.training_errs.append(ms_error)
