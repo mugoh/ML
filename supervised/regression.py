@@ -42,7 +42,7 @@ class Regression:
             y_prediction = x_value.dot(self.weights)
 
             ##
-            # Missing regularization method
+            # subclass regularization method
 
             ms_error = numpy.mean(0.5 * (y_value - y_prediction) ** 2 +
                                   self.regularization(self.weights))
@@ -53,3 +53,35 @@ class Regression:
                                 ).dot(x_value) +
             self.regularization.grad(self.weights)
             self.weights -= self.learning_factor * gradient_weight
+
+    def regularization(self, factor):
+        """
+            Implement in subclasses
+        """
+        return 0
+
+    def make_prediction(self, x_value):
+        """
+        Inserts constant ones for bias weights
+        """
+        x = numpy.insert(x_value, 0, 1, axis=1)
+
+        return x.dot(self.weights)
+
+
+class PolynomialRRegression():
+    """
+        Balances the model fit with respect to the training data and
+        complexity of the model. Transforms data to allow for polynomial
+        regression.
+    """
+
+    def __init__(self, degree,
+                 reg_factor, iters=3000,
+                 learning_factor=0.01, gradient_descent=True):
+        self.degree = degree
+        self.regularization = rglarization(reg_factor)
+
+    def fit_constants(self, X, Y):
+        x = normalize(finf_poly_features(X, degree=self.degree))
+        super.fit_constants(X, Y)
