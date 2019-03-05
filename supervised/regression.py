@@ -41,6 +41,15 @@ class Regression:
         for i in xrange(self.iters):
             y_prediction = x_value.dot(self.weights)
 
+            ##
+            # Missing regularization method
+
             ms_error = numpy.mean(0.5 * (y_value - y_prediction) ** 2 +
                                   self.regularization(self.weights))
             self.training_errs.append(ms_error)
+
+            # Gradient loss of 12 (weight)
+            gradient_weight = -(y_value - y_prediction
+                                ).dot(x_value) +
+            self.regularization.grad(self.weights)
+            self.weights -= self.learning_factor * gradient_weight
