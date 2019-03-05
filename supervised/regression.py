@@ -83,5 +83,10 @@ class PolynomialRRegression():
         self.regularization = rglarization(reg_factor)
 
     def fit_constants(self, X, Y):
-        x = normalize(finf_poly_features(X, degree=self.degree))
-        super.fit_constants(X, Y)
+        x = normalize(find_poly_features(X, degree=self.degree))
+        super().fit_constants(X, Y)
+
+    def make_prediction(self, x):
+        normalized_values = normalize(find_poly_features(x, self.degree))
+
+        return super().make_prediction(x)
