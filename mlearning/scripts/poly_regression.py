@@ -6,8 +6,8 @@ import matplotlib.pyplot as plot
 import numpy
 import pandas
 
-from supervised.regression import PolynomialRRegression
-from supervised.helpers.data_utils import data_helper
+from ..supervised.regression import PolynomialRRegression
+from ..supervised.helpers.data_utils import data_helper
 
 data_file = 'data/time_temperature.txt'
 
