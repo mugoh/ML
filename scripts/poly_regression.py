@@ -9,11 +9,13 @@ import pandas
 from supervised.regression import PolynomialRRegression
 from supervised.helpers.data_utils import data_helper
 
+data_file = 'data/time_temperature.txt'
+
 
 def regress_polynomial():
-    data = pandas.read_csv('path/to/data/', sep='')
-    period = numpy.atleast_2d(data['time'].values).T
-    temperature = data['temp'].values
+    data = pandas.read_csv(data_file, sep='\t')
+    period = numpy.atleast_2d(data['duration'].values).T
+    temperature = data['temperature'].values
 
     Y = temperature
     X = period
