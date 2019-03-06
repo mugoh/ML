@@ -9,7 +9,7 @@ import pandas
 from ..supervised.regression import PolynomialRRegression
 from ..supervised.helpers.data_utils import data_helper
 
-data_file = 'data/time_temperature.txt'
+data_file = 'mlearning/data/time_temperature.txt'
 
 
 def regress_polynomial():
@@ -43,11 +43,11 @@ def regress_polynomial():
             data_model = PolynomialRRegression(
                 degree=degree,
                 reg_factor=reg_factor,
-                learning_rate=0.01,
+                learning_factor=0.01,
                 iters=10000)
-            data_model.fit(_Xtrain, _Ytrain)
-            Y_prediction = data_model.predict(_Xtest)
-            _mse = data_helper.find_mse(_Ytest, _Y_prediction)
+            data_model.fit_constants(_Xtrain, _Ytrain)
+            Y_prediction = data_model.make_prediction(_Xtest)
+            _mse = data_helper.find_mse(_Ytest, Y_prediction)
             mse += _mse
         mse /= count
         print(f"Mean square root error: {mse} (regularization {reg_factor})")
@@ -59,17 +59,17 @@ def regress_polynomial():
             lowest_err = mse
 
         # Final prediction
-        pred_model = PolynomialRRegression(degree,
-                                           highest_reg_fact,
-                                           0.001,
-                                           10000)
-        model.fit(X_train, Y_train)
-        Y_prediction = pred_model.predict(X_test)
+        pred_model = PolynomialRRegression(degree=degree,
+                                           reg_factor=highest_reg_fact,
+                                           learning_factor=0.001,
+                                           iters=10000)
+        pred_model.fit_constants(X_train, Y_train)
+        Y_prediction = pred_model.make_prediction(X_test)
 
         mse = data_helper.find_mse(Y_test, Y_prediction)
-        print(f"Mean Squaredd Error: {lowest_err} from {highest_reg_fact}")
+        print(f"Mean Squared Error: {lowest_err} from {highest_reg_fact}")
 
-        Y_prediction_line = pred_model.predict(X)
+        Y_prediction_line = pred_model.make_prediction(X)
 
         # Plot data
         colour_map = plot.get_cmap('viridis')
@@ -79,7 +79,7 @@ def regress_polynomial():
         plot.plot(366 * X, Y_prediction_line, color='black',
                   linewidth=2, label='Prediction')
         plot.suptitle("Polynomial Regression (Rg)")
-        plot.title("MSE {mse}", fontsize=10)
+        plot.title(f"MSE {mse}", fontsize=10)
         plot.xlabel = ('Day')
         plot.ylabel('Temperature in Celcius')
         plot.legend((map1, map2), ("Training Data",
