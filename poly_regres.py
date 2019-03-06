@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plot
 import numpy
 import pandas
-from .utils import train_test_split, fold_val_sets, mean_square_error
+
+from supervised.helpers.data_utils import PolynomialRRegression
+from .utils import train_test_split, fold_validation_set, mean_square_error
 
 
 def regress_polynomial():
@@ -26,7 +28,7 @@ def regress_polynomial():
     for reg_factor in numpy.arange(0, 0.1, 0.01):
         #
         #
-        cross_val_sets = fold_val_sets(X_train, Y_train, count)
+        cross_val_sets = fold_validation_set(X_train, Y_train, count)
 
         mse = 0
         print("Getting regularization const")

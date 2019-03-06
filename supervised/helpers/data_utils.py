@@ -39,5 +39,35 @@ class Data:
 
         return new_X
 
+    def find_mse(self, y_true, y_prediction):
+        """
+            Finds the mean square error between the true and
+            the predicted value of Y
+        """
+        return numpy.mean(
+            numpy.power(y_true - y_prediction, 2))
+
+    def fold_validation_set(self, X, Y, set_count, shuffle=True):
+        """
+            Splits data into a given set count of training or
+            testing data.
+        """
+
+        if shuffle:
+            X, Y = self.shuffle(X, Y)
+
+    def shuffle(self, x_values, y_values, seed_value=None):
+        """
+            Returns a random shuffle of data samples.
+            Return value is a tuple of X, Y values
+        """
+
+        if seed_value:
+            numpy.random.seed(seed_value)
+        index = numpy.arange(x_values.shape[0])
+        numpy.random.shuffle(index)
+
+        return x_values[index], y_values[index]
+
 
 data_helper = Data()

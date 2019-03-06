@@ -8,7 +8,8 @@ from .helpers.data_utils import data_helper
 
 class Regression:
     """
-    Models the relationship between a scalar independent and a dependent variable
+    Models the relationship between a scalar independent and
+    a dependent variable
     """
 
     def __init__(self, no_of_iters, step_rate):
