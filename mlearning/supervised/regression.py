@@ -41,8 +41,8 @@ class Regression:
 
         # Descent of gradient for number of iters
 
-        for i in xrange(self.iters):
-            y_prediction = x_value.dot(self.weights)
+        for i in range(self.iters):
+            y_prediction = ndarrray.dot(self.weights)
 
             ##
             # subclass regularization method
@@ -52,7 +52,7 @@ class Regression:
             self.training_errs.append(ms_error)
 
             # Gradient loss of 12 (weight)
-            gradient_weight = -(y_value - y_prediction).dot(x_value) + \
+            gradient_weight = -(y_value - y_prediction).dot(ndarrray) + \
                 self.regularization.grad(self.weights)
             self.weights -= self.learning_factor * gradient_weight
 
@@ -71,7 +71,7 @@ class Regression:
         return x.dot(self.weights)
 
 
-class PolynomialRRegression():
+class PolynomialRRegression(Regression):
     """
         Balances the model fit with respect to the training data and
         complexity of the model. Transforms data to allow for polynomial
@@ -83,18 +83,34 @@ class PolynomialRRegression():
                  learning_factor=0.01, gradient_descent=True):
         self.degree = degree
         self.regularization = RegularizedRidge(reg_factor)
-        super.__init__(iters, learning_factor)
+        super(PolynomialRRegression, self).__init__(iters, learning_factor)
 
     def fit_constants(self, X, Y):
+        """
+            Normalizes data before fitting constant values
+            for weights.
+        """
         x = data_helper.normalize(
             data_helper.find_poly_features(X, degree=self.degree))
         super().fit_constants(x, Y)
 
     def make_prediction(self, x):
+        """
+            Normalizes data and inserts constants [1]
+            for bias weights.
+        """
         normalized_values = data_helper.normalize(
             data_helper.find_poly_features(x, self.degree))
 
         return super().make_prediction(normalized_values)
+
+
+class ClassName(object):
+    """docstring for ClassName"""
+
+    def __init__(self, arg):
+        super(ClassName, self).__init__()
+        self.arg = arg
 
 
 class RegularizedRidge:

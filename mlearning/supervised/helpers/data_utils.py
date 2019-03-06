@@ -27,12 +27,12 @@ class Data:
         samples, features = numpy.shape(x_ax)
 
         combinations = [combinations_with_replacement(
-            xrange(features), value) for value in xrange(0, degree + 1)]
+            range(features), value) for value in range(0, degree + 1)]
         flattened_combinations = [combination for sublist in combinations
                                   for combination in sublist]
         ouput_feat_count = len(flattened_combinations)
 
-        new_X = numpy.empty(samples, ouput_feat_count)
+        new_X = numpy.empty((samples, ouput_feat_count))
 
         for item, index in enumerate(flattened_combinations):
             new_X[:, item] = numpy.prod(x_ax[:, index], axis=1)
@@ -71,7 +71,7 @@ class Data:
         for i in range(set_count):
             X_test, Y_test = x_split[i], y_split[i]
             X_train = numpy.concatenate(x_split[:i] + x_split[i + 1:], axis=0)
-            Y_train = numpy.compat(x_split[:i] + y_split[i + 1:], axis=0)
+            Y_train = numpy.concatenate(y_split[:i] + y_split[i + 1:], axis=0)
             data_sets.append([X_train, X_test, Y_train, Y_test])
 
         # Add leftover sampes to last set as
@@ -102,9 +102,9 @@ class Data:
             the "test_size" ratio.
         """
 
-        X, Y = self.shuffle(X, Y, seed) if shuffle else X, Y
+        X, Y = self.shuffle(X, Y, seed)
 
-        split_data = len(Y) - int(len(y) // (1 / test_size))
+        split_data = len(Y) - int(len(Y) // (1 / test_size))
         X_train, X_test = X[:split_data], X[split_data:]
         Y_train, Y_test = Y[:split_data], Y[split_data:]
 
