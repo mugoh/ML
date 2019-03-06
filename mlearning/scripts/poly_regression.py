@@ -80,7 +80,8 @@ def regress_polynomial():
                   linewidth=2, label='Prediction')
         plot.suptitle("Polynomial Regression (Rg)")
         plot.title(f"MSE {mse}", fontsize=10)
-        plot.xlabel = ('Day')
+        plot.get_cmap
+        plot.xlabel('Day')
         plot.ylabel('Temperature in Celcius')
         plot.legend((map1, map2), ("Training Data",
                                    "Test Data"), loc='lower right')
