@@ -34,7 +34,7 @@ class Data:
 
         new_X = numpy.empty(samples, ouput_feat_count)
 
-        fot item, index in enumerate(flattened_combinations):
+        for item, index in enumerate(flattened_combinations):
             new_X[:, item] = numpy.prod(x_ax[:, index], axis=1)
 
         return new_X

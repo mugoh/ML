@@ -86,4 +86,4 @@ def regress_polynomial():
 
 
 if __name__ == '__main__':
-    regress_polnomial()
+    regress_polynomial()

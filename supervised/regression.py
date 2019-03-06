@@ -52,9 +52,8 @@ class Regression:
             self.training_errs.append(ms_error)
 
             # Gradient loss of 12 (weight)
-            gradient_weight = -(y_value - y_prediction
-                                ).dot(x_value) +
-            self.regularization.grad(self.weights)
+            gradient_weight = -(y_value - y_prediction).dot(x_value) + \
+                self.regularization.grad(self.weights)
             self.weights -= self.learning_factor * gradient_weight
 
     def regularization(self, factor):
@@ -83,15 +82,31 @@ class PolynomialRRegression():
                  reg_factor, iters=3000,
                  learning_factor=0.01, gradient_descent=True):
         self.degree = degree
-        self.regularization = rglarization(reg_factor)
+        self.regularization = RegularizedRidge(reg_factor)
+        super.__init__(iters, learning_factor)
 
     def fit_constants(self, X, Y):
         x = data_helper.normalize(
             data_helper.find_poly_features(X, degree=self.degree))
-        super().fit_constants(X, Y)
+        super().fit_constants(x, Y)
 
     def make_prediction(self, x):
         normalized_values = data_helper.normalize(
             data_helper.find_poly_features(x, self.degree))
 
-        return super().make_prediction(x)
+        return super().make_prediction(normalized_values)
+
+
+class RegularizedRidge:
+    """
+        Performs regularization for Ridge Regression.
+    """
+
+    def __init__(self, reg_constant):
+        self.factor = reg_constant
+
+    def __call__(self, weight):
+        return self.factor * 0.5 * weight.T.dot(weight)
+
+    def grad(self, weight):
+        return self.factor * weight
