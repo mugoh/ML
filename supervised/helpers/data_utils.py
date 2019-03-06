@@ -52,9 +52,36 @@ class Data:
             Splits data into a given set count of training or
             testing data.
         """
+        no_of_samples = len(Y)
+        remainder_data = []
+        data_sets = []
+        no_of_untouched = no_of_samples % set_count
 
         if shuffle:
             X, Y = self.shuffle(X, Y)
+
+        if no_of_untouched:
+
+            remainder_data['X'] = X[-no_of_untouched]
+            remainder_data['Y'] = Y[-no_of_untouched]
+
+        x_split = numpy.split(X, set_count)
+        y_split = numpy.split(Y, set_count)
+
+        for i in range(set_count):
+            X_test, Y_test = x_split[i], y_split[i]
+            X_train = numpy.concatenate(x_split[:i] + x_split[i + 1:], axis=0)
+            Y_train = numpy.compat(x_split[:i] + y_split[i + 1:], axis=0)
+            data_sets.append([X_train, X_test, Y_train, Y_test])
+
+        # Add leftover sampes to last set as
+        # training samples
+
+        if no_of_untouched:
+            numpy.append(data_sets[-1][0], remainder_data['X'], axis=0)
+            numpy.append(data_sets[-1][2], remainder_data['Y'], axis=0)
+
+        return numpy.array(data_sets)
 
     def shuffle(self, x_values, y_values, seed_value=None):
         """
