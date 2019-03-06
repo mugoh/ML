@@ -96,5 +96,19 @@ class Data:
 
         return x_values[index], y_values[index]
 
+    def split_train_test(self, X, Y, test_size=0.5, shuffle=True, seed=None):
+        """
+            Splits data into train and testing values using
+            the "test_size" ratio.
+        """
+
+        X, Y = self.shuffle(X, Y, seed) if shuffle else X, Y
+
+        split_data = len(Y) - int(len(y) // (1 / test_size))
+        X_train, X_test = X[:split_data], X[split_data:]
+        Y_train, Y_test = Y[:split_data], Y[split_data:]
+
+        return X_train, X_test, Y_train, Y_test
+
 
 data_helper = Data()

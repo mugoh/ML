@@ -1,7 +1,13 @@
+"""
+    Polynomial Regression
+"""
+
 import matplotlib.pyplot as plot
 import numpy
 import pandas
-from .utils import train_test_split, fold_val_sets, mean_square_error
+
+from supervised.regression import PolynomialRRegression
+from supervised.helpers.data_utils import data_helper
 
 
 def regress_polynomial():
@@ -13,11 +19,11 @@ def regress_polynomial():
     X = period
     #
     #
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, 0.4)
+    X_train, X_test, Y_train, Y_test = data_helper.split_train_test(X, Y, 0.4)
 
     degree = 15
 
-    # F=Get reqularization constants
+    # Get reqularization constants
     lowest_err = float('inf')
     highes_reg_fact_ = None
 
@@ -26,7 +32,8 @@ def regress_polynomial():
     for reg_factor in numpy.arange(0, 0.1, 0.01):
         #
         #
-        cross_val_sets = fold_val_sets(X_train, Y_train, count)
+        cross_val_sets = data_helper.fold_validation_set(
+            X_train, Y_train, count)
 
         mse = 0
         print("Getting regularization const")
@@ -38,7 +45,7 @@ def regress_polynomial():
                 iters=10000)
             data_model.fit(_Xtrain, _Ytrain)
             Y_prediction = data_model.predict(_Xtest)
-            _mse = mean_square_error(_Ytest, _Y_prediction)
+            _mse = data_helper.find_mse(_Ytest, _Y_prediction)
             mse += _mse
         mse /= count
         print(f"Mean square root error: {mse} (regularization {reg_factor})")
@@ -57,7 +64,7 @@ def regress_polynomial():
         model.fit(X_train, Y_train)
         Y_prediction = pred_model.predict(X_test)
 
-        mse = mean_square_error(Y_test, Y_prediction)
+        mse = data_helper.find_mse(Y_test, Y_prediction)
         print(f"Mean Squaredd Error: {lowest_err} from {highest_reg_fact}")
 
         Y_prediction_line = pred_model.predict(X)
