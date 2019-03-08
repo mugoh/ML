@@ -3,7 +3,7 @@
 """
 import numpy
 
-from .helpers.data_utils import data_helper
+from ..helpers.data_utils import data_helper
 
 
 class Regression:

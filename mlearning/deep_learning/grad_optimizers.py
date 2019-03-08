@@ -30,7 +30,7 @@ class Adam:
             moment estimates.
         """
 
-        if not self.mean:
+        if not self.mean or not self.uncentered_variance:
             self.mean = numpy.zeros(numpy.shape(grad_wrt_weight))
             self.uncentered_variance = numpy.zeros(
                 numpy.shape(grad_wrt_weight))
