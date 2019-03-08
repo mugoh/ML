@@ -9,6 +9,9 @@ from itertools import combinations_with_replacement
 
 
 class Data:
+    """
+        Manipulates data for favourable input structures.
+    """
 
     def normalize(self, x_values, axis=-1, order=2):
         """

@@ -3,7 +3,7 @@
 """
 from sklearn import datasets
 
-from ..supervised.helpers.data_utils import data_helper
+from ..helpers.data_utils import data_helper
 
 
 def convolute():
