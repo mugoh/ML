@@ -3,6 +3,7 @@
 """
 from sklearn import datasets
 
+from ..deep_learning.grad_optimizers import Adam
 from ..helpers.data_utils import data_helper
 
 
@@ -11,7 +12,7 @@ def convolute():
         Runs convolution to a data input
     """
 
-    optimizer = A
+    optimizer = Adam()
 
     digits = datasets.load_digits()
     X = digits.data
