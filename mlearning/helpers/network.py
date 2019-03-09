@@ -1,7 +1,7 @@
 """
     This module contains a class that modles the Deep Learning Neural Network
 """
-
+import numpy
 import progress_bar
 
 
@@ -45,3 +45,40 @@ class Neural_Network:
         """
         for layer in self.input_layers:
             layer.trainable = trainable
+
+    def add_layer(self, new_layer):
+        """
+            Adds a layer to the neural network
+        """
+
+        #  Set input shape to output shape of last layer added
+        if self.input_layers:
+            new_layer.set_input_shape(
+                shape=self.input_layers[-1].output_shape())
+
+        # Layer contains weights that require initialization
+        if hasattr(new_layer, 'initialize'):
+            new_layer.initialize(optimizer=self.optimizer)
+        self.layers.append(new_layer)
+
+    def test_on_batch(self, X, y):
+        """
+            Evaluates the model over samples in a single batch.
+        """
+
+        y_prediction = self.forward_pass(X, training=False)
+        loss = numpy.mean(self.loss_func.loss(y, y_prediction))
+        acc = self.loss_func.acc(y, y_prediction)
+
+        return loss, acc
+
+    def forward_pass(self, X, training=True):
+        """
+            Calculates the output of the neural network
+        """
+
+        output_layer = X
+        for layer in self.input_layers:
+            output_layer = layer.forward_pass(output_layer, training)
+
+        return output_layer
