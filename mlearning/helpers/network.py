@@ -66,13 +66,13 @@ class Neural_Network:
             Evaluates the model over samples in a single batch.
         """
 
-        y_prediction = self.forward_pass(X, training=False)
+        y_prediction = self.run_forward_pass(X, training=False)
         loss = numpy.mean(self.loss_func.loss(y, y_prediction))
         acc = self.loss_func.acc(y, y_prediction)
 
         return loss, acc
 
-    def forward_pass(self, X, training=True):
+    def run_forward_pass(self, X, training=True):
         """
             Calculates the output of the neural network
         """
@@ -82,3 +82,12 @@ class Neural_Network:
             output_layer = layer.forward_pass(output_layer, training)
 
         return output_layer
+
+    def run_backward_pass(self, loss_gradient):
+        """
+            Propagates the gradient "backward" and updates weights
+            in each layer from the loss gradient.
+        """
+
+        for layer in reversed(self.input_layers):
+            loss_gradient = layer.backward_pass(loss_gradient)
