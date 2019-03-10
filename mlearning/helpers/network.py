@@ -18,7 +18,7 @@ class Neural_Network:
                         Contains the validation data items and (X, y) labels
     """
 
-    def __init__(self, optimizer, loss, validation_data):
+    def __init__(self, optimizer, loss, validation_data=None):
         self.optimizer = optimizer
         self.loss_func = loss()
         self.input_layers = []
@@ -26,6 +26,9 @@ class Neural_Network:
         self.errs = {'training': [],
                      'validation': []
                      }
+        if validation_data:
+            self.validation_set = {
+                key: value for key, value in validation_data}
 
     def set_trainable(self, trainable):
         """
@@ -94,7 +97,7 @@ class Neural_Network:
 
     def train_on_batch(self, X, y):
         """
-            Updates the gradient over one batcj of samples
+            Updates the gradient over one batch of samples
         """
         y_prediction = self.run_forward_pass(X)
         loss = numpy.mean(self.loss_func.loss(y, y_prediction))
@@ -107,3 +110,24 @@ class Neural_Network:
         self.run_backward_pass(loss_gradient)
 
         return loss, acc
+
+    def fit(self, X, y, no_of_epochs, batch_size):
+        """
+            Trains the model for a speciied number of epochs
+        """
+
+        for _ in self.progress_bar(no_of_epochs):
+            batch_err = []
+            for X_batch, y_batch in iterate_over_batch(X, y, batch_size):
+                loss, _ = self.train_on_batch(X_batch, y_batch)
+                batch_err.append(loss)
+
+            self.errs.get('training').append(numpy.mean(batch_err))
+
+            if self.validation_data:
+                validation_loss, _ = self.test_on_batch(
+                    self.validation_set.get('X'),
+                    self.validation_set.get('y'))
+                self.errs['validation'].append(validation_loss)
+
+        return tuple(self.errs.values())
