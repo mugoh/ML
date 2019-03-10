@@ -91,3 +91,19 @@ class Neural_Network:
 
         for layer in reversed(self.input_layers):
             loss_gradient = layer.backward_pass(loss_gradient)
+
+    def train_on_batch(self, X, y):
+        """
+            Updates the gradient over one batcj of samples
+        """
+        y_prediction = self.run_forward_pass(X)
+        loss = numpy.mean(self.loss_func.loss(y, y_prediction))
+        acc = self.loss_func.acc(y, y_prediction)
+
+        # Gradient of loss func with respect to predicted values for y
+        loss_gradient = self.loss_func.gradient(y, y_prediction)
+
+        # Update the weights
+        self.run_backward_pass(loss_gradient)
+
+        return loss, acc

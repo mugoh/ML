@@ -11,7 +11,10 @@ def convolute():
     """
         Runs convolution to a data input
     """
-
+    #
+    #
+    #
+    # Loss Function Implem'?
     optimizer = Adam()
 
     digits = datasets.load_digits()
