@@ -7,6 +7,10 @@ import progressbar
 from terminaltables import AsciiTable
 
 from ..utils.display import progress_bar_widgets
+from ..utils.data_utils import Data
+
+
+data_helper = Data()
 
 
 class Neural_Network:
@@ -129,7 +133,8 @@ class Neural_Network:
 
         for _ in self.progressbar(no_of_epochs):
             batch_err = []
-            for X_batch, y_batch in iterate_over_batch(X, y, batch_size):
+            for X_batch, y_batch in \
+                    data_helper.iterate_over_batch(X, y, batch_size):
                 loss, _ = self.train_on_batch(X_batch, y_batch)
                 batch_err.append(loss)
 

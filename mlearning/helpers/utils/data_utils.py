@@ -113,5 +113,16 @@ class Data:
 
         return X_train, X_test, Y_train, Y_test
 
+    def iterate_over_batch(self, X, y=None, batch_size=64):
+        """
+            Creates a Generator for a batch of given size
+        """
+        no_of_samples = X.shape[0]
+
+        for i in numpy.arange(0, no_of_samples, batch_size):
+            start, finish = i, min(i + batch_size, no_of_samples)
+
+            yield X[start:finish], y[start:finish] if y else X[start:finish]
+
 
 data_helper = Data()
