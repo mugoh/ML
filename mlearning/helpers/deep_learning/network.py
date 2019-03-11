@@ -2,9 +2,11 @@
     This module contains a class that modles the Deep Learning Neural Network
 """
 import numpy
-import progress_bar
+import progressbar
 
 from terminaltables import AsciiTable
+
+from ..utils.display import progress_bar_widgets
 
 
 class Neural_Network:
@@ -24,7 +26,8 @@ class Neural_Network:
         self.optimizer = optimizer
         self.loss_func = loss()
         self.input_layers = []
-        self.progress_bar = progress_bar.ProgressBar(widgets=bar_widgets)
+        self.progressbar = progressbar.ProgressBar(
+            widgets=progress_bar_widgets)
         self.errs = {'training': [],
                      'validation': []
                      }
@@ -124,7 +127,7 @@ class Neural_Network:
             Trains the model for a specified number of epochs
         """
 
-        for _ in self.progress_bar(no_of_epochs):
+        for _ in self.progressbar(no_of_epochs):
             batch_err = []
             for X_batch, y_batch in iterate_over_batch(X, y, batch_size):
                 loss, _ = self.train_on_batch(X_batch, y_batch)
