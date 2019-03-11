@@ -4,6 +4,8 @@
 import numpy
 import progress_bar
 
+from terminaltables import AsciiTable
+
 
 class Neural_Network:
     """
@@ -144,7 +146,7 @@ class Neural_Network:
             and configuration of the network layers.
         """
         # Model name
-        print(ASCII_table([[name]],).table)
+        print(AsciiTable([[name]]).table)
 
         # Network input's (First Layer) shape
         print(f"Input Shape: {self.input_layers[0].input_shape}")
@@ -158,5 +160,5 @@ class Neural_Network:
                 str(layer.output_shape())
             )
             layer_parameters += layer.parameters()
-        print(ASCII_table(data).table,
+        print(AsciiTable(data).table,
               f"Total Parameters {layer_parameters}")

@@ -15,6 +15,7 @@ def convolute():
     #
     #
     # Loss Function Implem'?
+    # Replace ascii tables with astropy.io.ascii
     optimizer = Adam()
 
     digits = datasets.load_digits()

@@ -7,7 +7,7 @@ import numpy
 import pandas
 
 from ..supervised.regression import PolynomialRRegression
-from ..helpers.data_utils import data_helper
+from ..helpers.utils.data_utils import data_helper
 
 data_file = 'mlearning/data/time_temperature.txt'
 
