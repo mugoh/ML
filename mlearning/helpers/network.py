@@ -75,6 +75,12 @@ class Neural_Network:
 
         return loss, acc
 
+    def make_prediction(self, X):
+        """
+            Predicts values of X from the train model
+        """
+        return self.run_forward_pass(X, training=False)
+
     def run_forward_pass(self, X, training=True):
         """
             Calculates the output of the neural network
@@ -113,7 +119,7 @@ class Neural_Network:
 
     def fit(self, X, y, no_of_epochs, batch_size):
         """
-            Trains the model for a speciied number of epochs
+            Trains the model for a specified number of epochs
         """
 
         for _ in self.progress_bar(no_of_epochs):
@@ -131,3 +137,26 @@ class Neural_Network:
                 self.errs['validation'].append(validation_loss)
 
         return tuple(self.errs.values())
+
+    def show_model_details(self, name='Summary of Model'):
+        """
+            Gives  a summary of the network model
+            and configuration of the network layers.
+        """
+        # Model name
+        print(ASCII_table([[name]],).table)
+
+        # Network input's (First Layer) shape
+        print(f"Input Shape: {self.input_layers[0].input_shape}")
+        data = [['Layer Type', 'Parameters', 'Ouput Shape']]
+        layer_parameters = 0
+
+        for layer in self.input_layers:
+            data.append(
+                layer.layer_name(),
+                str(layer.parameters()),
+                str(layer.output_shape())
+            )
+            layer_parameters += layer.parameters()
+        print(ASCII_table(data).table,
+              f"Total Parameters {layer_parameters}")
