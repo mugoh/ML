@@ -4,7 +4,7 @@
 from sklearn import datasets
 
 from ..deep_learning.grad_optimizers import Adam
-from ..helpers.data_utils import data_helper
+from ..helpers.utils.data_utils import data_helper
 
 
 def convolute():
@@ -24,7 +24,7 @@ def convolute():
 
     # Convert to one hot encoding
 
-    Y = to_categorcal(Y.asType('int'))
+    Y = data_helper.categorize(Y.asType('int'))
 
     X_train, X_test, Y_train, Y_test = data_helper.split_train_test
 

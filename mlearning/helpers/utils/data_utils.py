@@ -124,5 +124,16 @@ class Data:
 
             yield X[start:finish], y[start:finish] if y else X[start:finish]
 
+    def categorize(self, x_value, columns):
+        """
+            Perorms one hot encoding for nominal vlaues
+        """
+        if not columns:
+            columns = numpy.amax(x_value) + 1
+        res = numpy.zeros((x_value.shape[0], columns))
+        res[numpy.arange(x_value.shape[0]), x_value] = 1
+
+        return res
+
 
 data_helper = Data()
