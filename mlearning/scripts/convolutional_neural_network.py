@@ -3,6 +3,7 @@
 """
 from sklearn import datasets
 
+from ..helpers.deep_learning.network import Neural_Network
 from ..deep_learning.grad_optimizers import Adam
 from ..helpers.utils.data_utils import data_helper
 
@@ -26,8 +27,11 @@ def convolute():
 
     Y = data_helper.categorize(Y.asType('int'))
 
-    X_train, X_test, Y_train, Y_test = data_helper.split_train_test
+    X_train, X_test, y_train, y_test = data_helper.split_train_test
 
     # Reshape to no. of samples, channels, height, width
-    X_test = X_train.reshape((-1, 1, 8, 8))
+    X_train = X_train.reshape((-1, 1, 8, 8))
     X_test = X_test.reshape((-1, 1, 8, 8))
+
+    classifier = Neural_Network(optimizer, CrossEntropy, (X_test, y_test))
+    classifier.add_layer
