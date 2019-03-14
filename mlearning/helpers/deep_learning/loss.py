@@ -12,6 +12,10 @@ class CrossEntropyLoss:
     """
 
     def compute_loss(self, y_true, y_prediction):
+        """
+            Computes the cross entropy loss between the true
+            and predicted values
+        """
         pred = np.clip(y_prediction, 1e-15, 1 - 1e-15)
 
         return -y_true * np.log(pred) - (1 - y_true) * np.log(1 - pred)
