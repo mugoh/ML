@@ -4,6 +4,8 @@
 
 import numpy as np
 
+from ..utils.operations import op
+
 
 class CrossEntropyLoss:
     """
@@ -26,8 +28,8 @@ class CrossEntropyLoss:
             y to the predicted values.
         """
 
-        return accuracy_score(np.argmax(y_true, axis=1),
-                              np.argmax(y_pred, axis=1))
+        return op.rate_accuracy(np.argmax(y_true, axis=1),
+                                np.argmax(y_pred, axis=1))
 
     def find_gradient(self, y_true, y_pred):
         """
