@@ -45,7 +45,7 @@ class Data:
     def find_mse(self, y_true, y_prediction):
         """
             Finds the mean square error between the true and
-            the predicted value of Y
+            the predicted value of y
         """
         return numpy.mean(
             numpy.power(y_true - y_prediction, 2))
@@ -88,8 +88,8 @@ class Data:
 
     def shuffle(self, x_values, y_values, seed_value=None):
         """
-            Returns a random shuffle of data samples.
-            Return value is a tuple of X, Y values
+            Returns a a tuple of X, Y values as a random
+            shuffle of data samples.
         """
 
         if seed_value:
@@ -126,7 +126,7 @@ class Data:
 
     def categorize(self, x_value, columns):
         """
-            Perorms one hot encoding for nominal vlaues
+            Performs one hot encoding for nominal vlaues
         """
         if not columns:
             columns = numpy.amax(x_value) + 1
