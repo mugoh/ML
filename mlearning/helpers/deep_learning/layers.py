@@ -98,6 +98,13 @@ class ConvolutionTwoD(Layer):
 
         # Reshape weight shape to column
         self.W_col = self.weight_.reshape((self.no_of_filters, -1))
+        output = self.W_col.dot(self.X_col) + self.weight_out
+
+        # Reshape ouput to: no_of_filters, height, width, and batch size
+        output = output.reshape(self.ouput_shape() + (batch_size, ))
+
+        # Redistribute axes to bring batch size first
+        return output.transpose(3, 0, 1, 2)
 
     def backward_pass(self, grad):
         """
