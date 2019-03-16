@@ -77,6 +77,41 @@ class ConvolutionTwoD(Layer):
                                                fltr_height,
                                                fltr_width)
                                          )
-        self.weight_hat_ = np.zeros((self.no_of_filters, 1))
-        self.weight_opt = copy.copy(optimizer)
-        self.weight_hat_opt = copy.copy(optimizer)
+        self.weight_out = np.zeros((self.no_of_filters, 1))
+        self.optimized_w = copy.copy(optimizer)
+        self.optimized_w_out = copy.copy(optimizer)
+
+    def forward_pass(self, X, training=True):
+        """
+            Propagates input data through the network to
+            get an ouput prediction
+        """
+        self.input_layer = X
+        return X.dot(self.weight_) + self.weight_out
+
+    def backward_pass(self, grad):
+        """
+            Parameter:
+                grad: accumulated gradient
+            ____________________________________
+            Propagates the accumulated gradient backwards.
+            -> It calculates the gradient of a loss function with respect
+               to all the weights in the network.
+
+        """
+        # Reshape accumulated grad to column shape
+        accumulated_grad = grad.transpose(
+            1, 2, 3, 0).reshape(self.no_of_filters, -1)
+
+        weights = self.weight_  # Weights used in forward pass
+
+        if self.trainable:
+            # Find gradient with respect to layer weights
+            grad_weight =
+
+    def paramitize(self):
+        """
+            Returns the number of trainable parameters used by the layer
+        """
+        return np.prod(self.weight_.shape)
+        + np.prod(self.weight_out.shape)
