@@ -87,7 +87,17 @@ class ConvolutionTwoD(Layer):
             get an ouput prediction
         """
         self.input_layer = X
-        return X.dot(self.weight_) + self.weight_out
+        batch_size, channels, heigt, width = X.shape
+
+        # For dot product between input and weights,
+        # change image shape to column shape
+        self.X_col = reshape_image_to_col(
+            X, self.filter_shape,
+            stride=self.stride,
+            ouput_shape=self.padding)
+
+        # Reshape weight shape to column
+        self.W_col = self.weight_.reshape((self.no_of_filters, -1))
 
     def backward_pass(self, grad):
         """
