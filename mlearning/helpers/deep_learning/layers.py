@@ -103,11 +103,32 @@ class ConvolutionTwoD(Layer):
         accumulated_grad = grad.transpose(
             1, 2, 3, 0).reshape(self.no_of_filters, -1)
 
-        weights = self.weight_  # Weights used in forward pass
-
         if self.trainable:
-            # Find gradient with respect to layer weights
-            grad_weight =
+            # Find the dot product of the column-shaped accumulated grad
+            # and column shape layer.
+            # This will determine the grad at the layer w.r.t layer weights
+
+            grad_weight = accumulated_grad.dot(
+                self.X_col.T).reshape(self.weight_.shape)
+
+            # Gradient w.r.t the bias sums
+            grad_w_out = np.sum(grad, axis=1, keepdims=True)
+
+            # Update layer weights
+            self.weight_ = self.optimized_w.update(self.weight_, grad_weight)
+            self.weight_out = self.optimized_w_out.update(
+                self.weight_out, grad_w_out)
+
+            # Find gradient to propage back to previous layer
+            accumulated_grad = self.W_col.T.dot(accumulated_grad)
+
+            # Change shape from column to image
+            accumulated_grad = reshape_col_to_image(accumulated_grad,
+                                                    self.input_layer.shape,
+                                                    self.filter_shape,
+                                                    stride=self.stride,
+                                                    ouput_shape=self.padding)
+            return accumulated_grad
 
     def paramitize(self):
         """
