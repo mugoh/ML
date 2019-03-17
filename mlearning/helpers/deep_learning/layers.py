@@ -27,6 +27,36 @@ class Layer:
         """
         return self.__class__.__name__
 
+    def reshape_col_to_image(self,
+                             cols, imgs_shape, fltr_shape,
+                             stride, output_shape=True):
+        """
+            Changes shape of the input layer from column to image
+
+        """
+        batch_size, channels, height, width = imgs_shape
+        pad_h, pad_w = get_padding(filter_shape, output_shape)
+
+        padded_h = height + np.sum(pad_h)
+        padded_w = width + np.sum(pad_w)
+        padded_imgs = np.empty((batch_size, channels, padded_h, padded_w))
+
+        # Calculate indices for dot product between weights
+        # and images
+
+        ind1, ind2, ind3 = get_img_cols_indices(
+            imgs_shape, filter_shape, (pad_h, pad_w), stride)
+
+        cols_reshaped = cols.reshape(channels * np.product(filter_shape))
+        cols_reshaped = cols_reshaped.transpose(2, 0, 1)
+
+        # Add column content to images at the indeces
+        np.add.at(padded_imgs, (slice(None), ind1, ind2, ind3), cols_reshaped)
+
+        # Image without padding
+        return padded_imgs[:, :, pad_h[0]:height +
+                           pad_h[0], pad_w[0]:width + pad_w[0]]
+
 
 class ConvolutionTwoD(Layer):
     """
@@ -139,7 +169,6 @@ class ConvolutionTwoD(Layer):
         # Find gradient to propage back to previous layer
         accumulated_grad = self.W_col.T.dot(accumulated_grad)
 
-        # Change shape from column to image
         accumulated_grad = reshape_col_to_image(accumulated_grad,
                                                 self.input_layer.shape,
                                                 self.filter_shape,
