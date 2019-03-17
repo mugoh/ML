@@ -45,8 +45,8 @@ class ConvolutionTwoD(Layer):
             for the  first layer of the network.
                 e.g (batch_size, channels, width, height)
         padding: boolean
-            True - Ouput height and width matches input height and width
-            False - Ouput without padding
+            True - output height and width matches input height and width
+            False - output without padding
         stride: int
             Step size of the filters during convolution over the input
 
@@ -84,7 +84,7 @@ class ConvolutionTwoD(Layer):
     def forward_pass(self, X, training=True):
         """
             Propagates input data through the network to
-            get an ouput prediction
+            get an output prediction
         """
         self.input_layer = X
         batch_size, channels, heigt, width = X.shape
@@ -94,14 +94,14 @@ class ConvolutionTwoD(Layer):
         self.X_col = reshape_image_to_col(
             X, self.filter_shape,
             stride=self.stride,
-            ouput_shape=self.padding)
+            output_shape=self.padding)
 
         # Reshape weight shape to column
         self.W_col = self.weight_.reshape((self.no_of_filters, -1))
         output = self.W_col.dot(self.X_col) + self.weight_out
 
-        # Reshape ouput to: no_of_filters, height, width, and batch size
-        output = output.reshape(self.ouput_shape() + (batch_size, ))
+        # Reshape output to: no_of_filters, height, width, and batch size
+        output = output.reshape(self.output_shape() + (batch_size, ))
 
         # Redistribute axes to bring batch size first
         return output.transpose(3, 0, 1, 2)
@@ -136,16 +136,29 @@ class ConvolutionTwoD(Layer):
             self.weight_out = self.optimized_w_out.update(
                 self.weight_out, grad_w_out)
 
-            # Find gradient to propage back to previous layer
-            accumulated_grad = self.W_col.T.dot(accumulated_grad)
+        # Find gradient to propage back to previous layer
+        accumulated_grad = self.W_col.T.dot(accumulated_grad)
 
-            # Change shape from column to image
-            accumulated_grad = reshape_col_to_image(accumulated_grad,
-                                                    self.input_layer.shape,
-                                                    self.filter_shape,
-                                                    stride=self.stride,
-                                                    ouput_shape=self.padding)
-            return accumulated_grad
+        # Change shape from column to image
+        accumulated_grad = reshape_col_to_image(accumulated_grad,
+                                                self.input_layer.shape,
+                                                self.filter_shape,
+                                                stride=self.stride,
+                                                output_shape=self.padding)
+        return accumulated_grad
+
+    def output_shape(self):
+        """
+            Gives the shape of the output returned by the forward pass
+        """
+        channels, height, width = self.input_shape
+        padd_ht, padd_wt = get_padding(
+            self.filter_shape, output_shape=self.padding)
+        output_height = (height + np.sum(padd_ht) -
+                         self.filter_shape[0]) / self.stride + 1
+        output_width = (width + np.sum(padd_wt) -
+                        self.filter_shape[1]) / self.stride + 1
+        return self.no_of_filters, int(output_height), int(output_width)
 
     def paramitize(self):
         """
