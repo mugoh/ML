@@ -4,6 +4,7 @@
 """
 import numpy as np
 import copy
+import math
 
 
 class Layer:
@@ -27,7 +28,8 @@ class Layer:
         """
         return self.__class__.__name__
 
-    def reshape_col_to_image(self,
+    @classmethod
+    def reshape_col_to_image(cls,
                              cols, imgs_shape, fltr_shape,
                              stride, output_shape=True):
         """
@@ -56,6 +58,26 @@ class Layer:
         # Image without padding
         return padded_imgs[:, :, pad_h[0]:height +
                            pad_h[0], pad_w[0]:width + pad_w[0]]
+
+    @classmethod
+    def get_padding(cls, fltr_shape, output_shape):
+        """
+            Determines the padding of the ouput height and width
+        """
+        if not output_shape:
+            return (0, 0), (0, 0)
+        flt_height, flt_width = fltr_shape
+
+        # Ref
+        # output_height = (height + padd_h - filter_height) / stride + 1
+        # output_height = height # Stride = 1
+
+        padd_ht_a = int(math.floor((flt_height - 1) / 2))
+        padd_ht_b = int(math.ceil((flt_height - 1) / 2))
+        padd_wt_a = int(math.floor((flt_width - 1) / 2))
+        padd_wt_b = int(math.ceil((flt_width - 1) / 2))
+
+        return (padd_ht_a, padd_ht_b), (padd_wt_a, padd_wt_b)
 
 
 class ConvolutionTwoD(Layer):
