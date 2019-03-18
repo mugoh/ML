@@ -37,7 +37,7 @@ class Layer:
 
         """
         batch_size, channels, height, width = imgs_shape
-        pad_h, pad_w = get_padding(filter_shape, output_shape)
+        pad_h, pad_w = cls.get_padding(fltr_shape, output_shape)
 
         padded_h = height + np.sum(pad_h)
         padded_w = width + np.sum(pad_w)
@@ -47,9 +47,9 @@ class Layer:
         # and images
 
         ind1, ind2, ind3 = get_img_cols_indices(
-            imgs_shape, filter_shape, (pad_h, pad_w), stride)
+            imgs_shape, fltr_shape, (pad_h, pad_w), stride)
 
-        cols_reshaped = cols.reshape(channels * np.product(filter_shape))
+        cols_reshaped = cols.reshape(channels * np.product(fltr_shape))
         cols_reshaped = cols_reshaped.transpose(2, 0, 1)
 
         # Add column content to images at the indeces
@@ -78,6 +78,31 @@ class Layer:
         padd_wt_b = int(math.ceil((flt_width - 1) / 2))
 
         return (padd_ht_a, padd_ht_b), (padd_wt_a, padd_wt_b)
+
+    def reshape_image_to_col(cls, images, fltr_shape, stride,
+                             output_shape=True):
+        """
+            Changes shape of the input layer from image to column
+        """
+        fltr_height, fltr_width = fltr_shape
+        pad_h, pad_w = cls.get_padding(fltr_shape, output_shape)
+
+        padded_imgs = np.pad(
+            images, ((0, 0), (0, 0), pad_h, pad_w), mode='constant')
+
+        # Indices to apply dot product between weights and image
+        ind_a, ind_b, ind_c = get_img_cols_indices(
+            images.shape, fltr_shape, (pad_h, pad_w), stride)
+
+        # Retrieve image content at these images
+        cols = padded_imgs[:, ind_a, ind_b, ind_c]
+        channels = images.shape[1]
+
+        # Reshape content to column shape
+        cols_reshaped = cols.transpose(1, 2, 0).reshape(
+            fltr_height * fltr_width * channels, -1)
+
+        return cols_reshaped
 
 
 class ConvolutionTwoD(Layer):
