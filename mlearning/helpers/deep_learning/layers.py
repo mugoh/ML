@@ -113,7 +113,7 @@ class Layer:
         """
 
         # Find expected output size
-        batch_size, channels, height, width = imgs_shape
+        batch_size, channels, height, width = img_shape
         fltr_height, fltr_width = fltr_shape
         pad_h, pad_w = padding
         out_height = int((height * np.sum(pad_h) - fltr_height) / stride + 1)
@@ -122,6 +122,16 @@ class Layer:
         ind_i0 = np.repeat(np.arange(fltr_height), fltr_width)
         ind_i0 = np.tile(ind_i0, channels)
         ind_i1 = stride * np.repeat(np.arange(out_height), out_width)
+
+        ind_j0 = np.tile(np.arange(fltr_width), fltr_height * channels)
+        ind_j1 = stride * np.tile(np.arange(out_width), out_height)
+        ind_i = ind_i0.reshape(-1, 1) + ind_i1.reshape(1, -1)
+        ind_j = ind_j0.reshape(-1, 1) + ind_j1.reshape(1, -1)
+
+        ind_k = np.repeat(np.arange(channels), fltr_height *
+                          fltr_width).reshape(-1, 1)
+
+        return ind_k, ind_i, ind_j
 
 
 class ConvolutionTwoD(Layer):
