@@ -79,6 +79,7 @@ class Layer:
 
         return (padd_ht_a, padd_ht_b), (padd_wt_a, padd_wt_b)
 
+    @classmethod
     def reshape_image_to_col(cls, images, fltr_shape, stride,
                              output_shape=True):
         """
@@ -103,6 +104,24 @@ class Layer:
             fltr_height * fltr_width * channels, -1)
 
         return cols_reshaped
+
+    @classmethod
+    def get_img_cols_indices(cls, img_shape, fltr_shape, padding, stride=1):
+        """
+            Calculates indices for dot product between weights
+            and images
+        """
+
+        # Find expected output size
+        batch_size, channels, height, width = imgs_shape
+        fltr_height, fltr_width = fltr_shape
+        pad_h, pad_w = padding
+        out_height = int((height * np.sum(pad_h) - fltr_height) / stride + 1)
+        out_width = int((width * np.sum(pad_w) - fltr_width) / stride + 1)
+
+        ind_i0 = np.repeat(np.arange(fltr_height), fltr_width)
+        ind_i0 = np.tile(ind_i0, channels)
+        ind_i1 = stride * np.repeat(np.arange(out_height), out_width)
 
 
 class ConvolutionTwoD(Layer):
@@ -168,7 +187,7 @@ class ConvolutionTwoD(Layer):
 
         # For dot product between input and weights,
         # change image shape to column shape
-        self.X_col = reshape_image_to_col(
+        self.X_col = self.reshape_image_to_col(
             X, self.filter_shape,
             stride=self.stride,
             output_shape=self.padding)
@@ -216,11 +235,11 @@ class ConvolutionTwoD(Layer):
         # Find gradient to propage back to previous layer
         accumulated_grad = self.W_col.T.dot(accumulated_grad)
 
-        accumulated_grad = reshape_col_to_image(accumulated_grad,
-                                                self.input_layer.shape,
-                                                self.filter_shape,
-                                                stride=self.stride,
-                                                output_shape=self.padding)
+        accumulated_grad = self.reshape_col_to_image(accumulated_grad,
+                                                     self.input_layer.shape,
+                                                     self.filter_shape,
+                                                     stride=self.stride,
+                                                     output_shape=self.padding)
         return accumulated_grad
 
     def output_shape(self):
@@ -228,7 +247,7 @@ class ConvolutionTwoD(Layer):
             Gives the shape of the output returned by the forward pass
         """
         channels, height, width = self.input_shape
-        padd_ht, padd_wt = get_padding(
+        padd_ht, padd_wt = self.get_padding(
             self.filter_shape, output_shape=self.padding)
         output_height = (height + np.sum(padd_ht) -
                          self.filter_shape[0]) / self.stride + 1
