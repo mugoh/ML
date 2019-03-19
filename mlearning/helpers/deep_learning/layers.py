@@ -46,7 +46,7 @@ class Layer:
         # Calculate indices for dot product between weights
         # and images
 
-        ind1, ind2, ind3 = get_img_cols_indices(
+        ind1, ind2, ind3 = cls.get_img_cols_indices(
             imgs_shape, fltr_shape, (pad_h, pad_w), stride)
 
         cols_reshaped = cols.reshape(channels * np.product(fltr_shape))
@@ -92,7 +92,7 @@ class Layer:
             images, ((0, 0), (0, 0), pad_h, pad_w), mode='constant')
 
         # Indices to apply dot product between weights and image
-        ind_a, ind_b, ind_c = get_img_cols_indices(
+        ind_a, ind_b, ind_c = cls.et_img_cols_indices(
             images.shape, fltr_shape, (pad_h, pad_w), stride)
 
         # Retrieve image content at these images
