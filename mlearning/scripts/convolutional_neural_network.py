@@ -6,6 +6,7 @@ from sklearn import datasets
 from ..helpers.deep_learning.network import Neural_Network
 from ..deep_learning.grad_optimizers import Adam
 from ..helpers.utils.data_utils import data_helper
+from ..helpers.deep_learning.layers import ConvolutionTwoD
 
 
 def convolute():
@@ -34,4 +35,6 @@ def convolute():
     X_test = X_test.reshape((-1, 1, 8, 8))
 
     classifier = Neural_Network(optimizer, CrossEntropy, (X_test, y_test))
-    classifier.add_layer
+    classifier.add_layer(ConvolutionTwoD(
+        no_of_filters=16, filter_shape=(3, 3), input_shape=(1, 8, 8),
+        padding=True))
