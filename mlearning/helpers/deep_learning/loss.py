@@ -9,7 +9,7 @@ from ..utils.operations import op
 
 class CrossEntropyLoss:
     """
-        Perform operationd that aid in computing the
+        Perform operations that aid in computing the
         cross entropy loss between predicted and true data values.
     """
 

@@ -19,7 +19,7 @@ class Neural_Network:
 
         optimizer: class
                 The descent optimizer that tunes the weight
-                for minumum loss
+                for minimum loss
         loss:   class
                     Measures the performance of the model
         validation_data: tuple
@@ -158,7 +158,7 @@ class Neural_Network:
 
         # Network input's (First Layer) shape
         print(f"Input Shape: {self.input_layers[0].input_shape}")
-        data = [['Layer Type', 'Parameters', 'Ouput Shape']]
+        data = [['Layer Type', 'Parameters', 'Output Shape']]
         layer_parameters = 0
 
         for layer in self.input_layers:

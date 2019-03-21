@@ -7,6 +7,7 @@ from ..helpers.deep_learning.network import Neural_Network
 from ..deep_learning.grad_optimizers import Adam
 from ..helpers.utils.data_utils import data_helper
 from ..helpers.deep_learning.layers import ConvolutionTwoD
+from ..helpers.deep_learning.loss import CrossEntropyLoss
 
 
 def convolute():

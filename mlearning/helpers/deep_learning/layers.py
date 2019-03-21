@@ -10,7 +10,7 @@ import math
 class Layer:
     """
         Parent class layer model. Only contains methods common
-        to impemented layer models and does not suffice
+        to implemented layer models and does not suffice
         to create a layer.
     """
 
@@ -23,7 +23,7 @@ class Layer:
 
     def get_name(self):
         """
-            Returns the name of the layer. Thiss is represented by
+            Returns the name of the layer. This is represented by
             the class instance holding the layer.
         """
         return self.__class__.__name__
@@ -52,7 +52,7 @@ class Layer:
         cols_reshaped = cols.reshape(channels * np.product(fltr_shape))
         cols_reshaped = cols_reshaped.transpose(2, 0, 1)
 
-        # Add column content to images at the indeces
+        # Add column content to images at the indices
         np.add.at(padded_imgs, (slice(None), ind1, ind2, ind3), cols_reshaped)
 
         # Image without padding
@@ -62,7 +62,7 @@ class Layer:
     @classmethod
     def get_padding(cls, fltr_shape, output_shape):
         """
-            Determines the padding of the ouput height and width
+            Determines the padding of the output height and width
         """
         if not output_shape:
             return (0, 0), (0, 0)
@@ -242,7 +242,7 @@ class ConvolutionTwoD(Layer):
             self.weight_out = self.optimized_w_out.update(
                 self.weight_out, grad_w_out)
 
-        # Find gradient to propage back to previous layer
+        # Find gradient to propagate back to previous layer
         accumulated_grad = self.W_col.T.dot(accumulated_grad)
 
         accumulated_grad = self.reshape_col_to_image(accumulated_grad,
@@ -271,3 +271,19 @@ class ConvolutionTwoD(Layer):
         """
         return np.prod(self.weight_.shape)
         + np.prod(self.weight_out.shape)
+
+
+class Activation(Layer):
+    """
+        Applies an activation operation to the input
+
+        Parameters:
+        ____________________
+        name: string
+            Activation function to be used
+    """
+
+    def __init__(self, name):
+        self.activation_name = name
+        self.activation_func = activation_functions.get(name)()
+        self.trainable = True
