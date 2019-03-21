@@ -287,3 +287,18 @@ class Activation(Layer):
         self.activation_name = name
         self.activation_func = activation_functions.get(name)()
         self.trainable = True
+
+    def show_layer_name(self):
+        """
+            Gives a string representation of the activation function name
+        """
+        return f'Activation {self.activation_func.__class__.__name__}'
+
+    def run_forward_pass(self, X, training=True):
+        """
+            Propagates input data through the network to
+            get an output prediction
+        """
+        self.input_layer = X
+
+        return self.activation_func(X)
