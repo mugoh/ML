@@ -2,6 +2,9 @@
     This module contains the network model
     layers.
 """
+from .activation_functions import (ReLu, SoftPlus, SoftMax, ELU, TanH,
+				  LeakyReLu, SELU, Sigmoid)
+
 import numpy as np
 import copy
 import math
@@ -302,3 +305,14 @@ class Activation(Layer):
         self.input_layer = X
 
         return self.activation_func(X)
+
+activation_functions =  {
+	'ReLu': ReLu,
+	'sigmoid': Sigmoid,
+	'selu': SELU,
+	'softplus': SoftPlus,
+	'leaky_relu': LeakyReLu,
+	'elu': ELU,
+	'tanh': TanH,
+	'softmax': SoftMax
+}

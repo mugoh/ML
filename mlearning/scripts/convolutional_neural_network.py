@@ -39,3 +39,4 @@ def convolute():
     classifier.add_layer(ConvolutionTwoD(
         no_of_filters=16, filter_shape=(3, 3), input_shape=(1, 8, 8),
         padding=True))
+    classifier.add_layer(Activation('ReLu'))
