@@ -3,7 +3,7 @@
     layers.
 """
 from .activation_functions import (ReLu, SoftPlus, SoftMax, ELU, TanH,
-				  LeakyReLu, SELU, Sigmoid)
+                                   LeakyReLu, SELU, Sigmoid)
 
 import numpy as np
 import copy
@@ -306,13 +306,40 @@ class Activation(Layer):
 
         return self.activation_func(X)
 
-activation_functions =  {
-	'ReLu': ReLu,
-	'sigmoid': Sigmoid,
-	'selu': SELU,
-	'softplus': SoftPlus,
-	'leaky_relu': LeakyReLu,
-	'elu': ELU,
-	'tanh': TanH,
-	'softmax': SoftMax
+
+class DropOut(Layer):
+    """
+        Randomly sets a fraction p of the inputs (probaility 1-p)
+        of the previous layer to zero
+
+        Parameters:
+        -----------
+        p: float
+            The probability that  the given unit is set to zero
+    """
+
+    def __init__(self, p=0.2):
+        self.p = p
+        self._mask = None
+        self.no_of_units = None
+        self.input_shape = None
+        self.pass_through = True
+        self.trainable = True
+
+    def run_forward_pass(self, X, training=True):
+        """
+           Propagates input data through the network to
+           get an output prediction
+       """
+
+
+activation_functions = {
+    'ReLu': ReLu,
+    'sigmoid': Sigmoid,
+    'selu': SELU,
+    'softplus': SoftPlus,
+    'leaky_relu': LeakyReLu,
+    'elu': ELU,
+    'tanh': TanH,
+    'softmax': SoftMax
 }
