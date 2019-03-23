@@ -2,7 +2,7 @@
     This module contains the network model
     layers.
 """
-from .activation_functions import (ReLu, SoftPlus, SoftMax, ELU, TanH,
+from .activation_functions import (Rectified_Linear_Units, SoftMax, ELU, TanH,
                                    LeakyReLu, SELU, Sigmoid)
 
 import numpy as np
@@ -331,6 +331,21 @@ class DropOut(Layer):
            Propagates input data through the network to
            get an output prediction
        """
+        c = (1 - self.p)
+
+        if training:
+            self._mask = np.random.uniform(size=X.shape) > self.p
+            c = self._mask
+        return X * c
+
+    def run_backward_pass(self, accumulated_grad):
+        return accumulated_grad * self._mask
+
+    def output_shape(self):
+        """
+            Gives the shape of the output returned by the forward pass
+        """
+        return self.input_shape
 
 
 activation_functions = {
