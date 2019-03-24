@@ -339,6 +339,9 @@ class DropOut(Layer):
         return X * c
 
     def run_backward_pass(self, accumulated_grad):
+        """
+             Propagates the accumulated gradient backwards
+        """
         return accumulated_grad * self._mask
 
     def output_shape(self):
@@ -346,6 +349,54 @@ class DropOut(Layer):
             Gives the shape of the output returned by the forward pass
         """
         return self.input_shape
+
+
+class BatchNormalization(Layer):
+    """
+        Batch normalization model
+         -> Adds a Normalizatiion 'layer' Between each layer
+            to reduce covariance shift
+    """
+
+    def __init__(self, momemtum=0.99):
+        self.momemtum = momemtum
+        self.trainable = True
+        self.eps = 0.01
+        self.running_var = None
+        self.running_mean = None
+
+    def initialize(self, optimizer):
+        self.gamma = np.ones(self.input_shape)
+        self.beta = np.zeros(self.input_shape)
+
+        # Parameter optimizers
+        self.gamma_opt = copy.copy(optimizer)
+        self.beta_opt = copy.copy(optimizer)
+
+    def paramitize(self):
+        """
+            Returns the number of trainable parameters used by the layer
+        """
+        return np.product(self.gamma.shape) +
+        np.product(self.beta.shape)
+
+    def output_shape(self):
+        """
+            Gives the shape of the output returned
+            by the forward pass
+        """
+        return self.input_shape
+
+    def run_forward_pass(self, X, training=True):
+        """
+           Propagates input data through the network to
+           get an output prediction
+       """
+
+    def run_backward_pass(self):
+        """
+            Propagates the accumulated gradient backwards
+       """
 
 
 activation_functions = {

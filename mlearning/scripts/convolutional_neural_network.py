@@ -6,7 +6,7 @@ from sklearn import datasets
 from ..helpers.deep_learning.network import Neural_Network
 from ..deep_learning.grad_optimizers import Adam
 from ..helpers.utils.data_utils import data_helper
-from ..helpers.deep_learning.layers import ConvolutionTwoD, Activation, DropOut
+from ..helpers.deep_learning.layers import ConvolutionTwoD, Activation, DropOut, BatchNormalization
 from ..helpers.deep_learning.loss import CrossEntropyLoss
 
 
@@ -42,3 +42,4 @@ def convolute():
         padding=True))
     classifier.add_layer(Activation('ReLu'))
     classifier.add_layer(DropOut(0.25))
+    classifier.add_layer(BatchNormalization())
