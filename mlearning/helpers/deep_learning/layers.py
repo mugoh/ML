@@ -392,6 +392,28 @@ class BatchNormalization(Layer):
            Propagates input data through the network to
            get an output prediction
        """
+        if not self.running_mean:
+            self.running_mean = np.mean(X, axis=0)
+            self.running_var = np.var(X, axis=0)
+
+        if training and self.trainable:
+            mean = np.mean(X, axis=0)
+            var = np.var(X, axis=0)
+            self.running_mean = self.momemtum * \
+                self.running_mean + (1 - self.momentum) * mean
+            self.running_var = self.momentum * \
+                self.running_var + (1 - self.momentum) * var
+        else:
+            mean = self.running_mean
+            var = self.running_var
+
+        # Stats saved for backward pass
+        self.X_centred = X * mean
+        self.inv_std_dev = 1 / np.sqrt(var * self.eps)
+
+        X_normalized = self.X_centred * self.inv_std_dev
+
+        return self.gamma * X_normalized + self.beta
 
     def run_backward_pass(self):
         """
