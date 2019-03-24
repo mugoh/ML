@@ -40,6 +40,17 @@ def convolute():
     classifier.add_layer(ConvolutionTwoD(
         no_of_filters=16, filter_shape=(3, 3), input_shape=(1, 8, 8),
         padding=True))
+
+    classifier.add_layer(Activation('ReLu'))
+    classifier.add_layer(DropOut(0.25))
+    classifier.add_layer(BatchNormalization())
+
+    classifier.add_layer(
+        ConvolutionTwoD(
+            no_of_filters=32,
+            filter_shape=(3, 3),
+            stride=1,
+            padding=True))
     classifier.add_layer(Activation('ReLu'))
     classifier.add_layer(DropOut(0.25))
     classifier.add_layer(BatchNormalization())
