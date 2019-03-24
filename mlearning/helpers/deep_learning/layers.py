@@ -415,10 +415,32 @@ class BatchNormalization(Layer):
 
         return self.gamma * X_normalized + self.beta
 
-    def run_backward_pass(self):
+    def run_backward_pass(self, accumulated_grad):
         """
             Propagates the accumulated gradient backwards
        """
+
+        # Stat used during forward pass
+        gamma = self.gamma
+
+        if self.trainable:
+            X_normalized = self.X_centred * self.inv_std_dev
+            grad_gamma = np.sum(accumulated_grad, axis=0)
+            grad_beta = self.beta_opt.update(self.beta_opt, grad_beta)
+
+        batch_size = accumulated_grad.shape[0]
+
+        # loss gradient with respect to layer inputs
+        # (Use stats from forward pass)
+        accumulated_grad = (1 / batch_size) * gamma * self.inv_std_dev * (
+            batch_size * accumulated_grad - np.sum(
+                accumulated_grad, axis=0) -
+            self.X_centred * self.inv_std_dev ** 2 *
+            np.sum(
+                accumulated_grad * self.X_centred, axis=0)
+        )
+
+        return accumulated_grad
 
 
 activation_functions = {
@@ -430,4 +452,6 @@ activation_functions = {
     'elu': ELU,
     'tanh': TanH,
     'softmax': SoftMax
+
+
 }
