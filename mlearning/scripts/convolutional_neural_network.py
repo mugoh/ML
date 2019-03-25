@@ -6,7 +6,9 @@ from sklearn import datasets
 from ..helpers.deep_learning.network import Neural_Network
 from ..deep_learning.grad_optimizers import Adam
 from ..helpers.utils.data_utils import data_helper
-from ..helpers.deep_learning.layers import ConvolutionTwoD, Activation, DropOut, BatchNormalization
+from ..helpers.deep_learning.layers import (
+    ConvolutionTwoD, Activation, DropOut, BatchNormalization,
+    Flatten, Dense)
 from ..helpers.deep_learning.loss import CrossEntropyLoss
 
 
@@ -54,3 +56,18 @@ def convolute():
     classifier.add_layer(Activation('ReLu'))
     classifier.add_layer(DropOut(0.25))
     classifier.add_layer(BatchNormalization())
+
+    classifier.add_layer(Flatten())
+    classifier.add_layer(Dense(256))
+    classifier.add_layer(Activation('ReLu'))
+    classifier.add_layer(DropOut(0.4))
+    classifier.add_layer(BatchNormalization())
+
+    classifier.add_layer(Dense(10))
+    classifier.add_layer(Activation('softmax'))
+
+    print(classifier.show_model_details('Convolution Network'))
+    training_err, validation_err = classifier.fit(
+        X_train, y_train, no_of_epochs=50, batch_size=256)
+
+    # Training and Validation Error Plot
