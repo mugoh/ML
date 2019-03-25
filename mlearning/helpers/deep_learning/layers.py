@@ -297,7 +297,7 @@ class Activation(Layer):
         """
         return f'Activation {self.activation_func.__class__.__name__}'
 
-    def run_forward_pass(self, X, training=True):
+    def forward_pass(self, X, training=True):
         """
             Propagates input data through the network to
             get an output prediction
@@ -326,7 +326,7 @@ class DropOut(Layer):
         self.pass_through = True
         self.trainable = True
 
-    def run_forward_pass(self, X, training=True):
+    def forward_pass(self, X, training=True):
         """
            Propagates input data through the network to
            get an output prediction
@@ -338,7 +338,7 @@ class DropOut(Layer):
             c = self._mask
         return X * c
 
-    def run_backward_pass(self, accumulated_grad):
+    def backward_pass(self, accumulated_grad):
         """
              Propagates the accumulated gradient backwards
         """
@@ -387,7 +387,7 @@ class BatchNormalization(Layer):
         """
         return self.input_shape
 
-    def run_forward_pass(self, X, training=True):
+    def forward_pass(self, X, training=True):
         """
            Propagates input data through the network to
            get an output prediction
@@ -415,7 +415,7 @@ class BatchNormalization(Layer):
 
         return self.gamma * X_normalized + self.beta
 
-    def run_backward_pass(self, accumulated_grad):
+    def backward_pass(self, accumulated_grad):
         """
             Propagates the accumulated gradient backwards
        """
@@ -460,14 +460,14 @@ class Flatten(Layer):
        """
         return np.prod(self.input_shape),
 
-    def run_forward_pass(self, X, training=True):
+    def forward_pass(self, X, training=True):
         """
             Propagates forward
         """
         self.previous_shape = X.shape
         return X.reshape((X.shape[0], -1))
 
-    def run_backward_pass(self, accumulated_grad):
+    def backward_pass(self, accumulated_grad):
         """
             Propagates backward across neuron layers
         """
