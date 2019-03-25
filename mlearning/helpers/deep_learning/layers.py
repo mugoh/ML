@@ -443,6 +443,37 @@ class BatchNormalization(Layer):
         return accumulated_grad
 
 
+class Flatten(Layer):
+    """
+        Converts a multi-dimensional to a two-d matrix
+    """
+
+    def __init__(self, input_shape=None):
+        self.previous_shape = None
+        self.trainable = True
+        self.input_shape = input_shape
+
+    def output_shape(self):
+        """
+           Gives the shape of the output returned
+           by the forward pass
+       """
+        return np.prod(self.input_shape),
+
+    def run_forward_pass(self, X, training=True):
+        """
+            Propagates forward
+        """
+        self.previous_shape = X.shape
+        return X.reshape((X.shape[0], -1))
+
+    def run_backward_pass(self, accumulated_grad):
+        """
+            Propagates backward across neuron layers
+        """
+        return accumulated_grad.reshape(self.previous_shape)
+
+
 activation_functions = {
     'ReLu': ReLu,
     'sigmoid': Sigmoid,
