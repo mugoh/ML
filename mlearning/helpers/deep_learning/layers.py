@@ -306,6 +306,21 @@ class Activation(Layer):
 
         return self.activation_func(X)
 
+        return self.activation_func(X)
+
+    def backward_pass(self, accumulated_grad):
+        """
+            Propagates backwards
+        """
+        return accumulated_grad *
+        self.activation_func.find_grad(self.input_layer)
+
+    def output_shape(self):
+        """
+            Gives the shape of the output returned by the forward pass
+        """
+        return self.input_shape
+
 
 class DropOut(Layer):
     """
