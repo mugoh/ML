@@ -489,6 +489,78 @@ class Flatten(Layer):
         return accumulated_grad.reshape(self.previous_shape)
 
 
+class Dense(Layer):
+    """
+        Models a Neural Network layer
+    Parameters:
+    -----------
+    units: int
+        Number of neurons in the layer
+    input_shape: tuple
+        Expected input shape of the layer. Needs to be specified for the first
+        network layer
+    """
+
+    def __init__(self, units, input_shape=None):
+        self.input_layer = None
+        self.input_shape = input_shape
+        self.units = units
+        self.trainable = True
+        self.weight
+        self.weight_out
+
+    def initialize_weights(self, optimizer):
+        """
+            Initializes the input weights
+        """
+        limit = 1 / pow(self.input_shape[0], .5)
+        self.weight = np.random.uniform(-limit,
+                                        limit,
+                                        (self.input_shape[0],
+                                            self.units))
+        # Weight optimizers
+        self.optimized_w = copy.copy(optimizer)
+        self.optimized_w_out = copy.copy(optimizer)
+
+    def paramitize(self):
+        """
+            Returns the number of trainable parameters used by the layer
+        """
+        return np.prod(self.weight.shape) + np.prod(self.weight_out.shape)
+
+    def forward_pass(self, X, training=True):
+        """
+            Gets dot product of input shape and ouptu weights
+        """
+        self.input_layer = X
+        return X.dot(self.weight) + self.weight_out
+
+    def output_shape(self):
+        """
+          Gives the shape of the output returned
+          by the forward pass
+      """
+        return self.units,
+
+    def backward_pass(self, accumulated_grad):
+        """
+            Propagates backward
+        """
+        weight_ = self.weight
+
+        if self.trainable:
+            weight_grad = self.input_layer.T.dot(accumulated_grad)
+            weight_out_grad = np.sum(accumulated_grad, axis=0, keepdims=True)
+
+            self.weight = self.optimized_w.update(self.weight, weight_grad)
+            self.weight_out = self.optimized_w_out.update(
+                self.weight_out, weight_out_grad)
+
+        # Accumulated gradient for next layer
+        # -> Calculated on weights used on forward pass
+        return accumulated_grad.dot(weight_.T)
+
+
 activation_functions = {
     'ReLu': ReLu,
     'sigmoid': Sigmoid,
