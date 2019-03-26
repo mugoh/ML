@@ -1,6 +1,9 @@
 """
     This module contains a Convolutional Neural Network example
 """
+import matplotlib.pyplot as plot
+import numpy as np
+
 from sklearn import datasets
 
 from ..helpers.deep_learning.network import Neural_Network
@@ -71,3 +74,23 @@ def convolute():
         X_train, y_train, no_of_epochs=50, batch_size=256)
 
     # Training and Validation Error Plot
+
+    training_count = len(training_err)
+    training, = plot.plot(range(training_count),
+                          training_err, label="Training Error")
+    validation, = plot.plot(range(training_count),
+                            validation_err, label="Validation Error")
+    plot.legend(handles=[training, validation])
+    plot.title('Error Plot')
+    plot.ylabel('error')
+    plot.xlabel('no. of iterations')
+    plot.show()
+
+    _, accuracy = classifier.test_on_batch(X_test, y_test)
+    print(f'Accuracy: {accuracy}')
+
+    y_prediction = np.argmax(classifier.make_prediction(X_test, y_test))
+    X_test = X_test.reshape(-1, 8*8)
+
+    # Flatten dimension to Two-D
+    Plot
