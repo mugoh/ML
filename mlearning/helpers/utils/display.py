@@ -48,3 +48,40 @@ class Plot:
         transformed_X = X.dot(eigen_vectors)
 
         return transformed_X
+
+    def plot_regression(self, lines, title, axis_labels=None,
+                        mse=None, scatter=None,
+                        legend={'type': 'lines', 'location': 'lower right'}):
+        """
+            Helps in plotting of a regression fit
+        """
+        if scatter:
+            scatter_plots = []
+            scatter_labels = []
+
+            for item in scatter:
+                scatter_plots += [plt.scatter(item['x'],
+                                              item['y'], color=item['color'],
+                                              s=item['size'])]
+                scatter_labels += [item['label']]
+            scatter_plots = tuple(scatter_plots)
+            scatter_labels = tuple(scatter_labels)
+
+        for line in lines:
+            line = plt.plot(line['x'], line['y'],
+                            color=line['color'],
+                            linewidth=line['width'],
+                            label=line['label'])
+        plt.suptitle(title)
+        if mse:
+            plt.suptitle('Mean Sq. Error: {mse}', fontsize=9)
+        if axis_labels:
+            plt.xlabel(axis_labels['x'])
+            plt.ylabel(axis_labels['y'])
+
+        if legend['type'] == 'lines':
+            plt.legend(loc='lower_left')
+        elif scatter and legend['type'] == 'scatter':
+            plt.legend(scatter_plots, scatter_labels, loc=legend['location'])
+
+        plt.show()
