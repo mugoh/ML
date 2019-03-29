@@ -85,3 +85,27 @@ class Plot:
             plt.legend(scatter_plots, scatter_labels, loc=legend['location'])
 
         plt.show()
+
+    def plot_in_two_d(self, X, y=None, title=None, accuracy=0,
+                      legend_labels=None):
+        """
+            PLots the dataset x and y labels iin Two D using PCA
+        """
+        class_distr = []
+        X_transformed = self._X_transformed(X, dims=2)
+        x_one = X_transformed[:, 0]
+        x_two = X_transformed[:, 1]
+
+        y = np.array(y).astype(int)
+        colors = [self.cmap(i) for i in np.linspace(0, 1, len(np.unique(y)))]
+
+        # Plot class distrbutions
+        for num, item in enumerate(np.unique(y)):
+            x_one_ = x_one[y == 1]
+            x_two_ = x_two[y == 1]
+            y_ = y[y == 1]
+            class_distr.append(plt.scatter(x_one_, x_two_, color=colors[num]))
+
+        # Plot legend
+        if legend_labels:
+            plt.legend(class_distr, legend_labels, loc=1)
