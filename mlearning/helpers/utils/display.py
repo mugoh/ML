@@ -109,3 +109,14 @@ class Plot:
         # Plot legend
         if legend_labels:
             plt.legend(class_distr, legend_labels, loc=1)
+        # Plot accuracy
+        if title and accuracy:
+            perc = 100 * accuracy
+            plt.suptitle(title)
+            plt.title(f"Accuracy: {perc}", fontsize=10)
+        elif not accuracy and title:
+            plt.title(title)
+
+        plt.xlabel('Principal Component 1')
+        plt.ylabel('Principal Component 2')
+        plt.show()
