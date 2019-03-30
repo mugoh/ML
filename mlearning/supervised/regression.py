@@ -3,7 +3,7 @@
 """
 import numpy
 
-from ..helpers.data_utils import data_helper
+from ..helpers.utils.data_utils import data_helper
 
 
 class Regression:
@@ -103,14 +103,6 @@ class PolynomialRRegression(Regression):
             data_helper.find_poly_features(x, self.degree))
 
         return super().make_prediction(normalized_values)
-
-
-class ClassName(object):
-    """docstring for ClassName"""
-
-    def __init__(self, arg):
-        super(ClassName, self).__init__()
-        self.arg = arg
 
 
 class RegularizedRidge:

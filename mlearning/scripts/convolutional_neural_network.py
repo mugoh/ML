@@ -97,13 +97,13 @@ class CNN:
         plot.show()
 
         _, accuracy = classifier.test_on_batch(X_test, y_test)
-        print(f'Accuracy': {accuracy})
+        print(f'Accuracy: {accuracy}')
 
         y_prediction = np.argmax(classifier.make_prediction(X_test), axis=1)
         X_test = X_test.reshape(-1, 8 * 8)
 
         # Flatten dimension to Two-D
-        plot_dimensioner.plot_in_two_d(X_test, y_prediction
+        plot_dimensioner.plot_in_two_d(X_test, y_prediction,
                                        title="Convolution Neural Network",
                                        accuracy=accuracy,
                                        legend_labels=range(10))

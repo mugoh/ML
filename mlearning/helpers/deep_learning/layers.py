@@ -312,8 +312,8 @@ class Activation(Layer):
         """
             Propagates backwards
         """
-        return accumulated_grad *
-        self.activation_func.find_grad(self.input_layer)
+        return accumulated_grad * \
+            self.activation_func.find_grad(self.input_layer)
 
     def output_shape(self):
         """
@@ -392,8 +392,8 @@ class BatchNormalization(Layer):
         """
             Returns the number of trainable parameters used by the layer
         """
-        return np.product(self.gamma.shape) +
-        np.product(self.beta.shape)
+        return np.product(self.gamma.shape) + \
+            np.product(self.beta.shape)
 
     def output_shape(self):
         """
