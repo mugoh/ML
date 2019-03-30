@@ -10,7 +10,7 @@ class Rectified_Linear_Units:
     """
         A rectified linear units activation function
         0 : x < 0
-        1 : x > 0
+        1 : x >= 0
     """
 
     def __call__(self, x):
@@ -74,5 +74,40 @@ class Leaky_ReLu:
     """
         Leaky Relu activation function
         - infinity to  infinity
+        inf : x < 0
+        1 : x >= 0
+    """
 
+    def __init__(self, alpha=0.2):
+        self.alpha = alpha
+
+    def __call__(self, x):
+        return np.where(x >= 0, x, self.alpha * x)
+
+    def grad(self, x):
+        return np.where(x >= 0, x, 1, self.alpha)
+
+
+class ELU:
+    """
+        Exponential Linear Unit
+        inf : x < 0
+        1 : x >= 1
+    """
+
+    def __init__(self, alpha=0.1):
+        self.alpha = alpha
+
+    def __call__(self, x):
+        return np.where(x >= 0.0, x, self.alpha * (np.exp(x) - 1))
+
+    def grad(self, x):
+        return np.where(x >= 0.0, 1, self.__call__(x) + self.alpha)
+
+
+class SELU:
+    """
+        Scaled Exponential Linear Units
+        alpha(exp(x) - 1): x < 0
+        x >= 0
     """
