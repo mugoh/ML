@@ -128,8 +128,8 @@ class Layer:
         batch_size, channels, height, width = img_shape
         fltr_height, fltr_width = fltr_shape
         pad_h, pad_w = padding
-        out_height = int((height * np.sum(pad_h) - fltr_height) / stride + 1)
-        out_width = int((width * np.sum(pad_w) - fltr_width) / stride + 1)
+        out_height = int((height + np.sum(pad_h) - fltr_height) / stride + 1)
+        out_width = int((width + np.sum(pad_w) - fltr_width) / stride + 1)
 
         ind_i0 = np.repeat(np.arange(fltr_height), fltr_width)
         ind_i0 = np.tile(ind_i0, channels)
@@ -322,7 +322,7 @@ class Activation(Layer):
             Propagates backwards
         """
         return accumulated_grad * \
-            self.activation_func.find_grad(self.input_layer)
+            self.activation_func.grad(self.input_layer)
 
     def output_shape(self):
         """
@@ -382,8 +382,8 @@ class BatchNormalization(Layer):
             to reduce covariance shift
     """
 
-    def __init__(self, momemtum=0.99):
-        self.momemtum = momemtum
+    def __init__(self, momentum=0.99):
+        self.momentum = momentum
         self.trainable = True
         self.eps = 0.01
         self.running_var = None
@@ -423,7 +423,7 @@ class BatchNormalization(Layer):
         if training and self.trainable:
             mean = np.mean(X, axis=0)
             var = np.var(X, axis=0)
-            self.running_mean = self.momemtum * \
+            self.running_mean = self.momentum * \
                 self.running_mean + (1 - self.momentum) * mean
             self.running_var = self.momentum * \
                 self.running_var + (1 - self.momentum) * var

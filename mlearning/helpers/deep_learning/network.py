@@ -120,7 +120,7 @@ class Neural_Network:
         acc = self.loss_func.get_acc_score(y, y_prediction)
 
         # Gradient of loss func with respect to predicted values for y
-        loss_gradient = self.loss_func.grad(y, y_prediction)
+        loss_gradient = self.loss_func.find_gradient(y, y_prediction)
 
         # Update the weights
         self.run_backward_pass(loss_gradient)
