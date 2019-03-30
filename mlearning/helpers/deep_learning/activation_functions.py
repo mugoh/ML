@@ -91,8 +91,8 @@ class Leaky_ReLu:
 class ELU:
     """
         Exponential Linear Unit
-        inf : x < 0
-        1 : x >= 1
+        alpha(exp(x) - 1): x < 0
+        x : x >= 0
     """
 
     def __init__(self, alpha=0.1):
@@ -109,5 +109,32 @@ class SELU:
     """
         Scaled Exponential Linear Units
         alpha(exp(x) - 1): x < 0
-        x >= 0
+        x : x >= 0
     """
+
+    def __init__(self, alpha, scale):
+        self.alpha = alpha or 1.6732632423543772848170429916717
+        self.scale = scale or 1.0507009873554804934193349852946
+
+    def __call__(self, x):
+        return self.scale * np.where(x >= 0.0, x, self.alpha * (np.exp(x) - 1))
+
+    def grad(self, x):
+        return self.scale * np.where(x >= 0.0, 1, self.alpha * np.exp(x))
+
+
+class SoftPlus:
+    """
+        SoftPlus activation function
+        ln(1 + exp(x))
+        log(exp)[1 + exp(x)]
+    """
+
+    def __call__(self, x):
+        return np.log(1 + np.exp(x))
+
+    def grad(self, x):
+        """
+            f`(x) = 1 / (1 + exp(-x))
+        """
+        return 1 / (1 + np.exp(-x))
