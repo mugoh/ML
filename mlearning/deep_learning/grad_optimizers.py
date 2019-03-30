@@ -21,8 +21,8 @@ class Adam:
         self.beta2 = beta2
 
         # First and second moment estimates
-        self.mean
-        self.uncentered_variance
+        self.mean = 0
+        self.uncentered_variance = 0
 
     def update(self, weight, grad_wrt_weight):
         """

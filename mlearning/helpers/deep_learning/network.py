@@ -36,8 +36,9 @@ class Neural_Network:
                      'validation': []
                      }
         if validation_data:
+            X, y = validation_data
             self.validation_set = {
-                key: value for key, value in validation_data}
+                'X': X, 'y': y}
 
     def set_trainable(self, trainable):
         """
@@ -69,9 +70,9 @@ class Neural_Network:
                 shape=self.input_layers[-1].output_shape())
 
         # Layer contains weights that require initialization
-        if hasattr(new_layer, 'initialize'):
-            new_layer.initialize(optimizer=self.optimizer)
-        self.layers.append(new_layer)
+        if hasattr(new_layer, 'init_weights'):
+            new_layer.init_weights(optimizer=self.optimizer)
+        self.input_layers.append(new_layer)
 
     def test_on_batch(self, X, y):
         """
@@ -162,11 +163,13 @@ class Neural_Network:
         layer_parameters = 0
 
         for layer in self.input_layers:
-            data.append(
-                layer.layer_name(),
-                str(layer.parameters()),
+            params = layer.paramitize()
+            data.append([
+                layer.get_name(),
+                str(params),
                 str(layer.output_shape())
+            ]
             )
-            layer_parameters += layer.parameters()
+            layer_parameters += params
         print(AsciiTable(data).table,
               f"Total Parameters {layer_parameters}")

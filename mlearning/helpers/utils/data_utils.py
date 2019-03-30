@@ -124,7 +124,7 @@ class Data:
 
             yield X[start:finish], y[start:finish] if y else X[start:finish]
 
-    def categorize(self, x_value, columns):
+    def categorize(self, x_value, columns=None):
         """
             Performs one hot encoding for nominal vlaues
         """

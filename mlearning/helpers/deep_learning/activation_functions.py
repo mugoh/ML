@@ -70,7 +70,7 @@ class TanH:
         return 1 - np.power(self.__call__(x), 2)
 
 
-class Leaky_ReLu:
+class LeakyReLu:
     """
         Leaky Relu activation function
         - infinity to  infinity

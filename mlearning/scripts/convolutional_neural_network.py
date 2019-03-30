@@ -36,7 +36,7 @@ class CNN:
 
         # Convert to one hot encoding
 
-        y = data_helper.categorize(y.asType('int'))
+        y = data_helper.categorize(y.astype('int'))
 
         X_train, X_test, y_train, y_test = data_helper.split_train_test(
             X, y, test_size=0.4, seed=1)
@@ -51,7 +51,7 @@ class CNN:
         self.add_layers()
 
         print(self.classifier.show_model_details('Convolution Network'))
-        training_err, validation_err = classifier.fit(
+        training_err, validation_err = self.classifier.fit(
             X_train, y_train, no_of_epochs=50, batch_size=256)
         self.output()
 
@@ -109,4 +109,4 @@ class CNN:
                                        legend_labels=range(10))
 
 
-convolute = CNN.convolute
+convolute = CNN().convolute

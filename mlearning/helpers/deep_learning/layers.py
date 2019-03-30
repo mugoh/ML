@@ -2,8 +2,10 @@
     This module contains the network model
     layers.
 """
-from .activation_functions import (Rectified_Linear_Units, SoftMax, ELU, TanH,
-                                   LeakyReLu, SELU, Sigmoid)
+from .activation_functions import (Rectified_Linear_Units as ReLu, SoftMax,
+                                   TanH, LeakyReLu, SELU, Sigmoid, SoftPlus,
+                                   ELU
+                                   )
 
 import numpy as np
 import copy
@@ -30,6 +32,13 @@ class Layer:
             the class instance holding the layer.
         """
         return self.__class__.__name__
+
+    def paramitize(self):
+        """
+            Shows the number of trainable parameters used
+            by the layer
+        """
+        return 0
 
     @classmethod
     def reshape_col_to_image(cls,
@@ -162,7 +171,7 @@ class ConvolutionTwoD(Layer):
     """
 
     def __init__(self, no_of_filters, filter_shape,
-                 input_shape, padding=False, stride=1, trainable=True):
+                 input_shape=None, padding=False, stride=1, trainable=True):
         self.no_of_filters = no_of_filters
         self.filter_shape = filter_shape
         self.input_shape = input_shape
@@ -272,8 +281,8 @@ class ConvolutionTwoD(Layer):
         """
             Returns the number of trainable parameters used by the layer
         """
-        return np.prod(self.weight_.shape)
-        + np.prod(self.weight_out.shape)
+        return np.prod(self.weight_.shape) + \
+            np.prod(self.weight_out.shape)
 
 
 class Activation(Layer):
@@ -380,7 +389,7 @@ class BatchNormalization(Layer):
         self.running_var = None
         self.running_mean = None
 
-    def initialize(self, optimizer):
+    def init_weights(self, optimizer):
         self.gamma = np.ones(self.input_shape)
         self.beta = np.zeros(self.input_shape)
 
@@ -506,10 +515,10 @@ class Dense(Layer):
         self.input_shape = input_shape
         self.units = units
         self.trainable = True
-        self.weight
-        self.weight_out
+        self.weight = 0
+        self.weight_out = 0
 
-    def initialize_weights(self, optimizer):
+    def init_weights(self, optimizer):
         """
             Initializes the input weights
         """
@@ -518,9 +527,11 @@ class Dense(Layer):
                                         limit,
                                         (self.input_shape[0],
                                             self.units))
+        self.weight_out = np.zeros((1, self.units))
         # Weight optimizers
         self.optimized_w = copy.copy(optimizer)
         self.optimized_w_out = copy.copy(optimizer)
+        print(self.weight_out, '\n\n')
 
     def paramitize(self):
         """
