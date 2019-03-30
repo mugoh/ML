@@ -11,7 +11,7 @@ import numpy as np
 
 import progressbar
 
-from .operations import get_matrix_covariance
+from .operations import op
 
 progress_bar_widgets = [
     'Training: ', progressbar.Percentage(),
@@ -27,7 +27,8 @@ progress_bar_widgets = [
 
 class Plot:
     """
-        A data plot display class
+        A data plot dimension-transformation class.
+        Makes use of Principal Component Analysis
     """
 
     def __init__(self):
@@ -38,7 +39,7 @@ class Plot:
             Transforms a given layer to s specified dimension
         """
 
-        covariance = get_matrix_covariance(X)
+        covariance = op.get_covariance_matrix(X)
         eigen_values, eigen_vectors = np.linalg.eig(covariance)
 
         # Sort eigen values ande eigen_vectors by largest eigen values
@@ -91,7 +92,7 @@ class Plot:
     def plot_in_two_d(self, X, y=None, title=None, accuracy=0,
                       legend_labels=None):
         """
-            PLots the dataset x and y labels iin Two D using PCA
+            PLots the dataset x and y labels in Two D using PCA
         """
         class_distr = []
         X_transformed = self._X_transformed(X, dims=2)
@@ -137,3 +138,6 @@ class Plot:
         axs = fig.add_subplot(111, projection='3d')
         axs.scatter(x_one, x_two, x_three, c=y)
         plt.show()
+
+
+plot_dimensioner = Plot()
