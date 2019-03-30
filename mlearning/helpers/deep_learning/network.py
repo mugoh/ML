@@ -120,7 +120,7 @@ class Neural_Network:
         acc = self.loss_func.get_acc_score(y, y_prediction)
 
         # Gradient of loss func with respect to predicted values for y
-        loss_gradient = self.loss_func.find_gradient(y, y_prediction)
+        loss_gradient = self.loss_func.grad(y, y_prediction)
 
         # Update the weights
         self.run_backward_pass(loss_gradient)
@@ -132,10 +132,11 @@ class Neural_Network:
             Trains the model for a specified number of epochs
         """
 
-        for _ in self.progressbar(no_of_epochs):
+        for _ in self.progressbar(range(no_of_epochs)):
             batch_err = []
             for X_batch, y_batch in \
-                    data_helper.iterate_over_batch(X, y, batch_size):
+                    data_helper.iterate_over_batch(
+                        X, y, batch_size=batch_size):
                 loss, _ = self.train_on_batch(X_batch, y_batch)
                 batch_err.append(loss)
 

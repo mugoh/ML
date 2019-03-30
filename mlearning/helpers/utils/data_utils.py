@@ -122,7 +122,10 @@ class Data:
         for i in numpy.arange(0, no_of_samples, batch_size):
             start, finish = i, min(i + batch_size, no_of_samples)
 
-            yield X[start:finish], y[start:finish] if y else X[start:finish]
+            if y is not None:
+                yield X[start:finish], y[start:finish]
+            else:
+                yield X[start:finish]
 
     def categorize(self, x_value, columns=None):
         """

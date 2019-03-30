@@ -104,7 +104,7 @@ class Layer:
             images, ((0, 0), (0, 0), pad_h, pad_w), mode='constant')
 
         # Indices to apply dot product between weights and image
-        ind_a, ind_b, ind_c = cls.et_img_cols_indices(
+        ind_a, ind_b, ind_c = cls.get_img_cols_indices(
             images.shape, fltr_shape, (pad_h, pad_w), stride)
 
         # Retrieve image content at these images
@@ -205,7 +205,7 @@ class ConvolutionTwoD(Layer):
             get an output prediction
         """
         self.input_layer = X
-        batch_size, channels, heigt, width = X.shape
+        batch_size, channels, height, width = X.shape
 
         # For dot product between input and weights,
         # change image shape to column shape
@@ -531,7 +531,6 @@ class Dense(Layer):
         # Weight optimizers
         self.optimized_w = copy.copy(optimizer)
         self.optimized_w_out = copy.copy(optimizer)
-        print(self.weight_out, '\n\n')
 
     def paramitize(self):
         """
