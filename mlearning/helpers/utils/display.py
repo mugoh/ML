@@ -11,10 +11,12 @@ import numpy as np
 
 import progressbar
 
+from .operations import get_matrix_covariance
+
 progress_bar_widgets = [
     'Training: ', progressbar.Percentage(),
     ' ',
-    progressbar.Bar(marker='~',
+    progressbar.Bar(marker='#',
                     left='[',
                     right=']'
                     ),
@@ -119,4 +121,19 @@ class Plot:
 
         plt.xlabel('Principal Component 1')
         plt.ylabel('Principal Component 2')
+        plt.show()
+
+    def plot_in_3d(self, X, y):
+        """
+            Plots the dataset X and y labels in 3 dimensions
+            using Principal Component Analysis
+        """
+        X_transformed = self.transform(X, dimension=3)
+
+        x_one = X_transformed[:, 0]
+        x_two = X_transformed[:, 1]
+        x_three = X_transformed[:, 2]
+        fig = plt.figure()
+        axs = fig.add_subplot(111, projection='3d')
+        axs.scatter(x_one, x_two, x_three, c=y)
         plt.show()
