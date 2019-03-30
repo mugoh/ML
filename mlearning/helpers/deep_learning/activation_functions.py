@@ -8,7 +8,9 @@ import numpy as np
 
 class Rectified_Linear_Units:
     """
-            A rectified linear units activation function
+        A rectified linear units activation function
+        0 : x < 0
+        1 : x > 0
     """
 
     def __call__(self, x):
@@ -57,5 +59,20 @@ class SoftMax:
 class TanH:
     """
         TanH activation function
+        -1 to 1
+        : (2 / [1 - exp(-2x)]) -1
+    """
+
+    def __call__(self, x):
+        return 2 / (1 + np.exp(-2 * x)) - 1
+
+    def grad(self, x):
+        return 1 - np.power(self.__call__(x), 2)
+
+
+class Leaky_ReLu:
+    """
+        Leaky Relu activation function
+        - infinity to  infinity
 
     """
