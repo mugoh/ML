@@ -449,8 +449,11 @@ class BatchNormalization(Layer):
 
         if self.trainable:
             X_normalized = self.X_centred * self.inv_std_dev
-            grad_gamma = np.sum(accumulated_grad, axis=0)
-            grad_beta = self.beta_opt.update(self.beta_opt, grad_beta)
+            grad_gamma = np.sum(accumulated_grad * X_normalized, axis=0)
+            grad_beta = np.sum(accumulated_grad, axis=0)
+
+            self.gamma = self.gamma_opt.update(self.gamma, grad_gamma)
+            self.beta = self.beta_opt.update(self.beta, grad_beta)
 
         batch_size = accumulated_grad.shape[0]
 
