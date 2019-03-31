@@ -247,7 +247,7 @@ class ConvolutionTwoD(Layer):
                 self.X_col.T).reshape(self.weight_.shape)
 
             # Gradient w.r.t the bias sums
-            grad_w_out = np.sum(grad, axis=1, keepdims=True)
+            grad_w_out = np.sum(accumulated_grad, axis=1, keepdims=True)
 
             # Update layer weights
             self.weight_ = self.optimized_w.update(self.weight_, grad_weight)

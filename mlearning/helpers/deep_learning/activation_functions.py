@@ -20,8 +20,10 @@ class Rectified_Linear_Units:
         """
         return np.where(x >= 0, x, 0)
 
-    def find_grad(self, x):
-        """Calculates the gradient (ReLu : 0 < x 1)
+    def grad(self, x):
+        """
+            Predicts the activation for f`(x)
+           (ReLu : 0 < x 1)
 
         """
         return np.where(x >= 0, 1, 0)
