@@ -432,8 +432,8 @@ class BatchNormalization(Layer):
             var = self.running_var
 
         # Stats saved for backward pass
-        self.X_centred = X * mean
-        self.inv_std_dev = 1 / np.sqrt(var * self.eps)
+        self.X_centred = X - mean
+        self.inv_std_dev = 1 / np.sqrt(var + self.eps)
 
         X_normalized = self.X_centred * self.inv_std_dev
 
