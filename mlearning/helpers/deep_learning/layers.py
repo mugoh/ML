@@ -61,7 +61,8 @@ class Layer:
         ind1, ind2, ind3 = cls.get_img_cols_indices(
             imgs_shape, fltr_shape, (pad_h, pad_w), stride)
 
-        cols_reshaped = cols.reshape(channels * np.product(fltr_shape))
+        cols_reshaped = cols.reshape(
+            channels * np.product(fltr_shape), -1, batch_size)
         cols_reshaped = cols_reshaped.transpose(2, 0, 1)
 
         # Add column content to images at the indices
@@ -416,7 +417,7 @@ class BatchNormalization(Layer):
            Propagates input data through the network to
            get an output prediction
        """
-        if not self.running_mean:
+        if not np.any(self.running_mean):
             self.running_mean = np.mean(X, axis=0)
             self.running_var = np.var(X, axis=0)
 

@@ -50,9 +50,17 @@ class CNN:
 
         self.add_layers()
 
-        print(self.classifier.show_model_details('Convolution Network'))
+        self.classifier.show_model_details('Convolution Network')
         training_err, validation_err = self.classifier.fit(
             X_train, y_train, no_of_epochs=50, batch_size=256)
+
+        count = len(training_err)
+        self.training, = plot.plot(range(count),
+                                   training_err,
+                                   label='Trainig Error')
+        self.validation, = plot.plot(range(count),
+                                     validation_err,
+                                     label='Validation Error')
         self.output()
 
     def add_layers(self):
@@ -90,16 +98,17 @@ class CNN:
         """
             Displays output from the data convolution.
         """
-        plot.legend(handles=[training, validation])
+        plot.legend(handles=[self.training, self.validation])
         plot.title('Error Plot')
         plot.ylabel('error')
         plot.xlabel('No. of iterations')
         plot.show()
 
-        _, accuracy = classifier.test_on_batch(X_test, y_test)
+        _, accuracy = self.classifier.test_on_batch(X_test, y_test)
         print(f'Accuracy: {accuracy}')
 
-        y_prediction = np.argmax(classifier.make_prediction(X_test), axis=1)
+        y_prediction = np.argmax(
+            self.classifier.make_prediction(X_test), axis=1)
         X_test = X_test.reshape(-1, 8 * 8)
 
         # Flatten dimension to Two-D

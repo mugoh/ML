@@ -142,7 +142,7 @@ class Neural_Network:
 
             self.errs.get('training').append(numpy.mean(batch_err))
 
-            if self.validation_data:
+            if self.validation_set:
                 validation_loss, _ = self.test_on_batch(
                     self.validation_set.get('X'),
                     self.validation_set.get('y'))
@@ -173,4 +173,4 @@ class Neural_Network:
             )
             layer_parameters += params
         print(AsciiTable(data).table,
-              f"Total Parameters {layer_parameters}")
+              f"\nTotal Parameters {layer_parameters}")
