@@ -148,7 +148,7 @@ class Neural_Network:
                     self.validation_set.get('y'))
                 self.errs['validation'].append(validation_loss)
 
-        return tuple(self.errs.values())
+        return self.errs.values()
 
     def show_model_details(self, name='Summary of Model'):
         """

@@ -18,7 +18,7 @@ class Operations:
         """
         return np.sum(y == y_hat, axis=0) / len(y)
 
-    def get_covariance_matrix(self, X, y):
+    def get_covariance_matrix(self, X, y=None):
         """
             Calculates the covariance of matrix
             of the given dataset.

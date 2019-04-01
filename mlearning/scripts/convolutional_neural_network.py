@@ -57,10 +57,11 @@ class CNN:
         count = len(training_err)
         self.training, = plot.plot(range(count),
                                    training_err,
-                                   label='Trainig Error')
+                                   label='Training Error')
         self.validation, = plot.plot(range(count),
                                      validation_err,
                                      label='Validation Error')
+        self.X_test, self.y_test = X_test, y_test
         self.output()
 
     def add_layers(self):
@@ -104,12 +105,13 @@ class CNN:
         plot.xlabel('No. of iterations')
         plot.show()
 
-        _, accuracy = self.classifier.test_on_batch(X_test, y_test)
+        print('\n\nGetting Accuracy...\n')
+        _, accuracy = self.classifier.test_on_batch(self.X_test, self.y_test)
         print(f'Accuracy: {accuracy}')
 
         y_prediction = np.argmax(
-            self.classifier.make_prediction(X_test), axis=1)
-        X_test = X_test.reshape(-1, 8 * 8)
+            self.classifier.make_prediction(self.X_test), axis=1)
+        X_test = self.X_test.reshape(-1, 8 * 8)
 
         # Flatten dimension to Two-D
         plot_dimensioner.plot_in_two_d(X_test, y_prediction,

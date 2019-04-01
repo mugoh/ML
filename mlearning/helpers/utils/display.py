@@ -89,13 +89,13 @@ class Plot:
 
         plt.show()
 
-    def plot_in_two_d(self, X, y=None, title=None, accuracy=0,
+    def plot_in_two_d(self, X, y=None, title=None, accuracy=None,
                       legend_labels=None):
         """
             PLots the dataset x and y labels in Two D using PCA
         """
         class_distr = []
-        X_transformed = self._X_transformed(X, dims=2)
+        X_transformed = self.transform(X, dimension=2)
         x_one = X_transformed[:, 0]
         x_two = X_transformed[:, 1]
 
@@ -113,12 +113,13 @@ class Plot:
         if legend_labels:
             plt.legend(class_distr, legend_labels, loc=1)
         # Plot accuracy
-        if title and accuracy:
-            perc = 100 * accuracy
-            plt.suptitle(title)
-            plt.title(f"Accuracy: {perc}", fontsize=10)
-        elif not accuracy and title:
-            plt.title(title)
+        if title:
+            if accuracy:
+                perc = 100 * accuracy
+                plt.suptitle(title)
+                plt.title(f"Accuracy: {perc}", fontsize=10)
+            elif not accuracy:
+                plt.title(title)
 
         plt.xlabel('Principal Component 1')
         plt.ylabel('Principal Component 2')
