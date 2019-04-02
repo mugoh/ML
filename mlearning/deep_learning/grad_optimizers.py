@@ -29,9 +29,8 @@ class Adam:
             Updates parameters from bias-corrected first and second
             moment estimates.
         """
-        _any = numpy.any
 
-        if not _any(self.mean) or not _any(self.uncentered_variance):
+        if self.mean is None or self.uncentered_variance is None:
             self.mean = numpy.zeros(numpy.shape(grad_wrt_weight))
             self.uncentered_variance = numpy.zeros(
                 numpy.shape(grad_wrt_weight))

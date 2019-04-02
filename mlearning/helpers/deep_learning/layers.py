@@ -417,7 +417,7 @@ class BatchNormalization(Layer):
            Propagates input data through the network to
            get an output prediction
        """
-        if not np.any(self.running_mean):
+        if self.running_mean is None:
             self.running_mean = np.mean(X, axis=0)
             self.running_var = np.var(X, axis=0)
 

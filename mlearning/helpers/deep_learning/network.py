@@ -132,7 +132,7 @@ class Neural_Network:
             Trains the model for a specified number of epochs
         """
 
-        for _ in self.progressbar(range(no_of_epochs)):
+        for _ in self.progressbar(range(2)):
             batch_err = []
             for X_batch, y_batch in \
                     data_helper.iterate_over_batch(

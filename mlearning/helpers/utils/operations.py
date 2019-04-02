@@ -24,7 +24,8 @@ class Operations:
             of the given dataset.
         """
 
-        y = X if not y else y
+        if not y:
+            y = X
 
         no_of_samples = np.shape(X)[0]
         cov_matrix = (1 / (no_of_samples - 1)) * \
