@@ -21,8 +21,8 @@ class Adam:
         self.beta2 = beta2
 
         # First and second moment estimates
-        self.mean = 0
-        self.uncentered_variance = 0
+        self.mean = None
+        self.uncentered_variance = None
 
     def update(self, weight, grad_wrt_weight):
         """
@@ -30,7 +30,8 @@ class Adam:
             moment estimates.
         """
 
-        if self.mean is None or self.uncentered_variance is None:
+        if self.mean is None:
+                # or self.uncentered_variance is None:
             self.mean = numpy.zeros(numpy.shape(grad_wrt_weight))
             self.uncentered_variance = numpy.zeros(
                 numpy.shape(grad_wrt_weight))
