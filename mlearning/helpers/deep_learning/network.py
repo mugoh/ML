@@ -142,7 +142,7 @@ class Neural_Network:
 
             self.errs.get('training').append(numpy.mean(batch_err))
 
-            if self.validation_set:
+            if self.validation_set is not None:
                 validation_loss, _ = self.test_on_batch(
                     self.validation_set.get('X'),
                     self.validation_set.get('y'))
