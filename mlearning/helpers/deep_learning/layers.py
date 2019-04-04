@@ -186,9 +186,9 @@ class ConvolutionTwoD(Layer):
         """
         fltr_height, fltr_width = self.filter_shape
         channels = self.input_shape[0]
-        limit = 1 / pow(np.prod(
-            self.filter_shape),
-            .5)
+        limit = 1 / math.sqrt(np.prod(
+            self.filter_shape)
+        )
         self.weight_ = np.random.uniform(-limit,
                                          limit,
                                          size=(self.no_of_filters,

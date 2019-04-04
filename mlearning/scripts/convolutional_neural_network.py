@@ -69,7 +69,8 @@ class CNN:
         Adds network layers to the classifier
         """
         self.classifier.add_layer(ConvolutionTwoD(
-            no_of_filters=16, filter_shape=(3, 3), input_shape=(1, 8, 8),
+            no_of_filters=16, filter_shape=(3, 3),
+            stride=1, input_shape=(1, 8, 8),
             padding=True))
 
         self.classifier.add_layer(Activation('ReLu'))
