@@ -87,7 +87,7 @@ class LeakyReLu:
         return np.where(x >= 0, x, self.alpha * x)
 
     def grad(self, x):
-        return np.where(x >= 0, x, 1, self.alpha)
+        return np.where(x >= 0, 1, self.alpha)
 
 
 class ELU:
