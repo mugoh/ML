@@ -71,10 +71,10 @@ class Plot:
             scatter_labels = tuple(scatter_labels)
 
         for line in lines:
-            line = plt.plot(line['x'], line['y'],
-                            color=line['color'],
-                            linewidth=line['width'],
-                            label=line['label'])
+            line_ = plt.plot(line['x'], line['y'],
+                             color=s['color'],
+                             linewidth=line['width'],
+                             label=line['label'])
         plt.suptitle(title)
         if mse:
             plt.suptitle('Mean Sq. Error: {mse}', fontsize=9)
@@ -110,7 +110,7 @@ class Plot:
             class_distr.append(plt.scatter(x_one_, x_two_, color=colors[num]))
 
         # Plot legend
-        if legend_labels:
+        if not legend_labels is None:
             plt.legend(class_distr, legend_labels, loc=1)
         # Plot accuracy
         if title:

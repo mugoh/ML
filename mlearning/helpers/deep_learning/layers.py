@@ -2,7 +2,7 @@
     This module contains the network model
     layers.
 """
-from .activation_functions import (Rectified_Linear_Units as ReLu, SoftMax,
+from .activation_functions import (Rectified_Linear_Units, SoftMax,
                                    TanH, LeakyReLu, SELU, Sigmoid, SoftPlus,
                                    ELU
                                    )
@@ -73,7 +73,7 @@ class Layer:
                            pad_h[0], pad_w[0]:width + pad_w[0]]
 
     @classmethod
-    def get_padding(cls, fltr_shape, output_shape):
+    def get_padding(cls, fltr_shape, output_shape=True):
         """
             Determines the padding of the output height and width
         """
@@ -172,7 +172,7 @@ class ConvolutionTwoD(Layer):
     """
 
     def __init__(self, no_of_filters, filter_shape,
-                 input_shape=None, padding=False, stride=1, trainable=True):
+                 input_shape=None, padding=True, stride=1, trainable=True):
         self.no_of_filters = no_of_filters
         self.filter_shape = filter_shape
         self.input_shape = input_shape
@@ -313,8 +313,6 @@ class Activation(Layer):
             get an output prediction
         """
         self.input_layer = X
-
-        return self.activation_func(X)
 
         return self.activation_func(X)
 
@@ -486,7 +484,7 @@ class Flatten(Layer):
            Gives the shape of the output returned
            by the forward pass
        """
-        return np.prod(self.input_shape),
+        return (np.prod(self.input_shape),)
 
     def forward_pass(self, X, training=True):
         """
@@ -526,7 +524,7 @@ class Dense(Layer):
         """
             Initializes the input weights
         """
-        limit = 1 / pow(self.input_shape[0], .5)
+        limit = 1 / math.sqrt(self.input_shape[0])
         self.weight = np.random.uniform(-limit,
                                         limit,
                                         (self.input_shape[0],
@@ -554,7 +552,7 @@ class Dense(Layer):
           Gives the shape of the output returned
           by the forward pass
       """
-        return self.units,
+        return (self.units,)
 
     def backward_pass(self, accumulated_grad):
         """
@@ -576,7 +574,7 @@ class Dense(Layer):
 
 
 activation_functions = {
-    'ReLu': ReLu,
+    'ReLu': Rectified_Linear_Units,
     'sigmoid': Sigmoid,
     'selu': SELU,
     'softplus': SoftPlus,

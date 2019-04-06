@@ -16,7 +16,9 @@ class Operations:
             Conputes the accuracy by comapring the actual value of y
             to the predicted value
         """
-        return np.sum(y == y_hat, axis=0) / len(y)
+        x = np.sum(y == y_hat, axis=0) / len(y)
+        print(x)
+        return x
 
     def get_covariance_matrix(self, X, y=None):
         """

@@ -61,8 +61,7 @@ class CNN:
         self.validation, = plot.plot(range(count),
                                      validation_err,
                                      label='Validation Error')
-        self.X_test, self.y_test = X_test, y_test
-        self.output()
+        self.output(X_test, y_test)
 
     def add_layers(self):
         """
@@ -96,7 +95,7 @@ class CNN:
         self.classifier.add_layer(Dense(10))
         self.classifier.add_layer(Activation('softmax'))
 
-    def output(self):
+    def output(self, X_test, y_test):
         """
             Displays output from the data convolution.
         """
@@ -107,12 +106,12 @@ class CNN:
         plot.show()
 
         print('\n\nGetting Accuracy...\n')
-        _, accuracy = self.classifier.test_on_batch(self.X_test, self.y_test)
+        _, accuracy = self.classifier.test_on_batch(X_test, y_test)
         print(f'Accuracy: {accuracy}')
 
         y_prediction = np.argmax(
-            self.classifier.make_prediction(self.X_test), axis=1)
-        X_test = self.X_test.reshape(-1, 8 * 8)
+            self.classifier.make_prediction(X_test), axis=1)
+        X_test = X_test.reshape(-1, 8 * 8)
 
         # Flatten dimension to Two-D
         plot_dimensioner.plot_in_two_d(X_test, y_prediction,
