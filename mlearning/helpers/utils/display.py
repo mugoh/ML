@@ -96,6 +96,8 @@ class Plot:
         """
         class_distr = []
         X_transformed = self.transform(X, dimension=2)
+        print(X_transformed)
+        raise Exception
         x_one = X_transformed[:, 0]
         x_two = X_transformed[:, 1]
 
@@ -104,9 +106,9 @@ class Plot:
 
         # Plot class distrbutions
         for num, item in enumerate(np.unique(y)):
-            x_one_ = x_one[y == 1]
-            x_two_ = x_two[y == 1]
-            y_ = y[y == 1]
+            x_one_ = x_one[y == item]
+            x_two_ = x_two[y == item]
+            y_ = y[y == item]
             class_distr.append(plt.scatter(x_one_, x_two_, color=colors[num]))
 
         # Plot legend

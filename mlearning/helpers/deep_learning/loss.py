@@ -35,5 +35,5 @@ class CrossEntropyLoss:
         """
             Finds the gradient between p, and q values H(p, q)
         """
-        y_clipped = np.clip(y_pred, 1e-15, 1 - 1e15)
+        y_clipped = np.clip(y_pred, 1e-15, 1 - 1e-15)
         return - (y_true / y_clipped) + (1 - y_true) / (1 - y_clipped)

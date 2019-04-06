@@ -117,6 +117,7 @@ class Neural_Network:
         """
         y_prediction = self.run_forward_pass(X)
         loss = numpy.mean(self.loss_func.compute_loss(y, y_prediction))
+
         acc = self.loss_func.get_acc_score(y, y_prediction)
 
         # Gradient of loss func with respect to predicted values for y
