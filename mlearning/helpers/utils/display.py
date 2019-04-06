@@ -96,8 +96,6 @@ class Plot:
         """
         class_distr = []
         X_transformed = self.transform(X, dimension=2)
-        print(X_transformed)
-        raise Exception
         x_one = X_transformed[:, 0]
         x_two = X_transformed[:, 1]
 
@@ -112,14 +110,14 @@ class Plot:
             class_distr.append(plt.scatter(x_one_, x_two_, color=colors[num]))
 
         # Plot legend
-        if not legend_labels is None:
+        if legend_labels:
             plt.legend(class_distr, legend_labels, loc=1)
         # Plot accuracy
         if title:
             if accuracy:
                 perc = 100 * accuracy
                 plt.suptitle(title)
-                plt.title(f"Accuracy: {perc}", fontsize=10)
+                plt.title(f"Accuracy: {perc}%", fontsize=10)
             elif not accuracy:
                 plt.title(title)
 

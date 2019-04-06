@@ -50,7 +50,7 @@ class CNN:
 
         self.add_layers()
 
-        # self.classifier.show_model_details('Convolution Network')
+        self.classifier.show_model_details('Convolution Network')
         training_err, validation_err = self.classifier.fit(
             X_train, y_train, no_of_epochs=50, batch_size=256)
         count = len(training_err)
@@ -102,7 +102,7 @@ class CNN:
         plot.title('Error Plot')
         plot.ylabel('error')
         plot.xlabel('No. of iterations')
-        # plot.show()
+        plot.show()
 
         print('\n\nGetting Accuracy...\n')
         _, accuracy = self.classifier.test_on_batch(X_test, y_test)
