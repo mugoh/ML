@@ -8,6 +8,9 @@ from ..helpers.deep_learning.network import Neural_Network
 from ..helpers.deep_learning.layers import (
     Dense, DropOut, Activation, BatchNormalization)
 
+from sklearn.datasets import fetch_mldata
+import numpy as np
+
 
 class Generative_Adversarial_Net:
     """
@@ -81,3 +84,25 @@ class Generative_Adversarial_Net:
 
         net.add_layer(Dense(cls.img_dimensions))
         net.add_layer(Activation('tanh'))
+
+    def train(self, no_of_epochs, batch_size=128, save_interval=50):
+        """
+            Trains the network
+        """
+
+        mnist = fetch_mldata('MNIST original')
+
+        X = mnist.data
+        y = mnist.target
+
+        # Rescale data -> -1, 1
+        X = (X.astype(np.float32) - 127.5) / 127.5
+        half_batch = batch_size / 2
+
+        # Train the discriminator
+        for epoch in range(no_of_epochs):
+            self.discriminator.set_trainable(True)
+
+            # Select a random half-batch of images
+            index = np.random.randint(0, X.shape[0], half_batch)
+            images = X.get(index)

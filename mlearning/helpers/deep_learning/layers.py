@@ -332,7 +332,7 @@ class Activation(Layer):
 
 class DropOut(Layer):
     """
-        Randomly sets a fraction p of the inputs (probaility 1-p)
+        Randomly sets a fraction p of the inputs (probability 1-p)
         of the previous layer to zero
 
         Parameters:
