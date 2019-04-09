@@ -149,3 +149,27 @@ class Generative_Adversarial_Net:
 
             if not epoch % save_interval:
                 self.save_samples(epoch)
+
+        def save_samples(self, epoch):
+            """
+                Saves generated sample images at the save interval
+            """
+            row, col = 5, 5
+            noise = np.random.normal(0, 1, (row * col, self.latent_dimensions))
+
+            # Generate and reshape images
+            gen_images = self.generator.make_prediction(
+                noise).reshape((-1, self.img_rows, self.img_cols))
+            # Rescale images: 0 - 1
+            gen_images = 0.5 * gen_images + 0.5
+
+            figure, axis = plt.subplots(row, col)
+            plt.suptitile('Generative Adversarial Network')
+            count = 0
+            for i in range(row):
+                for j in range(col):
+                    axis[i, j].imshow(gen_images[count, :, :, ], cmap='grey')
+                    axis[i, j].axis('off')
+                    count += 1
+            figure.save_fig('mnist_{epoch}.png')
+            plt.close()
