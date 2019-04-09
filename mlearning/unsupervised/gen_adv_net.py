@@ -44,6 +44,13 @@ class Generative_Adversarial_Net:
         self.discriminator = self.build_discriminator(optimizer, loss_funct)
         self.generator = self.create_generator(optimizer, loss_funct)
 
+        self.combined = Neural_Network(optimizer, loss_funct)
+        self.combined.input_layers.extend(self.generator.input_layers)
+        self.combined.input_layers.extend(self.discriminator.input_layers)
+
+        self.generator.show_model_details('Generator')
+        self.discriminator.show_model_details('Discriminator')
+
     @classmethod
     def build_discriminator(cls, optimizer, loss):
         """
