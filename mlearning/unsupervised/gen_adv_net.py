@@ -25,9 +25,16 @@ class Generative_Adversarial_Net:
             Number of image rows
         cols: int
             Number of image columns
+        model_data: dict
+            {'no_of_epochs':int 'batch_size': 128, 'save_interval':50}
+            To be used in training the network
     """
+    sample_input = {'no_of_epochs': 20000,
+                    'batch_size': 64,
+                    'save_interval': 400
+                    }
 
-    def __init__(self, rows=28, cols=28):
+    def __init__(self, rows=28, cols=28, model_data={}):
         self.img_rows = rows
         self.img_cols = cols
         self.img_dimensions = self.img_rows * self.img_cols
@@ -36,6 +43,8 @@ class Generative_Adversarial_Net:
         optimizer = Adam(learning_rate=0.002, beta1=0.5)
 
         self.make_generative(optimizer, CrossEntropyLoss)
+
+        self.train(model_data or sample_input)
 
     def make_generative(self, optimizer, loss_funct):
         """
@@ -93,10 +102,13 @@ class Generative_Adversarial_Net:
         net.add_layer(Dense(cls.img_dimensions))
         net.add_layer(Activation('tanh'))
 
-    def train(self, no_of_epochs, batch_size=128, save_interval=50):
+    def train(self, **kwargs):
         """
             Trains the network
         """
+        no_of_epochs = kwargs.get('no_of_epochs')
+        batch_size = kwargs.get('batch_size') or 128
+        save_interval = kwargs.get('save_interval') or 50
 
         mnist = fetch_openml('MNIST original')
 
@@ -180,3 +192,7 @@ class Generative_Adversarial_Net:
                     count += 1
             figure.save_fig('mnist_{epoch}.png')
             plt.close()
+
+
+if __name__ == '__main__':
+    Generative_Adversarial_Net.train()
