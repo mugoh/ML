@@ -26,7 +26,7 @@ class Generative_Adversarial_Net:
         cols: int
             Number of image columns
         model_data: dict
-            {'no_of_epochs':int 'batch_size': 128, 'save_interval':50}
+            {'no_of_epochs':222int 'batch_size': 128, 'save_interval':50}
             To be used in training the network
     """
     sample_input = {'no_of_epochs': 20000,
@@ -121,50 +121,8 @@ class Generative_Adversarial_Net:
 
         for epoch in range(no_of_epochs):
 
-            # Train Discriminator
-
-            self.discriminator.set_trainable(True)
-
-            # Select a random half-batch of images
-            index = np.random.randint(0, X.shape[0], half_batch)
-            images = X.get(index)
-
-            # Sample noise to use as Generator input
-            noise = np.random.normal(
-                0, 1, (half_batch, self.latent_dimensions))
-
-            # Generate a half batch of images
-            gen_images = self.generator.make_prediction(noise)
-
-            # valid: [1, 0] invalid: [0, 1]
-            valid = np.concatenate(
-                (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
-            invalid = np.concatenate(
-                (np.zeros(half_batch, 1)), (np.ones(half_batch, 1)), axis=1)
-
-            # Train discriminator
-            d_loss_real, d_acc_real = self.discriminator.train_on_batch(
-                images, valid)
-            d_loss_invalid, d_acc_invalid = self.discriminator.train_on_batch(
-                gen_images, invalid)
-
-            d_loss = .5 * (d_loss_real + d_loss_invalid)
-            d_acc = .5 * (d_acc_real + d_acc_invalid)
-
-            # Train Generator
-
-            # Train only for the  combined model
-            self.generator.set_trainable(False)
-
-            noise = np.random.normal(
-                0, 1, (batch_size, self.latent_dimensions))
-            # Label generated samples as valid
-            valid = np.concatenate(
-                (np.ones(batch_size, 1), (np.zeros(batch_size, 1))), axis=1)
-            gen_loss, gen_acc = self.combined.train_on_batch(noise, valid)
-
-            print(f'{epoch} [Discriminator: Loss {d_loss: .3f}, acc {d_loss * 100: .3f}]')
-            print(f'Generator: loss {gen_loss:.2f}, acc {gen_acc * 100:.2f}')
+            self.train_discriminator()
+            self.train_gen()
 
             if not epoch % save_interval:
                 self.save_samples(epoch)
@@ -193,6 +151,57 @@ class Generative_Adversarial_Net:
             figure.save_fig('mnist_{epoch}.png')
             plt.close()
 
+        def train_discriminator(self):
+            """
+                Trains the discriminator for each epoch
+            """
+            self.discriminator.set_trainable(True)
+
+            # Select a random half-batch of images
+            index = np.random.randint(0, X.shape[0], half_batch)
+            images = X.get(index)
+
+            # Sample noise to use as Generator input
+            noise = np.random.normal(
+                0, 1, (half_batch, self.latent_dimensions))
+
+            # Generate a half batch of images
+            gen_images = self.generator.make_prediction(noise)
+
+            # valid: [1, 0] invalid: [0, 1]
+            valid = np.concatenate(
+                (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
+            invalid = np.concatenate(
+                (np.zeros(half_batch, 1)), (np.ones(half_batch, 1)), axis=1)
+
+            # Train discriminator
+            d_loss_real, d_acc_real = self.discriminator.train_on_batch(
+                images, valid)
+            d_loss_invalid, d_acc_invalid = self.discriminator.train_on_batch(
+                gen_images, invalid)
+
+            d_loss = .5 * (d_loss_real + d_loss_invalid)
+            d_acc = .5 * (d_acc_real + d_acc_invalid)
+            print(f'{epoch} [Discriminator: Loss {d_loss: .3f},' +
+                  f'acc {d_loss * 100: .3f}]')
+
+        def train_gen(self):
+            """
+               Trains the generator for each epoch
+            """
+
+            # Train only for the  combined model
+            self.generator.set_trainable(False)
+
+            noise = np.random.normal(
+                0, 1, (batch_size, self.latent_dimensions))
+            # Label generated samples as valid
+            valid = np.concatenate(
+                (np.ones(batch_size, 1), (np.zeros(batch_size, 1))), axis=1)
+            gen_loss, gen_acc = self.combined.train_on_batch(noise, valid)
+
+            print(f'Generator: loss {gen_loss:.2f}, acc {gen_acc * 100:.2f}')
+
 
 if __name__ == '__main__':
-    Generative_Adversarial_Net.train()
+    Generative_Adversarial_Net()
