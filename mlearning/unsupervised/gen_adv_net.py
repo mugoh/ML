@@ -9,7 +9,7 @@ from ..helpers.deep_learning.layers import (
     Dense, DropOut, Activation, BatchNormalization)
 
 from sklearn.datasets import fetch_openml
-import matplotlib.pylplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -43,8 +43,9 @@ class Generative_Adversarial_Net:
         optimizer = Adam(learning_rate=0.002, beta1=0.5)
 
         self.make_generative(optimizer, CrossEntropyLoss)
-
-        self.train(model_data or sample_input)
+        model_data = model_data if model_data else \
+            Generative_Adversarial_Net.sample_input
+        self.train(**model_data)
 
     def make_generative(self, optimizer, loss_funct):
         """
@@ -60,14 +61,13 @@ class Generative_Adversarial_Net:
         self.generator.show_model_details('Generator')
         self.discriminator.show_model_details('Discriminator')
 
-    @classmethod
-    def build_discriminator(cls, optimizer, loss):
+    def build_discriminator(self, optimizer, loss):
         """
             Creates the GAN discriminator
         """
         net = Neural_Network(optimizer, loss)
 
-        net.add_layer(Dense(512, input_shape=(cls.img_dimensions, )))
+        net.add_layer(Dense(512, input_shape=(self.img_dimensions, )))
         net.add_layer(Activation('leaky_relu'))
         net.add_layer(DropOut(0.5))
 
@@ -80,14 +80,13 @@ class Generative_Adversarial_Net:
 
         return net
 
-    @classmethod
-    def create_generator(cls, optimizer, loss_func):
+    def create_generator(self, optimizer, loss_func):
         """
             Creates the GAN generator
         """
         net = Neural_Network(optimizer, loss_func)
 
-        net.add_layer(Dense(256, input_shape=(cls.latent_dimensions, )))
+        net.add_layer(Dense(256, input_shape=(self.latent_dimensions, )))
         net.add_layer(Activation('leaky_relu'))
         net.add_layer(BatchNormalization(momentum=0.8))
 
@@ -99,8 +98,10 @@ class Generative_Adversarial_Net:
         net.add_layer(Activation('leaky_relu'))
         net.add_layer(BatchNormalization(momentum=0.8))
 
-        net.add_layer(Dense(cls.img_dimensions))
+        net.add_layer(Dense(self.img_dimensions))
         net.add_layer(Activation('tanh'))
+
+        return net
 
     def train(self, **kwargs):
         """
@@ -201,7 +202,3 @@ class Generative_Adversarial_Net:
             gen_loss, gen_acc = self.combined.train_on_batch(noise, valid)
 
             print(f'Generator: loss {gen_loss:.2f}, acc {gen_acc * 100:.2f}')
-
-
-if __name__ == '__main__':
-    Generative_Adversarial_Net()
