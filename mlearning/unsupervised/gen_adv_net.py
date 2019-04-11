@@ -111,10 +111,9 @@ class Generative_Adversarial_Net:
         batch_size = kwargs.get('batch_size') or 128
         save_interval = kwargs.get('save_interval') or 50
 
-        mnist = fetch_openml('MNIST original')
+        mnist = fetch_openml('mlnst_784')
 
         X = mnist.data
-        y = mnist.target
 
         # Rescale data -> -1, 1
         X = (X.astype(np.float32) - 127.5) / 127.5
