@@ -121,83 +121,83 @@ class Generative_Adversarial_Net:
 
         for epoch in range(no_of_epochs):
 
-            self.train_discriminator()
-            self.train_gen()
+            self.train_discriminator(X, half_batch, epoch)
+            self.train_gen(X, batch_size)
 
             if not epoch % save_interval:
                 self.save_samples(epoch)
 
-        def save_samples(self, epoch):
-            """
-                Saves generated sample images at the save interval
-            """
-            row, col = 5, 5
-            noise = np.random.normal(0, 1, (row * col, self.latent_dimensions))
+    def save_samples(self, epoch):
+        """
+            Saves generated sample images at the save interval
+        """
+        row, col = 5, 5
+        noise = np.random.normal(0, 1, (row * col, self.latent_dimensions))
 
-            # Generate and reshape images
-            gen_images = self.generator.make_prediction(
-                noise).reshape((-1, self.img_rows, self.img_cols))
-            # Rescale images: 0 - 1
-            gen_images = 0.5 * gen_images + 0.5
+        # Generate and reshape images
+        gen_images = self.generator.make_prediction(
+            noise).reshape((-1, self.img_rows, self.img_cols))
+        # Rescale images: 0 - 1
+        gen_images = 0.5 * gen_images + 0.5
 
-            figure, axis = plt.subplots(row, col)
-            plt.suptitile('Generative Adversarial Network')
-            count = 0
-            for i in range(row):
-                for j in range(col):
-                    axis[i, j].imshow(gen_images[count, :, :, ], cmap='grey')
-                    axis[i, j].axis('off')
-                    count += 1
-            figure.save_fig('mnist_{epoch}.png')
-            plt.close()
+        figure, axis = plt.subplots(row, col)
+        plt.suptitile('Generative Adversarial Network')
+        count = 0
+        for i in range(row):
+            for j in range(col):
+                axis[i, j].imshow(gen_images[count, :, :, ], cmap='grey')
+                axis[i, j].axis('off')
+                count += 1
+        figure.save_fig('mnist_{epoch}.png')
+        plt.close()
 
-        def train_discriminator(self):
-            """
-                Trains the discriminator for each epoch
-            """
-            self.discriminator.set_trainable(True)
+    def train_discriminator(self, X, half_batch, epoch):
+        """
+            Trains the discriminator for each epoch
+        """
+        self.discriminator.set_trainable(True)
 
-            # Select a random half-batch of images
-            index = np.random.randint(0, X.shape[0], half_batch)
-            images = X.get(index)
+        # Select a random half-batch of images
+        index = np.random.randint(0, X.shape[0], half_batch)
+        images = X.get(index)
 
-            # Sample noise to use as Generator input
-            noise = np.random.normal(
-                0, 1, (half_batch, self.latent_dimensions))
+        # Sample noise to use as Generator input
+        noise = np.random.normal(
+            0, 1, (half_batch, self.latent_dimensions))
 
-            # Generate a half batch of images
-            gen_images = self.generator.make_prediction(noise)
+        # Generate a half batch of images
+        gen_images = self.generator.make_prediction(noise)
 
-            # valid: [1, 0] invalid: [0, 1]
-            valid = np.concatenate(
-                (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
-            invalid = np.concatenate(
-                (np.zeros(half_batch, 1)), (np.ones(half_batch, 1)), axis=1)
+        # valid: [1, 0] invalid: [0, 1]
+        valid = np.concatenate(
+            (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
+        invalid = np.concatenate(
+            (np.zeros(half_batch, 1)), (np.ones(half_batch, 1)), axis=1)
 
-            # Train discriminator
-            d_loss_real, d_acc_real = self.discriminator.train_on_batch(
-                images, valid)
-            d_loss_invalid, d_acc_invalid = self.discriminator.train_on_batch(
-                gen_images, invalid)
+        # Train discriminator
+        d_loss_real, d_acc_real = self.discriminator.train_on_batch(
+            images, valid)
+        d_loss_invalid, d_acc_invalid = self.discriminator.train_on_batch(
+            gen_images, invalid)
 
-            d_loss = .5 * (d_loss_real + d_loss_invalid)
-            d_acc = .5 * (d_acc_real + d_acc_invalid)
-            print(f'{epoch} [Discriminator: Loss {d_loss: .3f},' +
-                  f'acc {d_loss * 100: .3f}]')
+        d_loss = .5 * (d_loss_real + d_loss_invalid)
+        d_acc = .5 * (d_acc_real + d_acc_invalid)
+        print(f'{epoch} [Discriminator: Loss {d_loss: .3f},' +
+              f'acc {d_acc * 100: .3f}]')
 
-        def train_gen(self):
-            """
-               Trains the generator for each epoch
-            """
+    def train_gen(self, X, batch_size):
+        """
+           Trains the generator for each epoch
+        """
 
-            # Train only for the  combined model
-            self.generator.set_trainable(False)
+        # Train only for the  combined model
+        self.generator.set_trainable(False)
 
-            noise = np.random.normal(
-                0, 1, (batch_size, self.latent_dimensions))
-            # Label generated samples as valid
-            valid = np.concatenate(
-                (np.ones(batch_size, 1), (np.zeros(batch_size, 1))), axis=1)
-            gen_loss, gen_acc = self.combined.train_on_batch(noise, valid)
+        noise = np.random.normal(
+            0, 1, (batch_size, self.latent_dimensions))
+        # Label generated samples as valid
+        valid = np.concatenate(
+            (np.ones(batch_size, 1), (np.zeros(batch_size, 1))), axis=1)
+        gen_loss, gen_acc = self.combined.train_on_batch(noise, valid)
 
-            print(f'Generator: loss {gen_loss:.2f}, acc {gen_acc * 100:.2f}')
+        print(f'Generator: loss {gen_loss:.2f}, acc {gen_acc * 100:.2f}')
