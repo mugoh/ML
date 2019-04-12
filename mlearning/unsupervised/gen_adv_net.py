@@ -8,7 +8,7 @@ from ..helpers.deep_learning.network import Neural_Network
 from ..helpers.deep_learning.layers import (
     Dense, DropOut, Activation, BatchNormalization)
 
-from sklearn.datasets import fetch_openml
+from sklearn.datasets import fetch_mldata
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -111,13 +111,13 @@ class Generative_Adversarial_Net:
         batch_size = kwargs.get('batch_size') or 128
         save_interval = kwargs.get('save_interval') or 50
 
-        mnist = fetch_openml('mlnst_784')
+        mnist = fetch_mldata('MNIST original')
 
         X = mnist.data
 
         # Rescale data -> -1, 1
         X = (X.astype(np.float32) - 127.5) / 127.5
-        half_batch = batch_size / 2
+        half_batch = batch_size // 2
 
         for epoch in range(no_of_epochs):
 
@@ -141,14 +141,14 @@ class Generative_Adversarial_Net:
         gen_images = 0.5 * gen_images + 0.5
 
         figure, axis = plt.subplots(row, col)
-        plt.suptitile('Generative Adversarial Network')
+        plt.suptitle('Generative Adversarial Network')
         count = 0
         for i in range(row):
             for j in range(col):
-                axis[i, j].imshow(gen_images[count, :, :, ], cmap='grey')
+                axis[i, j].imshow(gen_images[count, :, :], cmap='gray')
                 axis[i, j].axis('off')
                 count += 1
-        figure.save_fig('mnist_{epoch}.png')
+        figure.savefig('mnist_{epoch}.png')
         plt.close()
 
     def train_discriminator(self, X, half_batch, epoch):
@@ -159,7 +159,7 @@ class Generative_Adversarial_Net:
 
         # Select a random half-batch of images
         index = np.random.randint(0, X.shape[0], half_batch)
-        images = X.get(index)
+        images = X[index]
 
         # Sample noise to use as Generator input
         noise = np.random.normal(
@@ -172,7 +172,7 @@ class Generative_Adversarial_Net:
         valid = np.concatenate(
             (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
         invalid = np.concatenate(
-            (np.zeros(half_batch, 1)), (np.ones(half_batch, 1)), axis=1)
+            (np.zeros((half_batch, 1)), np.ones((half_batch, 1))), axis=1)
 
         # Train discriminator
         d_loss_real, d_acc_real = self.discriminator.train_on_batch(
@@ -182,8 +182,8 @@ class Generative_Adversarial_Net:
 
         d_loss = .5 * (d_loss_real + d_loss_invalid)
         d_acc = .5 * (d_acc_real + d_acc_invalid)
-        print(f'{epoch} [Discriminator: Loss {d_loss: .3f},' +
-              f'acc {d_acc * 100: .3f}]')
+        print(f'{epoch} Discriminator: Loss {d_loss: .3f} ,' +
+              f'acc {d_acc * 100: .3f}')
 
     def train_gen(self, X, batch_size):
         """
@@ -197,7 +197,7 @@ class Generative_Adversarial_Net:
             0, 1, (batch_size, self.latent_dimensions))
         # Label generated samples as valid
         valid = np.concatenate(
-            (np.ones(batch_size, 1), (np.zeros(batch_size, 1))), axis=1)
+            (np.ones((batch_size, 1)), np.zeros((batch_size, 1))), axis=1)
         gen_loss, gen_acc = self.combined.train_on_batch(noise, valid)
 
         print(f'Generator: loss {gen_loss:.2f}, acc {gen_acc * 100:.2f}')
