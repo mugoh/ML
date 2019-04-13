@@ -148,7 +148,7 @@ class Generative_Adversarial_Net:
                 axis[i, j].imshow(gen_images[count, :, :], cmap='gray')
                 axis[i, j].axis('off')
                 count += 1
-        figure.savefig('mnist_{epoch}.png')
+        figure.savefig(f'mnist_{epoch}.png')
         plt.close()
 
     def train_discriminator(self, X, half_batch, epoch):
@@ -183,7 +183,7 @@ class Generative_Adversarial_Net:
         d_loss = .5 * (d_loss_real + d_loss_invalid)
         d_acc = .5 * (d_acc_real + d_acc_invalid)
         print(f'{epoch} Discriminator: Loss {d_loss: .3f} ,' +
-              f'acc {d_acc * 100: .3f}')
+              f'acc {d_acc * 100: .3f}', end=' ')
 
     def train_gen(self, X, batch_size):
         """
