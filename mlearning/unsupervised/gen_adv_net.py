@@ -29,9 +29,9 @@ class Generative_Adversarial_Net:
             {'no_of_epochs':222int 'batch_size': 128, 'save_interval':50}
             To be used in training the network
     """
-    sample_input = {'no_of_epochs': 20000,
-                    'batch_size': 64,
-                    'save_interval': 400
+    sample_input = {'no_of_epochs': 30000,
+                    'batch_size': 32,
+                    'save_interval': 180
                     }
 
     def __init__(self, rows=28, cols=28, model_data={}):
@@ -148,7 +148,7 @@ class Generative_Adversarial_Net:
                 axis[i, j].imshow(gen_images[count, :, :], cmap='gray')
                 axis[i, j].axis('off')
                 count += 1
-        figure.savefig(f'mnist_{epoch}.png')
+        figure.savefig(f'gan/images/mnist_{epoch}.png')
         plt.close()
 
     def train_discriminator(self, X, half_batch, epoch):
