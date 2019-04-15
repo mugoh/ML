@@ -1,11 +1,13 @@
 """
-    This mofile contains the restricted Boltzmann Machine model
+    This module contains the restricted Boltzmann Machine model
 """
+
+import numpy as np
 
 
 class RBM:
     """
-        Bearnoulli Restricted Boltzmann Machine
+        Bernoulli Restricted Boltzmann Machine
 
         Parameters:
         ------------
@@ -25,3 +27,13 @@ class RBM:
         self.batch_size = batch_size
         self.learning_rate = l_rate
         self.hidden = hidden
+
+    def init_weights(self, X):
+        """
+            Initializes the weight inputs
+        """
+        n_visible = X[1]
+        self.weights = np.random.normal(
+            scale=0.1, size=(n_visible, self.hidden))
+        self.v_ = np.zeros(n_visible)
+        self.h_ = np.zeros(self.hidden)
