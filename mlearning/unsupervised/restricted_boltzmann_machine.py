@@ -4,6 +4,12 @@
 
 import numpy as np
 
+import progressbar
+
+from ..helpers.utils.display import progress_bar_widgets
+from ..helpers.utils.data_utils import data_helper
+from ..helpers.deep_learning.activation_functions import Sigmoid
+
 
 class RBM:
     """
@@ -27,6 +33,10 @@ class RBM:
         self.batch_size = batch_size
         self.learning_rate = l_rate
         self.hidden = hidden
+        self.training_errs = []
+        self.training_reconstructions = []
+        self.progressbar = progressbar.Progressbar(
+            widgets=progress_bar_widgets)
 
     def init_weights(self, X):
         """
@@ -37,3 +47,22 @@ class RBM:
             scale=0.1, size=(n_visible, self.hidden))
         self.v_ = np.zeros(n_visible)
         self.h_ = np.zeros(self.hidden)
+
+    def fit(self, X, y=None):
+        """
+            Trains the model through Contrastive Divergence
+        """
+        self.init_weights()
+
+        for _ in self.progressbar(range(self.no_of_iters)):
+            batch_errs = []
+            for batch in data_helper.iterate_over_batch(
+                    X, batch_size=self.batch_size):
+                # + Phase
+                positive_hidden = sigmoid(batch.dot(self.weights) + self.h_)
+                hidden_states = self.sample(positive_hidden)
+                positive_associtions = batch.T.dot(positive_hidden)
+
+                # - Phase
+
+sigmoid = Sigmoid()

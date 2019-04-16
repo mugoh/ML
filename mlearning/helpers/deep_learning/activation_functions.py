@@ -32,7 +32,7 @@ class Rectified_Linear_Units:
 class Sigmoid:
     """
         1/ (1 + exp(x))
-        Exists between 0 and 1 therefore usefful in predicting
+        Exists between 0 and 1 therefore usefull in predicting
         probability
     """
 
