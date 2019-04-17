@@ -35,31 +35,25 @@ def start_restricted_bolz_machine():
     plt.ylabel('Error')
     plt.xlabel('Iterations')
     plt.show()
+    save_images(iter_='First', )
+    save_images(iter_='Last')
 
+
+def save_images(iter_=''):
+    """
+        Saves the generated output images
+    """
     fig, axis = plt.subplots(5, 5)
-    plt.subtitle('Restricted Boltzmann Machine - 1st Iteration')
-    cnt = 0
+    plt.subtitle(f'Restricted Boltzmann Machine - {iter_} Iteration')
+    idx = 0 if iter_ == 'First' else -1
 
+    cnt = 0
     # First iteration images
     for i in range(5):
         for j in range(5):
-            axis[i, j].imshow(rbm.training_reconstructions[0][
+            axis[i, j].imshow(rbm.training_reconstructions[idx][
                               cnt].reshape((28, 28)), cmap='gray')
             axis[i, j].axis('off')
             cnt += 1
-    fig.savefig('generated/rbm/first_iter.png')
-    plt.close()
-    cnt = 0
-
-    # Last iter
-    fig, axis = plt.subplots(5, 5)
-    plt.subtitle('Restricted Boltzmann Machine - Last Iteration')
-
-    for i in range(5):
-        for j in range(5):
-            axis[i, j].imshow(rbm.training_reconstructions[-1]
-                              [cnt].reshape((28, 28)), cmap='gray')
-            axis[i, j].axis('off')
-            cnt += 1
-    fig.savefig('generated/rbm/last_iter.png')
+    fig.savefig(f'generated/rbm/{iter_.tolower()}_iter.png')
     plt.close()
