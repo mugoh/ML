@@ -84,5 +84,22 @@ class RBM:
             idx = np.random.choice(range(X.shape[0]), self.batch_size)
             self.training_reconstructions.append(self.reconstruct(X[idx]))
 
+    def sample(self, X):
+        """
+            Selected input to feed back into the network
+        """
+        return X > np.random.random_sample(X.shape)
+
+    def reconstruct(self, X):
+        """
+           Reconstructs images and updates based on the difference
+           between the calculated and the actual image projections
+        """
+        pos_hidden = sigmoid(X.dot(self.weights) + self.h_)
+        hidden_states = self.sample(pos_hidden)
+        neg_visible = sigmoid(hidden_states.dot(self.weights.T) + self.v_)
+
+        return neg_visible
+
 
 sigmoid = Sigmoid()
