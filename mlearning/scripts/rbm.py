@@ -6,6 +6,8 @@ from sklearn import fetch_mldata
 
 import numpy as np
 
+from ..unsupervised.restricted_boltzmann_machine import RBM
+
 
 def start_restricted_bolz_machine():
     """
@@ -23,4 +25,5 @@ def start_restricted_bolz_machine():
     idx = np.random.choice(range(X.shape[0]), size=500, replace=False)
     X = X[idx]
 
-    rbm = RBM()
+    rbm = RBM(hidden=50, iters=200, batch_size=25, l_rate=0.001)
+    rbm.fit(X)
