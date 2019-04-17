@@ -61,8 +61,28 @@ class RBM:
                 # + Phase
                 positive_hidden = sigmoid(batch.dot(self.weights) + self.h_)
                 hidden_states = self.sample(positive_hidden)
-                positive_associtions = batch.T.dot(positive_hidden)
+                positive_associations = batch.T.dot(positive_hidden)
 
                 # - Phase
+                neg_visible = sigmoid(
+                    hidden_states.dot(self.weights.T) + self.v_)
+                neg_visible = self.sample(neg_visible)
+                neg_hidden = sigmoid(neg_visible.dot(self.weights) + self.h_)
+                neg_associations = neg_visible.T.dot(neg_hidden)
+
+                self.weights += self.learning_rate * \
+                    (positive_associations - neg_associations)
+                self.h_ += self.learning_rate * \
+                    (positive_hidden.sum(axis=0) - neg_hidden.sum(axis=0))
+                self.v_ += self.learning_rate * \
+                    (batch.sum(axis=0) - neg_visible.sum(axis=0))
+
+                batch_errs.append(np.mean((batch - neg_visible)**2))
+            self.training_errs.append(np.mean(batch_errs))
+
+            # Reconstruct a batch of images from training set
+            idx = np.random.choice(range(X.shape[0]), self.batch_size)
+            self.training_reconstructions.append(self.reconstruct(X[idx]))
+
 
 sigmoid = Sigmoid()
