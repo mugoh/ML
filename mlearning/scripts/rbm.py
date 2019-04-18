@@ -28,23 +28,23 @@ def start_restricted_bolz_machine():
     rbm = RBM(hidden=50, iters=200, batch_size=25, l_rate=0.001)
     rbm.fit(X)
 
-    training, _ = plt.plot(range(len(rbm.training_errs)),
-                           rbm.training_errs, label='Training Error')
+    training, = plt.plot(range(len(rbm.training_errs)),
+                         rbm.training_errs, label='Training Error')
     plt.legend(handles=[training])
     plt.title('Error Plot')
     plt.ylabel('Error')
     plt.xlabel('Iterations')
     plt.show()
-    save_images(iter_='First', )
-    save_images(iter_='Last')
+    save_images(rbm, iter_='First')
+    save_images(rbm, iter_='Last')
 
 
-def save_images(iter_=''):
+def save_images(rbm, iter_=''):
     """
         Saves the generated output images
     """
     fig, axis = plt.subplots(5, 5)
-    plt.subtitle(f'Restricted Boltzmann Machine - {iter_} Iteration')
+    plt.suptitle(f'Restricted Boltzmann Machine - {iter_} Iteration')
     idx = 0 if iter_ == 'First' else -1
 
     cnt = 0
@@ -54,5 +54,5 @@ def save_images(iter_=''):
                               cnt].reshape((28, 28)), cmap='gray')
             axis[i, j].axis('off')
             cnt += 1
-    fig.savefig(f'generated/rbm/{iter_.tolower()}_iter.png')
+    fig.savefig(f'{iter_.lower()}_iter.png')
     plt.close()
