@@ -35,14 +35,14 @@ class RBM:
         self.hidden = hidden
         self.training_errs = []
         self.training_reconstructions = []
-        self.progressbar = progressbar.Progressbar(
+        self.progressbar = progressbar.ProgressBar(
             widgets=progress_bar_widgets)
 
     def init_weights(self, X):
         """
             Initializes the weight inputs
         """
-        n_visible = X[1]
+        n_visible = X.shape[1]
         self.weights = np.random.normal(
             scale=0.1, size=(n_visible, self.hidden))
         self.v_ = np.zeros(n_visible)
@@ -52,7 +52,7 @@ class RBM:
         """
             Trains the model through Contrastive Divergence
         """
-        self.init_weights()
+        self.init_weights(X)
 
         for _ in self.progressbar(range(self.no_of_iters)):
             batch_errs = []

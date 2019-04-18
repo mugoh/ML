@@ -2,7 +2,7 @@
     Restricted Boltzman's Machine [Energy based model]
 """
 
-from sklearn import fetch_mldata
+from sklearn.datasets import fetch_mldata
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -48,7 +48,6 @@ def save_images(iter_=''):
     idx = 0 if iter_ == 'First' else -1
 
     cnt = 0
-    # First iteration images
     for i in range(5):
         for j in range(5):
             axis[i, j].imshow(rbm.training_reconstructions[idx][
