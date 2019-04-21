@@ -33,4 +33,24 @@ class GeneticAlgorithm:
         for _ in range(self.pltn_size):
             individual = ''.join(np.random.choice(
                 self.chars, size=len(self.target)))
-        self.population.append(individual)
+            self.population.append(individual)
+
+    def determine_fitness(self):
+        """
+            Calculates the fitness of an individual
+            in the population
+        """
+        fitness = []
+
+        # Loss taken as the alphabetical distance between
+        # chars in the individual and the target string
+
+        for individual in self.population:
+            loss_ = 0
+            for char in range(len(individual)):
+                char_i1 = self.chars.index(individual[char])
+                char_i2 = self.chars.index(self.target[char])
+
+                loss_ += abs(char_i1 - char_i2)
+            fitness.append(1 / (loss_ + 1e-6))
+        return fitness
