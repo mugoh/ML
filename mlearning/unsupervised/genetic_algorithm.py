@@ -54,3 +54,15 @@ class GeneticAlgorithm:
                 loss_ += abs(char_i1 - char_i2)
             fitness.append(1 / (loss_ + 1e-6))
         return fitness
+
+    def _mutate(self, indv):
+        """
+            Changes the individual's genes in a random manner
+        """
+        indv = list(indv)
+
+        for i in range(len(indv)):
+            # Change made with probability of mutation rate
+            if np.random.random() < self.mutation_rate:
+                indv[i] = np.random.choice(self.chars)
+        return ''.join(indv)
