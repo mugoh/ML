@@ -66,3 +66,14 @@ class GeneticAlgorithm:
             if np.random.random() < self.mutation_rate:
                 indv[i] = np.random.choice(self.chars)
         return ''.join(indv)
+
+    def _cross_over(self, parent_one, parent_two):
+        """
+            Creates offspring from parents by crossover.
+            Crossover point is randomly selected.
+        """
+        cross_idx = np.random.randint(0, len(parent_one))
+        child_one = parent_one[:cross_idx] + parent_two[cross_idx:]
+        child_two = parent_two[:cross_idx] + parent_one[cross_idx:]
+
+        return child_one, child_two
