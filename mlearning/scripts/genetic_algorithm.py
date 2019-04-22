@@ -12,4 +12,4 @@ def genetic_algr():
                           population=1000,
                           mutation_rate=0.05)
     ga.summarize()
-    ga.run(1000, to_limit=True)
+    ga.run(1000)

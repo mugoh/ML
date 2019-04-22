@@ -94,27 +94,22 @@ class GeneticAlgorithm:
 
         return offspring_a, offspring_b
 
-    def run(self, iters=None, to_limit=False):
+    def run(self, iters):
         """
             Starts the genetic algorithm
         """
 
         self.init_population()
-        fittest_indv = ''
-        epoch = 0
 
-        while(self.target != fittest_indv):
-            if to_limit and epoch is iters:
-                print('Iteration exceeded. Quitting')
-                break
-            else:
-                epoch += 1
-
+        for epoch in range(iters):
             fitness = self.determine_fitness()
             best_fitness_idx = np.argmax(fitness)
 
             fittest_indv = self.population[best_fitness_idx]
             best_fitness = fitness[best_fitness_idx]
+
+            if fittest_indv == self.target:  # Found individual
+                break
 
             # Probability that individual selected as parent
             # set proportional to fitness
