@@ -77,8 +77,9 @@ class GeneticAlgorithm:
         indv = list(indv)
 
         for i in range(len(indv)):
+
             # Change made with probability of mutation rate
-            if np.random.random() < self.mutation_rate:
+            if np.random.random() < self.mtn_rate:
                 indv[i] = np.random.choice(self.chars)
         return ''.join(indv)
 
@@ -93,37 +94,35 @@ class GeneticAlgorithm:
 
         return offspring_a, offspring_b
 
-    def run(self, iters):
+    def run(self, iters=None, to_limit=False):
         """
             Starts the genetic algorithm
         """
 
         self.init_population()
+        fittest_indv = ''
+        epoch = 0
 
-        for epoch in range(iters):
-            fitness = self.determine_fitness()
-            fittest_indv = self.population[np.argmax(fitness)]
-            best_fitness = max(fitness)
-
-            if fittest_indv == self.target:  # Found individual
+        while(self.target != fittest_indv):
+            if to_limit and epoch is iters:
+                print('Iteration exceeded. Quitting')
                 break
+            else:
+                epoch += 1
+
+            fitness = self.determine_fitness()
+            best_fitness_idx = np.argmax(fitness)
+
+            fittest_indv = self.population[best_fitness_idx]
+            best_fitness = fitness[best_fitness_idx]
+
             # Probability that individual selected as parent
             # set proportional to fitness
 
             parent_prob = [fit / sum(fitness) for fit in fitness]
 
-            # Next gen
-            population_ = []
-            for i in np.arange(0, self.pltn_size, 2):
-                parent_a, parent_b = np.random.choice(
-                    self.population, size=2, replace=False, p=parent_prob)
-                child_a, child_b = self._cross_over(parent_a, parent_b)
-                population_ += (
-                    self._mutate(child_a),
-                    self._mutate(child_b)
-                )
+            self.build_next_generation(parent_prob)
 
-            self.population = population_
             print(f'{epoch} Closest candidate: {fittest_indv}, \
                 Fitness: {best_fitness:.2f}')
         print(f'[{epoch} Answer: {fittest_indv}]')
@@ -140,3 +139,21 @@ class GeneticAlgorithm:
         ]
 
         print(AsciiTable(data).table)
+
+    def build_next_generation(self, parent_probability):
+        """
+            Creates a new generation in the population
+            from mutated offspring
+        """
+        population_ = []
+
+        for i in np.arange(0, self.pltn_size, 2):
+            parent_a, parent_b = np.random.choice(
+                self.population, size=2, replace=False, p=parent_probability)
+            child_a, child_b = self._cross_over(parent_a, parent_b)
+            population_ += (
+                self._mutate(child_a),
+                self._mutate(child_b)
+            )
+
+        self.population = population_
