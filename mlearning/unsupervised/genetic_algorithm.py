@@ -1,13 +1,28 @@
+"""
+    Implements a Genetic Algorithm which aims to produce
+    a user specified target string. Candidates fitness is
+    based on the alphabetical distance between candidate
+    and target.
+    ----
+    Probability of selection as parent is dependent on the
+    candidate's fitness.
+    ---
+    Offspring are produced as a single crossover point
+    between pairs of parents, where mutation will involve
+    random assignment of new characters with uniform probability.
+"""
+
 import numpy as np
 
 import string
+
+from terminaltables import AsciiTable
 
 
 class GeneticAlgorithm:
     """
         A model of the Genetic Algorithm.
-        It will attempt to produce the specified
-        input string
+        It attempts to produce a specified input string
 
         Parameters
         -----------
@@ -112,3 +127,16 @@ class GeneticAlgorithm:
             print(f'{epoch} Closest candidate: {fittest_indv}, \
                 Fitness: {best_fitness:.2f}')
         print(f'[{epoch} Answer: {fittest_indv}]')
+
+    def summarize(self):
+        """
+            Outputs a summary of the model details.
+        """
+        print(AsciiTable([['Genetic Algorithm']]).table)
+
+        data = [
+            ['Target String', 'Mutation Rate', 'Population Size'],
+            [self.target, self.mtn_rate, self.pltn_size]
+        ]
+
+        print(AsciiTable(data).table)
