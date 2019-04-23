@@ -98,7 +98,7 @@ class DeepQNet:
             transitions between states
         """
         max_reward = 0
-        trained = False
+        # trained = False
 
         for epoch in range(no_of_epochs):
             state = self.env.reset()
@@ -106,7 +106,7 @@ class DeepQNet:
 
             epoch_loss = []
 
-            while not trained:
+            while True:
                 action = self.__choose_action(state)
                 new_state, reward, trained, _ = self.env.step(action)
                 self.memorize(state, action, reward, new_state, trained)
@@ -120,6 +120,8 @@ class DeepQNet:
                 epoch_loss.append(loss)
                 state = new_state
                 summed_reward += reward
+                if trained:
+                    break
 
             epoch_loss = np.mean(epoch_loss)
             self.epsilon = self.min_epsilon + \
@@ -127,8 +129,8 @@ class DeepQNet:
 
             max_reward = max(max_reward, summed_reward)
 
-            print(f'{epoch} [Loss: {epoch_loss:.4f} Epsilon: {self.epsilon} \
-                Reward: {summed_reward}, Max Reward: {max_reward}]')
+            print(f'{epoch} [ Loss: {epoch_loss:.4f}  Epsilon: {self.epsilon:.4f}',
+                  f'\tReward: {summed_reward}  Max Reward: {max_reward} ]')
         print('\nTraining Complete')
 
     def __create_training_set(self, replay):
@@ -178,13 +180,14 @@ class DeepQNet:
         for epoch in range(no_of_epochs):
             state = self.env.reset()
             accum_reward = 0
-            in_the_mood = False
 
-            while not in_the_mood:
+            while True:
                 self.env.render()
                 action = np.argmax(
-                    self.model.make_prediction(states), axis=1)[0]
-                state, reward, in_the_mood, _ = self.env.step(action)
-
+                    self.model.make_prediction(state), axis=1)[0]
+                state, reward, not_in_the_mood, _ = self.env.step(action)
                 accum_reward += reward
+                if not_in_the_mood:
+                    break
+
             print(f'{epoch} Reward: {accum_reward}')
