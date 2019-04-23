@@ -7,6 +7,8 @@ import gym
 
 import numpy as np
 
+import random
+
 from ..helpers.deep_learning.network import Neural_Network
 from ..helpers.deep_learning.loss import MSE
 from ..helpers.deep_learning.layers import Dense, Activation
@@ -64,7 +66,7 @@ class DeepQNet:
             Appends states, action and reward to memory
         """
         self.memory.append(args)
-        self.memory.pop(0) if len(self.memory > self.mem_size) else None
+        self.memory.pop(0) if len(self.memory) > self.mem_size else None
 
     def __choose_action(self, state):
         """
@@ -83,7 +85,7 @@ class DeepQNet:
         """
             Builds the neural network model
         """
-        clf = Neural_Network(optimizer=Adam, loss=MSE)
+        clf = Neural_Network(optimizer=Adam(), loss=MSE)
         clf.add_layer(Dense(units=64, input_shape=(inputs, )))
         clf.add_layer(Activation('ReLu'))
         clf.add_layer(Dense(units=outputs))
@@ -96,14 +98,13 @@ class DeepQNet:
             transitions between states
         """
         max_reward = 0
-        epoch_loss = []
         trained = False
 
         for epoch in range(no_of_epochs):
             state = self.env.reset()
             summed_reward = 0
 
-            epoch_loss.clear()
+            epoch_loss = []
 
             while not trained:
                 action = self.__choose_action(state)
@@ -111,7 +112,7 @@ class DeepQNet:
                 self.memorize(state, action, reward, new_state, trained)
 
                 batch_size_ = min(len(self.memory), batch_size)
-                replay = np.random.choice(self.memory, size=batch_size_)
+                replay = random.sample(self.memory, batch_size_)
                 X, y = self.__create_training_set(replay)
 
                 # Learn control policy
@@ -127,7 +128,7 @@ class DeepQNet:
             max_reward = max(max_reward, summed_reward)
 
             print(f'{epoch} [Loss: {epoch_loss:.4f} Epsilon: {self.epsilon} \
-                Reward: {total_reward}, Max Reward: {max_reward}]')
+                Reward: {summed_reward}, Max Reward: {max_reward}]')
         print('\nTraining Complete')
 
     def __create_training_set(self, replay):
@@ -138,7 +139,6 @@ class DeepQNet:
 
         states = self.extract_states(0, replay)
         new_states = self.extract_states(3, replay)
-
         q_value = self.model.make_prediction(states)
         new_q_value = self.model.make_prediction(new_states)
 
@@ -168,7 +168,7 @@ class DeepQNet:
             from all states present using the index specified
         """
 
-        return np.array((state[indx] for state in all_states))
+        return np.array([state[indx] for state in all_states])
 
     def shake_it(self, no_of_epochs):
         """
@@ -178,6 +178,7 @@ class DeepQNet:
         for epoch in range(no_of_epochs):
             state = self.env.reset()
             accum_reward = 0
+            in_the_mood = False
 
             while not in_the_mood:
                 self.env.render()

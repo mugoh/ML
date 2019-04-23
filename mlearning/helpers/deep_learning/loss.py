@@ -57,3 +57,6 @@ class MSE:
             derivative
         """
         return -(y - y_hat)
+
+    def get_acc_score(self, y, y_hat):
+        return 0
