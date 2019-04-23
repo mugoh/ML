@@ -37,3 +37,23 @@ class CrossEntropyLoss:
         """
         y_clipped = np.clip(y_pred, 1e-15, 1 - 1e-15)
         return - (y_true / y_clipped) + (1 - y_true) / (1 - y_clipped)
+
+
+class MSE:
+    """
+        Computes loss as a sum of squared distances between the target variable
+        and the predicted values
+    """
+
+    def compute_loss(self, y, y_hat):
+        """
+            Gives the Mean Square Error from the loss function
+        """
+        return 0.5 * np.power((y - y_hat), 2)
+
+    def find_gradient(self, y, y_hat):
+        """
+            Gives the loss computed from the function's
+            derivative
+        """
+        return -(y - y_hat)

@@ -8,7 +8,7 @@ import gym
 import numpy as np
 
 from ..helpers.deep_learning.network import Neural_Network
-from ..helpers.deep_learning.loss import SquareLoss
+from ..helpers.deep_learning.loss import MSE
 from ..helpers.deep_learning.layers import Dense, Activation
 from ..deep_learning.grad_optimizers import Adam
 
@@ -77,7 +77,7 @@ class DeepQNet:
         """
             Builds the neural network model
         """
-        clf = Neural_Network(optimizer=Adam, loss=SquareLoss)
+        clf = Neural_Network(optimizer=Adam, loss=MSE)
         clf.add_layer(Dense(units=64, input_shape=(inputs, )))
         clf.add_layer(Activation('ReLu'))
         clf.add_layer(Dense(units=outputs))
