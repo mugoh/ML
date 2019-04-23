@@ -25,7 +25,7 @@ class DeepQNet:
         epsilon: float
             Probability that the agent selects a random value
             and not one that maximizes the expected utility
-        gamma: float
+        discount_factor: float
             Factors the extent the agent should consider future rewards
         decay: float
             Rate of epsilon value decay for each epoch
@@ -33,10 +33,16 @@ class DeepQNet:
             Value to be approached as epsilon as training progresses
     """
 
-    def __init__(self, env, gamma=0.9, epsilon=1, decay=0.005, min_eps=0.1):
+    def __init__(
+            self,
+            env,
+            discount_factor=0.9,
+            epsilon=1,
+            decay=0.005,
+            min_eps=0.1):
         self.epsilon = epsilon
         self.min_epsilon = min_eps
-        self.gamma = gamma
+        self.discount_factor = discount_factor
         self.decay_rate = decay
 
         self.memory = []
@@ -123,3 +129,61 @@ class DeepQNet:
             print(f'{epoch} [Loss: {epoch_loss:.4f} Epsilon: {self.epsilon} \
                 Reward: {total_reward}, Max Reward: {max_reward}]')
         print('\nTraining Complete')
+
+    def __create_training_set(self, replay):
+        """
+            Creates and selects states from the replay parameter
+        """
+        repl_size = len(replay)
+
+        states = self.extract_states(0, replay)
+        new_states = self.extract_states(3, replay)
+
+        q_value = self.model.make_prediction(states)
+        new_q_value = self.model.make_prediction(new_states)
+
+        X = np.empty((repl_size, self.no_states))
+        y = np.empty((repl_size, self.no_actions))
+
+        for i in range(repl_size):
+            state_, action_, reward_, new_state_, done_rewarding = replay[i]
+            target = q_value[i]
+            target[action_] = reward_
+
+            # Utility is the reward of executing an action `a`
+            # in state `s`. If not done, add the expected maximum future reward
+            # as well
+            if not done_rewarding:
+                target[action_] += self.discount_factor * \
+                    np.amax(new_q_value[i])
+
+            X[i] = state_
+            y[i] = target
+
+        return X, y
+
+    def extract_states(self, indx, all_states):
+        """
+            Creates and returns an array of new states
+            from all states present using the index specified
+        """
+
+        return np.array((state[indx] for state in all_states))
+
+    def shake_it(self, no_of_epochs):
+        """
+            Starts the trained agent on a selected action
+        """
+
+        for epoch in range(no_of_epochs):
+            state = self.env.reset()
+            accum_reward = 0
+
+            while not in_the_mood:
+                self.env.render()
+                action = np.argmax(
+                    self.model.make_prediction(states), axis=1)[0]
+                state, reward, in_the_mood, _ = self.env.step(action)
+
+                accum_reward += reward
+            print(f'{epoch} Reward: {accum_reward}')
