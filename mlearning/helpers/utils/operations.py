@@ -32,5 +32,16 @@ class Operations:
             (X - X.mean(axis=0)).T.dot(y - y.mean(axis=0))
         return np.array(cov_matrix, dtype=float)
 
+    def get_eucledian_distance(self, x_a, x_b):
+        """
+            CAlculates distance between two vectors
+        """
+        dist = 0
+
+        for i in range(len(x_a)):  # Distance between each co-ordinnate
+            dist += pow((x_a[i] - x_b[i]), 2)
+
+        return pow(dist, .5)
+
 
 op = Operations()
