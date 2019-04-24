@@ -98,7 +98,6 @@ class DeepQNet:
             transitions between states
         """
         max_reward = 0
-        # trained = False
 
         for epoch in range(no_of_epochs):
             state = self.env.reset()
@@ -131,7 +130,7 @@ class DeepQNet:
 
             print(f'{epoch} [ Loss: {epoch_loss:.4f}  Epsilon: {self.epsilon:.4f}',
                   f'\tReward: {summed_reward}  Max Reward: {max_reward} ]')
-        print('\nTraining Complete')
+        print('\nTraining Complete\n')
 
     def __create_training_set(self, replay):
         """

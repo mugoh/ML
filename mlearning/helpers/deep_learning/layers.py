@@ -377,7 +377,7 @@ class DropOut(Layer):
 class BatchNormalization(Layer):
     """
         Batch normalization model
-         -> Adds a Normalizatiion 'layer' Between each layer
+         -> Adds a Normalization 'layer' Between each layer
             to reduce covariance shift
     """
 
@@ -542,7 +542,7 @@ class Dense(Layer):
 
     def forward_pass(self, X, training=True):
         """
-            Gets dot product of input shape and ouptu weights
+            Gets dot product of input shape and output weights
         """
         self.input_layer = X
         return X.dot(self.weight) + self.weight_out
