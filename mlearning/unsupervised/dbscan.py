@@ -31,20 +31,20 @@ class DBScan:
             Iterates through samples, creating new clusters
             to add to the present ones.
         """
-        unvisited_samples = [sample for sample in self.no_samples
+        unvisited_samples = [sample for sample in range(self.no_samples)
                              if sample not in self.visited_samples]
-        for sample in range(unvisited_samples):
+        for sample in unvisited_samples:
             self.neighbouring_s[sample] = self.find_sample_neighbours(sample)
 
             if len(self.neighbouring_s[sample]) >= self.min_samples:
                 # neighbour is a core point
                 # expand cluster from neighbour
-                self.clusters.append[
+                self.visited_samples.append(sample)
+                self.clusters.append(
                     self.expand_cluster(sample,
                                         self.neighbouring_s[sample])
-                ]
-
-        return self.get_cluster_index
+                )
+        return self.get_cluster_index()
 
     def find_sample_neighbours(self, sample_index):
         """
@@ -56,7 +56,7 @@ class DBScan:
         neighbours = []
 
         for i, smpl in enumerate(
-                self.X[indx is not sample_index]):
+                self.X[indx != sample_index]):
             dist = op.get_eucledian_distance(self.X[sample_index], smpl)
             neighbours.append(i) if dist < self.eps else None
         return np.array(neighbours)
@@ -71,12 +71,13 @@ class DBScan:
         for ngbr_index in neighbours:
             if ngbr_index in self.visited_samples:
                 continue
+            else:
+                self.visited_samples.append(ngbr_index)
 
             self.neighbouring_s[ngbr_index] = self.find_sample_neighbours(
                 ngbr_index)
-            self.visited_samples.append(ngbr_index)
 
-            if len(self.neighbouring_s[ngbr_index]) > self.min_samples:
+            if len(self.neighbouring_s[ngbr_index]) >= self.min_samples:
                 cluster += self.expand_cluster(
                     ngbr_index,
                     self.neighbouring_s[ngbr_index]
@@ -88,7 +89,7 @@ class DBScan:
 
     def get_cluster_index(self):
         """
-            Gives the index in which samples are contained
+            Gives the index labels in which samples are contained
 
             Outliers have a default index value equal to the number
             of samples
