@@ -2,6 +2,11 @@
     Neuroevolution Model
 """
 
+from ..helpers.deep_learning.network import Neural_Network
+from ..helpers.deep_learning.layers import Dense, Activation
+from ..helpers.deep_learning.loss import CrossEntropyLoss
+from ..deep_learning.grad_optimizers import Adam
+
 
 class EvolvedNN:
     """
@@ -35,3 +40,16 @@ class EvolvedNN:
         self.population = [
             self.build_model for _ in range(self.plt_size)
         ]
+
+    def build_model(self, n_inputs, n_ouputs):
+        """
+            Creates a new individual (net)
+        """
+        clf = Neural_Network(optimizer=Adam(),
+                             loss=CrossEntropyLoss)
+        clf.add_layer(Dense(units=(n_inputs,)))
+        clf.add_layer(Activation('ReLu'))
+        clf.add_layer(Dense(n_ouputs))
+        clf.add_layer(Activation('softmax'))
+
+        self.model = clf
