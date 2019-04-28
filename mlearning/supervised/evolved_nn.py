@@ -26,3 +26,12 @@ class EvolvedNN:
         self.y = y
         self.mtn_rate = mutation_rate
         self.plt_size = n_individuals
+
+    def init_population(self):
+        """
+            Initializes the population formed by Neural Network
+        """
+
+        self.population = [
+            self.build_model for _ in range(self.plt_size)
+        ]
