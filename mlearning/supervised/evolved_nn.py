@@ -7,6 +7,8 @@ from ..helpers.deep_learning.layers import Dense, Activation
 from ..helpers.deep_learning.loss import CrossEntropyLoss
 from ..deep_learning.grad_optimizers import Adam
 
+import numpy as np
+
 
 class EvolvedNN:
     """
@@ -34,22 +36,42 @@ class EvolvedNN:
 
     def init_population(self):
         """
-            Initializes the population formed by Neural Network
+            Initializes the population formed by the Neural Network
         """
 
         self.population = [
-            self.build_model for _ in range(self.plt_size)
+            self.build_model(
+                np.random.randint(1000)
+            ) for _ in range(self.plt_size)
         ]
 
-    def build_model(self, n_inputs, n_ouputs):
+    def build_model(self, id_):
         """
             Creates a new individual (net)
         """
+        n_inputs, n_ouputs = self.X.shape[1], self.y.shape[1]
+
         clf = Neural_Network(optimizer=Adam(),
                              loss=CrossEntropyLoss)
-        clf.add_layer(Dense(units=(n_inputs,)))
+        clf.add_layer(Dense(units=16, input_shape=(n_inputs,)))
         clf.add_layer(Activation('ReLu'))
         clf.add_layer(Dense(n_ouputs))
         clf.add_layer(Activation('softmax'))
 
-        self.model = clf
+        clf.fitness = clf.accuracy = 0
+        clf.id_ = id_
+
+        return clf
+
+    def evolve(self, n_generations):
+        """
+            Evolves the population for a given number of
+            generations based on the dataset X, and labels y
+
+            Parameters
+            ----------
+            n_generations: int
+                The number of generations for which to evolve
+                the network
+        """
+        self.init_population()
