@@ -129,7 +129,7 @@ class Data:
 
     def categorize(self, x_value, columns=None):
         """
-            Performs one hot encoding for nominal vlaues
+            Performs one hot encoding for nominal values
         """
         if not columns:
             columns = numpy.amax(x_value) + 1

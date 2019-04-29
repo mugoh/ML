@@ -42,7 +42,7 @@ class Plot:
         covariance = op.get_covariance_matrix(X)
         eigen_values, eigen_vectors = np.linalg.eig(covariance)
 
-        # Sort eigen values ande eigen_vectors by largest eigen values
+        # Sort eigen values and eigen_vectors by largest eigen values
         index = eigen_values.argsort()[::-1]
         eigen_values = eigen_values[index][:dimension]
         eigen_vectors = np.atleast_1d(eigen_vectors[:, index])[:, :dimension]
@@ -102,7 +102,7 @@ class Plot:
         y = np.array(y).astype(int)
         colors = [self.cmap(i) for i in np.linspace(0, 1, len(np.unique(y)))]
 
-        # Plot class distrbutions
+        # Plot class distributions
         for num, item in enumerate(np.unique(y)):
             x_one_ = x_one[y == item]
             x_two_ = x_two[y == item]

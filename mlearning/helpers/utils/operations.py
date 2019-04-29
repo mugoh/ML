@@ -1,6 +1,6 @@
 """
     This module contains various data operations common
-    to data functions and statistical formalae
+    to data functions and statistical formulae
 """
 import numpy as np
 
@@ -13,7 +13,7 @@ class Operations:
 
     def rate_accuracy(self, y, y_hat):
         """
-            Conputes the accuracy by comapring the actual value of y
+            Computes the accuracy by comparing the actual value of y
             to the predicted value
         """
         return np.sum(y == y_hat, axis=0) / len(y)
@@ -34,11 +34,11 @@ class Operations:
 
     def get_eucledian_distance(self, x_a, x_b):
         """
-            CAlculates distance between two vectors
+            Calculates distance between two vectors
         """
         dist = 0
 
-        for i in range(len(x_a)):  # Distance between each co-ordinnate
+        for i in range(len(x_a)):  # Distance between each co-ordinate
             dist += pow((x_a[i] - x_b[i]), 2)
 
         return pow(dist, .5)
