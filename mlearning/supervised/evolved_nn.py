@@ -25,6 +25,7 @@ class EvolvedNN:
         mutation_rate: float
             Probability of mutating a given network weight
     """
+    model_count = 0
 
     def __init__(self, X, y,
                  n_individuals=1000,
@@ -61,6 +62,10 @@ class EvolvedNN:
         clf.fitness = clf.accuracy = 0
         clf.id_ = id_
 
+        clf.show_model_details(
+            'Neuroevolution') if not self.model_count else None
+        self.model_count = + 1  # Show individual summary for first model
+
         return clf
 
     def evolve(self, n_generations):
@@ -75,3 +80,22 @@ class EvolvedNN:
                 the network
         """
         self.init_population()
+
+        # Select x % [40] highest individuals for next gen
+
+        n_highest = int(self.plt_size * .4)
+        n_parents = self.plt_size - n_highest
+
+        for epoch in range(n_generations):
+            self.determine_fiteness()
+
+    def determine_fitness(self):
+        """
+          Gets fitness scores from evaluation of Neural Networks
+          on the test data
+        """
+        for indv in self.population:
+            loss, acc = indv.test_on_batch(self.X, self.y)
+
+            indv.fitness = 1 / (loss + 1e8)
+            indv.accuracy = acc
