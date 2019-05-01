@@ -190,3 +190,26 @@ class EvolvedNN:
                 offspring.layers[i].weight = parent.layers[i].weight.copy()
                 offspring.layers[i].weight_out = parent.layers[
                     i].weight_out.copy()
+
+    def generate_mutn_mask(self, size):
+        """
+            Generates a mutation mask as a binomial distribution
+        """
+
+        return np.random.binomial(1, p=self.mtn_rate, size=size)
+
+    def mutate(self, model):
+        """
+            Adds a zero mean Gauassian noise to the layer weights
+            with a probability of the mutation rate
+        """
+        for layer in model.layers:
+            if layer.getattr('weight', ''):
+                layer.weight += np.random.normal(
+                    size=layer.weight.shape) * \
+                    self.generate_mutn_mask(size=layer.weight.shape)
+
+                layer.weight_out += np.random.normal(
+                    size=layer.weight_out.shape) * \
+                    self.generate_mutn_mask(size=layer.weight_out.shape)
+        return model
