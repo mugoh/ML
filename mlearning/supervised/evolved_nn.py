@@ -83,11 +83,29 @@ class EvolvedNN:
 
         # Select x % [40] highest individuals for next gen
 
-        n_highest = int(self.plt_size * .4)
+        n_fittest = int(self.plt_size * .4)
         n_parents = self.plt_size - n_highest
 
         for epoch in range(n_generations):
             self.determine_fiteness()
+            fittest = self.__sort_with_fitness()
+
+            print(f'{epoch}  Fittest individual -  ' +
+                  f'Fitness: {fittest:.2f}  ' +
+                  f'Accuracy: { 100* fittest.accuracy:.2f }')
+            self.population = [self.population[fit] for fit in n_fittest]
+            total_fitness = np.sum(model.fitness for model in self.population)
+
+            # Probability of selection of parent proportional to fitness
+            parent_probs = [model.fitness /
+                            total_fitness for model in self.population]
+
+            # Without distribution - Preserve diversity
+            parents = np.random.choice(self.population,
+                                       size=n_parents,
+                                       replace=False,
+                                       p=parent_probs)
+            self.produce_offsring()
 
     def determine_fitness(self):
         """
@@ -99,3 +117,16 @@ class EvolvedNN:
 
             indv.fitness = 1 / (loss + 1e8)
             indv.accuracy = acc
+
+    def __sort_with_fitness(self):
+        """
+            Orders the population starting from the fittest
+            individual.
+            Returns the fittest individual
+        """
+
+        ft = np.argsort(
+            [individual.fitness for individual in self.population])
+        self.population = [self.population[i] for i in ft]
+
+        return self.population[0]
