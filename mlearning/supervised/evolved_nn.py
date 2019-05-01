@@ -25,7 +25,7 @@ class EvolvedNN:
         mutation_rate: float
             Probability of mutating a given network weight
     """
-    model_count = 0
+    model_count = True
 
     def __init__(self, X, y,
                  n_individuals=1000,
@@ -62,10 +62,9 @@ class EvolvedNN:
         clf.fitness = clf.accuracy = 0
         clf.id_ = id_
 
-        clf.show_model_details(
-            'Neuroevolution') if not self.model_count else None
-        self.model_count = + 1  # Show individual summary for first model
-
+        if self.model_count:  # Show individual summary for first model
+            clf.show_model_details('Neuroevolution')
+            self.model_count = False
         return clf
 
     def evolve(self, n_generations):
@@ -105,7 +104,7 @@ class EvolvedNN:
                                        size=n_parents,
                                        replace=False,
                                        p=parent_probs)
-            self.produce_offsring()
+            self.produce_offsring(len(parents), n_fittest)
 
     def determine_fitness(self):
         """
@@ -117,6 +116,56 @@ class EvolvedNN:
 
             indv.fitness = 1 / (loss + 1e8)
             indv.accuracy = acc
+
+    def produce_offspring(self, no_prnts, no_fittest):
+        """
+           Creates the next generation
+        """
+
+        next_population = [self.population[i]
+                           for i in range(no_fittest)]
+
+        for i in np.arange(0, no_prnts, 2):
+            offspr_a, offsp_b = self.crossover(parents[i],
+                                               parents[i + 1])
+            next_population += [self.mutate(offspr_a),
+                                self.mutate(offsp_b)
+                                ]
+        self.population = next_population
+
+    def crossover(self, *parents):
+        """
+            Peforms crossovers between parents to
+            give new offspring
+        """
+
+        children = [self.build_model(parent.id_ + 1)
+                    for parent in parents]
+        child_a, child_b = [self.__inherit_weights(child,
+                                                   parents[children.index(
+                                                       child)]
+                                                   for child in children)
+                            ]
+        for i in range(len(child_a.layers)):
+            if hasattr(child_a.layers[i], 'weight'):
+
+                n_neurons = child_a.layers[i].weight.shape()[1]
+                limit = np.random.randint(0, n_neurons)
+
+                self.cross_neuron_weights(child_a, parents[1], i, limit)
+                self.cross_neuron_weights(child_b, parents[0], i, limit)
+
+        return child_a, child_b
+
+    def cross_neuron_weights(self, child, parent, indx, cut_off):
+        """
+            Crosses over using individuals neuron weights
+        """
+        expected_weights = ['weight', 'weight_out']
+
+        for weight in expected_weights:
+            parent_w = parent.layers[indx].getattr(weight)[:, cut_off:].copy()
+            child.layers[indx].getattr(weight)[:, cut_off:] = parent_w
 
     def __sort_with_fitness(self):
         """
@@ -130,3 +179,14 @@ class EvolvedNN:
         self.population = [self.population[i] for i in ft]
 
         return self.population[0]
+
+    def __inherit_weights(self, offspring, parent):
+        """
+            Inherits weights from parent, passed on to
+            offspring
+        """
+        for i in range(len(offspring.layers)):
+            if hasattr(offspring.layers[i], 'weight'):
+                offspring.layers[i].weight = parent.layers[i].weight.copy()
+                offspring.layers[i].weight_out = parent.layers[
+                    i].weight_out.copy()
