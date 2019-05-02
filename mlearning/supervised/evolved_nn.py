@@ -65,6 +65,7 @@ class EvolvedNN:
         if self.model_count:  # Show individual summary for first model
             clf.show_model_details('Neuroevolution')
             self.model_count = False
+
         return clf
 
     def evolve(self, n_generations):
@@ -105,6 +106,8 @@ class EvolvedNN:
                                        replace=False,
                                        p=parent_probs)
             self.produce_offsring(len(parents), n_fittest)
+
+        return fittest
 
     def determine_fitness(self):
         """
