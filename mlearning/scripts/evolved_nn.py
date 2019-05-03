@@ -14,11 +14,9 @@ def start_evolved_nn():
     """
         Runs the evolved neural network model
     """
-    X, y = datasets.make_classification(n_samples=3000,
-                                        n_classes=4,
-                                        n_clusters_per_class=2
-                                        )
+
     data = datasets.load_digits()
+
     X = data_helper.normalize(data.data)
     y = data_helper.categorize(data.target.astype('int'))
 
@@ -28,9 +26,10 @@ def start_evolved_nn():
     model = EvolvedNN(X_train, y_train,
                       n_individuals=100)
     individual = model.evolve(n_generations=1000)
-    _, acc = individual.test_on_batch(X_test, y_test)
 
+    _, acc = individual.test_on_batch(X_test, y_test)
     y_pred = np.argmax(individual.make_prediction(X_test), axis=1)
+
     plot_dimensioner.plot_in_two_d(X_test, y_pred,
                                    title='Evolved Neural Network',
                                    accuracy=acc,

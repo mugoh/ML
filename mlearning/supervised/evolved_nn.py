@@ -84,16 +84,16 @@ class EvolvedNN:
         # Select x % [40] highest individuals for next gen
 
         n_fittest = int(self.plt_size * .4)
-        n_parents = self.plt_size - n_highest
+        n_parents = self.plt_size - n_fittest
 
         for epoch in range(n_generations):
-            self.determine_fiteness()
+            self.determine_fitness()
             fittest = self.__sort_with_fitness()
 
             print(f'{epoch}  Fittest individual -  ' +
-                  f'Fitness: {fittest:.2f}  ' +
-                  f'Accuracy: { 100* fittest.accuracy:.2f }')
-            self.population = [self.population[fit] for fit in n_fittest]
+                  f'Fitness: {fittest.fitness:.2f}  ' +
+                  f'Accuracy: {100* fittest.accuracy:.2f}')
+
             total_fitness = np.sum(model.fitness for model in self.population)
 
             # Probability of selection of parent proportional to fitness
@@ -101,11 +101,11 @@ class EvolvedNN:
                             total_fitness for model in self.population]
 
             # Without distribution - Preserve diversity
-            parents = np.random.choice(self.population,
-                                       size=n_parents,
-                                       replace=False,
-                                       p=parent_probs)
-            self.produce_offsring(len(parents), n_fittest)
+            self.parents = np.random.choice(self.population,
+                                            size=n_parents,
+                                            replace=False,
+                                            p=parent_probs)
+            self.produce_offspring(len(self.parents), n_fittest)
 
         return fittest
 
@@ -129,8 +129,8 @@ class EvolvedNN:
                            for i in range(no_fittest)]
 
         for i in np.arange(0, no_prnts, 2):
-            offspr_a, offsp_b = self.crossover(parents[i],
-                                               parents[i + 1])
+            offspr_a, offsp_b = self.crossover(self.parents[i],
+                                               self.parents[i + 1])
             next_population += [self.mutate(offspr_a),
                                 self.mutate(offsp_b)
                                 ]
@@ -144,15 +144,16 @@ class EvolvedNN:
 
         children = [self.build_model(parent.id_ + 1)
                     for parent in parents]
-        child_a, child_b = [self.__inherit_weights(child,
-                                                   parents[children.index(
-                                                       child)]
-                                                   for child in children)
-                            ]
-        for i in range(len(child_a.layers)):
-            if hasattr(child_a.layers[i], 'weight'):
 
-                n_neurons = child_a.layers[i].weight.shape()[1]
+        child_a, child_b = [
+            self.__inherit_weights(child, parents[children.index(
+                child)])
+            for child in children
+        ]
+        for i in range(len(child_a.input_layers)):
+            if hasattr(child_a.input_layers[i], 'weight'):
+
+                n_neurons = child_a.input_layers[i].weight.shape()[1]
                 limit = np.random.randint(0, n_neurons)
 
                 self.cross_neuron_weights(child_a, parents[1], i, limit)
@@ -167,8 +168,9 @@ class EvolvedNN:
         expected_weights = ['weight', 'weight_out']
 
         for weight in expected_weights:
-            parent_w = parent.layers[indx].getattr(weight)[:, cut_off:].copy()
-            child.layers[indx].getattr(weight)[:, cut_off:] = parent_w
+            parent_w = parent.input_layers[indx].getattr(weight)[
+                :, cut_off:].copy()
+            child.input_layers[indx].getattr(weight)[:, cut_off:] = parent_w
 
     def __sort_with_fitness(self):
         """
@@ -188,11 +190,14 @@ class EvolvedNN:
             Inherits weights from parent, passed on to
             offspring
         """
-        for i in range(len(offspring.layers)):
-            if hasattr(offspring.layers[i], 'weight'):
-                offspring.layers[i].weight = parent.layers[i].weight.copy()
-                offspring.layers[i].weight_out = parent.layers[
+        for i in range(len(offspring.input_layers)):
+            if hasattr(offspring.input_layers[i], 'weight'):
+                offspring.input_layers[i].weight = parent.input_layers[i].weight.copy(
+                )
+                offspring.input_layers[i].weight_out = parent.input_layers[
                     i].weight_out.copy()
+
+        return offspring
 
     def generate_mutn_mask(self, size):
         """
@@ -206,7 +211,7 @@ class EvolvedNN:
             Adds a zero mean Gauassian noise to the layer weights
             with a probability of the mutation rate
         """
-        for layer in model.layers:
+        for layer in model.input_layers:
             if layer.getattr('weight', ''):
                 layer.weight += np.random.normal(
                     size=layer.weight.shape) * \
