@@ -167,9 +167,9 @@ class Neural_Network:
         for layer in self.input_layers:
             params = layer.paramitize()
             data.append([
-                layer.get_name(),
-                str(params),
-                str(layer.output_shape())
+                layer,
+                params,
+                layer.output_shape()
             ]
             )
             layer_parameters += params

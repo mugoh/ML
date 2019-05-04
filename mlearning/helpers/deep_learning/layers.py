@@ -26,9 +26,9 @@ class Layer:
         """
         self.input_shape = shape
 
-    def get_name(self):
+    def __repr__(self):
         """
-            Returns the name of the layer. This is represented by
+            Print representation. This is represented by
             the class instance holding the layer.
         """
         return self.__class__.__name__
@@ -301,12 +301,6 @@ class Activation(Layer):
         self.activation_func = activation_functions.get(name)()
         self.trainable = True
 
-    def show_layer_name(self):
-        """
-            Gives a string representation of the activation function name
-        """
-        return f'Activation {self.activation_func.__class__.__name__}'
-
     def forward_pass(self, X, training=True):
         """
             Propagates input data through the network to
@@ -328,6 +322,12 @@ class Activation(Layer):
             Gives the shape of the output returned by the forward pass
         """
         return self.input_shape
+
+    def __repr__(self):
+        """
+            Gives a string representation of the activation function name
+        """
+        return f'Activation ({self.activation_func.__class__.__name__})'
 
 
 class DropOut(Layer):

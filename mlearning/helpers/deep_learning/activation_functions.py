@@ -13,6 +13,10 @@ class Rectified_Linear_Units:
         1 : x >= 0
     """
 
+    def __init__(self):
+        # Too long for fit display
+        self.__class__.__name__ = 'ReLu'
+
     def __call__(self, x):
         """
                 Runs a ReLu function for given input and
