@@ -25,7 +25,7 @@ def start_evolved_nn():
 
     model = EvolvedNN(X_train, y_train,
                       n_individuals=100)
-    individual = model.evolve(n_generations=1000)
+    individual = model.evolve()
 
     _, acc = individual.test_on_batch(X_test, y_test)
     y_pred = np.argmax(individual.make_prediction(X_test), axis=1)

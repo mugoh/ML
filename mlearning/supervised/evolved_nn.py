@@ -9,6 +9,8 @@ from ..deep_learning.grad_optimizers import Adam
 
 import numpy as np
 
+from terminaltables import AsciiTable
+
 
 class EvolvedNN:
     """
@@ -68,7 +70,7 @@ class EvolvedNN:
 
         return clf
 
-    def evolve(self, n_generations):
+    def evolve(self, n_generations=None):
         """
             Evolves the population for a given number of
             generations based on the dataset X, and labels y
@@ -80,19 +82,21 @@ class EvolvedNN:
                 the network
         """
         self.init_population()
+        EvolvedNN.summarize(self.plt_size, self.mtn_rate, n_generations)
+        epoch = 0
 
         # Select x % [40] highest individuals for next gen
 
         n_fittest = int(self.plt_size * .4)
         n_parents = self.plt_size - n_fittest
 
-        for epoch in range(n_generations):
+        while True:
             self.determine_fitness()
             fittest = self.__sort_with_fitness()
 
             print(f'{epoch}  Fittest individual -  ' +
-                  f'Fitness: {fittest.fitness:.2f}  ' +
-                  f'Accuracy: {100* fittest.accuracy:.2f}')
+                  f'Fitness: {fittest.fitness:.5f}  ' +
+                  f'Accuracy: {100* fittest.accuracy:.2f}%')
 
             total_fitness = np.sum(model.fitness for model in self.population)
 
@@ -106,6 +110,13 @@ class EvolvedNN:
                                             replace=False,
                                             p=parent_probs)
             self.produce_offspring(len(self.parents), n_fittest)
+            epoch += 1
+
+            if n_generations and epoch == n_generations:
+                break
+            elif fittest.accuracy >= 1:
+                return fitness
+                break
 
         return fittest
 
@@ -117,7 +128,7 @@ class EvolvedNN:
         for indv in self.population:
             loss, acc = indv.test_on_batch(self.X, self.y)
 
-            indv.fitness = 1 / (loss + 1e8)
+            indv.fitness = 1 / (loss + 1e-8)
             indv.accuracy = acc
 
     def produce_offspring(self, no_prnts, no_fittest):
@@ -145,15 +156,17 @@ class EvolvedNN:
         children = [self.build_model(parent.id_ + 1)
                     for parent in parents]
 
-        child_a, child_b = [
+        [
             self.__inherit_weights(child, parents[children.index(
                 child)])
             for child in children
         ]
+        child_a, child_b = children
+
         for i in range(len(child_a.input_layers)):
             if hasattr(child_a.input_layers[i], 'weight'):
 
-                n_neurons = child_a.input_layers[i].weight.shape()[1]
+                n_neurons = child_a.input_layers[i].weight.shape[1]
                 limit = np.random.randint(0, n_neurons)
 
                 self.cross_neuron_weights(child_a, parents[1], i, limit)
@@ -167,10 +180,11 @@ class EvolvedNN:
         """
         expected_weights = ['weight', 'weight_out']
 
-        for weight in expected_weights:
-            parent_w = parent.input_layers[indx].getattr(weight)[
+        for wt in expected_weights:
+
+            getattr(child.input_layers[indx], wt)[:, cut_off:] = \
+                getattr(parent.input_layers[indx], wt)[
                 :, cut_off:].copy()
-            child.input_layers[indx].getattr(weight)[:, cut_off:] = parent_w
 
     def __sort_with_fitness(self):
         """
@@ -180,7 +194,8 @@ class EvolvedNN:
         """
 
         ft = np.argsort(
-            [individual.fitness for individual in self.population])
+            [individual.fitness for individual in self.population])[::-1]
+
         self.population = [self.population[i] for i in ft]
 
         return self.population[0]
@@ -192,8 +207,8 @@ class EvolvedNN:
         """
         for i in range(len(offspring.input_layers)):
             if hasattr(offspring.input_layers[i], 'weight'):
-                offspring.input_layers[i].weight = parent.input_layers[i].weight.copy(
-                )
+                offspring.input_layers[
+                    i].weight = parent.input_layers[i].weight.copy()
                 offspring.input_layers[i].weight_out = parent.input_layers[
                     i].weight_out.copy()
 
@@ -212,7 +227,7 @@ class EvolvedNN:
             with a probability of the mutation rate
         """
         for layer in model.input_layers:
-            if layer.getattr('weight', ''):
+            if hasattr(layer, 'weight'):
                 layer.weight += np.random.normal(
                     size=layer.weight.shape) * \
                     self.generate_mutn_mask(size=layer.weight.shape)
@@ -221,3 +236,13 @@ class EvolvedNN:
                     size=layer.weight_out.shape) * \
                     self.generate_mutn_mask(size=layer.weight_out.shape)
         return model
+
+    @classmethod
+    def summarize(clf, *data):
+        """
+            Gives a summary of the model details
+        """
+        model_info = [['Population Size', 'Mutation rate', 'No. Generations']]
+        model_info.append(data)
+
+        print('\n', AsciiTable(model_info).table, '\n')
