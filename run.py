@@ -17,4 +17,4 @@ if __name__ == '__main__':
     # start_deepq_net()
     # run_dbscan()
     # start_evolved_nn()
-    cluster
+    cluster()

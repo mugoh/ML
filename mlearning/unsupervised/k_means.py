@@ -37,8 +37,9 @@ class KMeans:
         """
         n_samples, n_features = self.X.shape
 
-        self.centroids = [np.random.choice(range(n_samples)) for
-                          cluster in self.k]
+        centroids = [self.X[np.random.choice(range(n_samples))] for
+                     cluster in range(self.k)]
+        self.centroids = np.array(centroids)
 
     def cluster(self):
         """
@@ -48,7 +49,7 @@ class KMeans:
         clusters = [[] for _ in range(self.k)]
 
         for sample_ind, sample in enumerate(self.X):
-            cluster_idx = self.find_closest_centroid(sample, self.centroids)
+            cluster_idx = self.find_closest_centroid(sample)
             clusters[cluster_idx].append(sample_ind)
 
         return clusters
@@ -78,9 +79,10 @@ class KMeans:
         for _ in range(self.iterations):
             clusters = self.cluster()
             prev_centroids = self.centroids.copy()
+            print()
             self.get_cluster_mean(clusters)
 
-            if not any(self.centroids - prev_centroids):
+            if not np.all(self.centroids - prev_centroids):
                 break  # Divergence
         return self.label_samples(clusters)
 
@@ -90,9 +92,9 @@ class KMeans:
             existing clusters
         """
 
-        self.centroids = [
+        self.centroids = np.array([
             np.mean(self.X[cluster], axis=0) for cluster in clusters
-        ]
+        ])
 
     def label_samples(self, clusters):
         """
@@ -101,6 +103,6 @@ class KMeans:
 
         """
 
-        y_pred = [sample_idx for cluster in clusters for sample_idx in cluster]
-
-        return y_pred
+        return np.array(
+            [sample_idx for cluster in clusters for sample_idx in cluster]
+        )
