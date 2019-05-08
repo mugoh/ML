@@ -2,6 +2,8 @@
     Support Vector Machine
 """
 
+import numpy as np
+
 
 class SVM:
     """
@@ -24,9 +26,28 @@ class SVM:
 
     """
 
-    def __init__(self, kernel=rbf, penalty=1, power=4, cf=4, gamma=None):
-        self.kernel = kernel
+    def __init__(self, kernel_f=rbf, penalty=1, power=4, cf=4, gamma=None):
+        self.kernel_f = kernel_f
         self.penalty = penalty
         self.gamma = gamma
         self.bias = cf
         self.power = power
+
+    def fit(self, X, y):
+        """
+          Creates a hyperplane from the selected support vectors in the dataset
+        """
+
+        n_samples, n_features = np.shape(X)
+
+        self.gamma = self.n_features if not gamma else gamma
+
+        self.init_kernel()
+
+    def init_kernel(self):
+        """
+          Initalizes the kernel function
+        """
+        self.kernel = self.kernel_f(power=self.power,
+                                    gamma=self.gamma,
+                                    bias=self.bias)
