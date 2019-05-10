@@ -10,7 +10,7 @@ class SVM:
     """
         Support Vector Machine Classifier
 
-        Finds a hyperplane of N-dimension which gives a distict classification
+        Finds a hyperplane of N-dimension which gives a distinct classification
         of the data points
 
         Parameters:
@@ -56,7 +56,7 @@ class SVM:
 
     def init_kernel(self):
         """
-          Initalizes the kernel function
+          Initializes the kernel function
         """
 
         n_samples = self.n_samples
@@ -72,9 +72,21 @@ class SVM:
 
         return kernel_matrx
 
+    def find_intercepts(self):
+        """
+            Calculates intercepts from present support vectors
+        """
+        self.intercept = self.sv_labels[0]
+
+        self.intercept -= [
+            multpr * self.s_vectors[i] *
+            self.kernel(s_vectors[i], s_vectors[0]
+                        for i, multpr in enumerate(self.lagrng_mltpliers))
+        ]
+
     def minimize_qfunction(self):
         """
-            Defines the quadratic optmization problem.
+            Defines the quadratic optimization problem.
             It returns the minimized CVXOPT function solution
         """
 
@@ -109,7 +121,7 @@ class SVM:
 
     def predict(self, X):
         """
-            Iterates through samples, determing the labels
+            Iterates through samples, determining the labels
             of samples by the support vectors
         """
 
