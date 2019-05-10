@@ -39,17 +39,28 @@ class SVM:
           Creates a hyperplane from the selected support vectors in the dataset
         """
 
-        n_samples, n_features = np.shape(X)
+        self.n_samples, self.n_features = np.shape(X)
         self.X, self.y = X, y
 
-        self.gamma = n_features if not self.gamma else self.gamma
+        self.gamma = self.n_features if not self.gamma else self.gamma
 
-        self.start_optmization()
+        minimization = self.minimize_qfunction().get('x')
 
-    def init_kernel(self, n_samples):
+        lagrng_mltpliers = np.ravel(minimization)
+
+        # Get non-zeros -> Extract support vectors
+        idx = lagrng_mltpliers > 1e-8
+        self.lagrng_mltpliers = lagrng_mltpliers[idx]
+        self.s_vectors = X[idx]
+        self.sv_labels = y[idx]
+
+    def init_kernel(self):
         """
           Initalizes the kernel function
         """
+
+        n_samples = self.n_samples
+
         self.kernel = self.kernel_f(power=self.power,
                                     gamma=self.gamma,
                                     bias=self.bias)
@@ -61,20 +72,40 @@ class SVM:
 
         return kernel_matrx
 
-    def start_optmization(self):
+    def minimize_qfunction(self):
         """
-            Creates the quadratic optmization matrix problem
+            Defines the quadratic optmization problem.
+            It returns the minimized CVXOPT function solution
         """
 
-        p = cvxopt.matrix(
+        Q = cvxopt.matrix(
             np.outer(
-                self.y,
-                self.y) *
-            self.init_kernel(),
+                self.y, self.y) * self.init_kernel(),
             tc='d')
-        q = cvxopt.matrix(np.ones(n_samples) * -1)
-        A = cvxopt.matrix(y, (1, n_samples), tc='d')
+        p = cvxopt.matrix(np.ones(self.n_samples) * -1)
+        A = cvxopt.matrix(y, (1, self.n_samples), tc='d')
         b = cvxopt.matrix(0, tc='d')
+        G_max = self.__get_stack_rows(atype='identity', -1)
+
+        h_max = self.__get_stack_rows()
+
+        if not self.C:
+            G, h = cvxopt.matrix(G_max), cvxopt.matrix(h_max)
+        elif self.C:
+            G_min = self.__get_stack_rows(atype='identity')
+            G = cvxopt.matrix(np.vstack((G_max, G_min)))
+
+            h_max = self.__get_stack_rows()
+            h_min = self.__get_stack_rows(multiplier=self.C)
+            h = cvxopt.matrix(np.vstack((h_min, h_max)))
+
+        return cvxopt.solvers.qp(Q, p, G, h, A, b)
+
+        def __get_stack_rows(self, atype='zeros', multiplier=1):
+            """
+                Returns an array of type specified
+            """
+            return getattr(np, atype)(self.n_samples) * multiplier
 
     def predict(self, X):
         """
@@ -89,7 +120,8 @@ class SVM:
 
             for mult in range(len(self.lagrng_mltpliers)):
                 pred += self.lagrng_mltpliers[mult] * \
-                    self.sv_labels[mult] * self.kernel(self.sv[mult], samples)
+                    self.sv_labels[mult] * \
+                    self.kernel(self.s_vectors[mult], samples)
 
                 pred += self.intercept
             y_pred.append(np.sign(pred))
