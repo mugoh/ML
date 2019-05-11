@@ -16,11 +16,11 @@ def cluster_svm():
     """
     data = datasets.load_iris()
 
-    y_idx = data.target is not 0
+    y_idx = data.target != 0
     X = data_helper.normalize(data.data[y_idx])
     y = data.target[y_idx]
 
-    X[y == 1] = -1
+    y[y == 1] = -1
     y[y == 2] = 1
     X_train, X_test, y_train, y_test = data_helper.split_train_test(
         X, y, test_size=1 / 3)

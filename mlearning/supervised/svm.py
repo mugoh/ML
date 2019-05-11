@@ -61,6 +61,8 @@ class SVM:
         self.s_vectors = X[idx]
         self.sv_labels = y[idx]
 
+        self.find_intercepts()
+
     def init_kernel(self):
         """
           Initializes the kernel function
@@ -70,12 +72,12 @@ class SVM:
 
         self.kernel = self.kernel_f(power=self.power,
                                     gamma=self.gamma,
-                                    bias=self.bias)
+                                    cf=self.bias)
         kernel_matrx = np.zeros((n_samples, n_samples))
 
         for i in range(n_samples):
             for j in range(n_samples):
-                kernel_matrx = self.kernel(self.X[i], self.X[j])
+                kernel_matrx[i, j] = self.kernel(self.X[i], self.X[j])
 
         return kernel_matrx
 
@@ -85,11 +87,17 @@ class SVM:
         """
         self.intercept = self.sv_labels[0]
 
-        self.intercept -= [
-            multpr * self.s_vectors[i] *
-            self.kernel(s_vectors[i], s_vectors[0]
-                        for i, multpr in enumerate(self.lagrng_mltpliers))
-        ]
+        """
+        self.intercept -= sum([
+            multpr * self.sv_labels[i] *
+            self.kernel(self.s_vectors[i], self.s_vectors[0])
+            for i, multpr in enumerate(self.lagrng_mltpliers)
+        ])
+
+        """
+        for i in range(len(self.lagrng_mltpliers)):
+            self.intercept -= self.lagrng_mltpliers[i] * self.sv_labels[i] * \
+                self.kernel(self.s_vectors[i], self.s_vectors[0])
 
     def minimize_qfunction(self):
         """
@@ -101,30 +109,31 @@ class SVM:
             np.outer(
                 self.y, self.y) * self.init_kernel(),
             tc='d')
+
         p = cvxopt.matrix(np.ones(self.n_samples) * -1)
-        A = cvxopt.matrix(y, (1, self.n_samples), tc='d')
+        A = cvxopt.matrix(self.y, (1, self.n_samples), tc='d')
         b = cvxopt.matrix(0, tc='d')
-        G_max = self.__get_stack_rows(atype='identity', -1)
+        G_max = self.__get_stack_rows('identity', -1)
 
         h_max = self.__get_stack_rows()
 
-        if not self.C:
+        if not self.penalty:
             G, h = cvxopt.matrix(G_max), cvxopt.matrix(h_max)
-        elif self.C:
+        elif self.penalty:
             G_min = self.__get_stack_rows(atype='identity')
             G = cvxopt.matrix(np.vstack((G_max, G_min)))
 
-            h_max = self.__get_stack_rows()
-            h_min = self.__get_stack_rows(multiplier=self.C)
-            h = cvxopt.matrix(np.vstack((h_min, h_max)))
+            h_min = self.__get_stack_rows(
+                atype='ones', multiplier=self.penalty)
+            h = cvxopt.matrix(np.vstack((h_max, h_min)))
 
         return cvxopt.solvers.qp(Q, p, G, h, A, b)
 
-        def __get_stack_rows(self, atype='zeros', multiplier=1):
-            """
-                Returns an array of type specified
-            """
-            return getattr(np, atype)(self.n_samples) * multiplier
+    def __get_stack_rows(self, atype='zeros', multiplier=1):
+        """
+            Returns an array of type specified
+        """
+        return cvxopt.matrix(getattr(np, atype)(self.n_samples) * multiplier)
 
     def predict(self, X):
         """
@@ -142,7 +151,7 @@ class SVM:
                     self.sv_labels[mult] * \
                     self.kernel(self.s_vectors[mult], samples)
 
-                pred += self.intercept
+            pred += self.intercept
             y_pred.append(np.sign(pred))
 
         return np.array(y_pred)
