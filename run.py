@@ -7,6 +7,8 @@ from mlearning.scripts.deep_q_net import start_deepq_net
 from mlearning.scripts.dbscan import run_dbscan
 from mlearning.scripts.evolved_nn import start_evolved_nn
 from mlearning.scripts.k_means import cluster
+from mlearning.scripts.svm import cluster_svm
+
 
 if __name__ == '__main__':
     # regress_polynomial()
@@ -17,4 +19,5 @@ if __name__ == '__main__':
     # start_deepq_net()
     # run_dbscan()
     # start_evolved_nn()
-    cluster()
+    # cluster()
+    cluster_svm()

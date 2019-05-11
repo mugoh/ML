@@ -1,6 +1,7 @@
 """
     Support Vector Machine
 """
+from ..helpers.utils.kernels import compute_polynomial
 
 import numpy as np
 import cvxopt
@@ -27,7 +28,13 @@ class SVM:
 
   """
 
-    def __init__(self, kernel_f=rbf, penalty=1, power=4, cf=4, gamma=None):
+    def __init__(
+            self,
+            kernel_f=compute_polynomial,
+            penalty=1,
+            power=4,
+            cf=4,
+            gamma=None):
         self.kernel_f = kernel_f
         self.penalty = penalty
         self.gamma = gamma
