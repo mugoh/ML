@@ -17,6 +17,7 @@ class NaiveBayes:
         super(NaiveBayes, self).__init__(*args, **kwargs)
 
         self.params = []
+        self.posteriors = []
         self.eps = kwargs.get('eps')
 
     def fit(self, X, y):
@@ -24,18 +25,29 @@ class NaiveBayes:
             Finds the mean and variance of the features
         """
         self.X, self.y = X, y
-        self.classes = np.unicode(y)
-
-        self.params = np.zeros(self.classes.shape[0])
+        self.classes = np.unique(y)
 
         for i, col in enumerate(self.classes):
             X_col = X[np.where(y == col)]
 
-            self.params[i].append(
-                [(col.mean(), col.var()) for col in X_col.T]
-            )
+            self.params += [(col.mean(), col.var()) for col in X_col.T]
 
     def predict(self, X):
+        """
+            Predicts class labels for samples in the dataset
+        """
+
+        return [self.classify(col) for col in X]
+
+    def find_prior(self, class_):
+        """
+            Finds the prior P(Y) of given class.
+            These are samples where the class equals class/total no. of samples
+        """
+
+        return np.mean(self.y == class_)
+
+    def classify(self, X):
         """
             Classifies the sample(X) as the class resulting in
             the largest P(Y|X) (posterior)
@@ -58,20 +70,19 @@ class NaiveBayes:
 
         for indx, col in enumerate(self.classes):
 
-            self.posteriors = [
+            """self.posteriors += [
                 self.find_prior(col) * self.find_likelihood(
-                    X[i], self.params[i]) for i in len(self.params)
+                    X[i], self.params[i]) for i, c in enumerate(self.params)
             ]
+            """
+            prior = self.find_prior(col)
+            self.params = self.params[:len(X) - 1]
 
+            for i in range(len(self.params)):
+                prior *= self.find_likelihood(X, self.params[i])
+
+            self.posteriors.append(prior)
         return self.classes[np.argmax(self.posteriors)]
-
-    def find_prior(self, class_):
-        """
-            Finds the prior P(Y) of given class.
-            These are samples where the class equals class/total no. of samples
-        """
-
-        return np.mean(self.y == class_)
 
     def find_likelihood(self, X, mean_var):
         """

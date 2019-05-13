@@ -8,7 +8,7 @@ from mlearning.scripts.dbscan import run_dbscan
 from mlearning.scripts.evolved_nn import start_evolved_nn
 from mlearning.scripts.k_means import cluster
 from mlearning.scripts.svm import cluster_svm
-
+from mlearning.scripts.naive_bayes import classify_nv_bayes
 
 if __name__ == '__main__':
     # regress_polynomial()
@@ -20,4 +20,6 @@ if __name__ == '__main__':
     # run_dbscan()
     # start_evolved_nn()
     # cluster()
-    cluster_svm()
+    # cluster_svm()
+    classify_nv_bayes()
+
