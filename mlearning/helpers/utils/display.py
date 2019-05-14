@@ -110,7 +110,7 @@ class Plot:
             class_distr.append(plt.scatter(x_one_, x_two_, color=colors[num]))
 
         # Plot legend
-        if legend_labels:
+        if np.any(legend_labels):
             plt.legend(class_distr, legend_labels, loc=1)
         # Plot accuracy
         if title:
