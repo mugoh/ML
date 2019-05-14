@@ -26,4 +26,5 @@ class classify_nv_bayes():
     plot_dimensioner.plot_in_two_d(
         X_test, y_pred,
         title='Naive Bayes',
-        accuracy=acc)
+        accuracy=acc,
+        legend_labels=data.target_names)

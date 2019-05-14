@@ -17,7 +17,6 @@ class NaiveBayes:
         super(NaiveBayes, self).__init__(*args, **kwargs)
 
         self.params = []
-        self.posteriors = []
         self.eps = kwargs.get('eps')
 
     def fit(self, X, y):
@@ -30,7 +29,7 @@ class NaiveBayes:
         for i, col in enumerate(self.classes):
             X_col = X[np.where(y == col)]
 
-            self.params += [(col.mean(), col.var()) for col in X_col.T]
+            self.params.append([(col.mean(), col.var()) for col in X_col.T])
 
     def predict(self, X):
         """
@@ -67,6 +66,7 @@ class NaiveBayes:
                      to belong to.
 
         """
+        posteriors = []
 
         for indx, col in enumerate(self.classes):
 
@@ -76,13 +76,13 @@ class NaiveBayes:
             ]
             """
             prior = self.find_prior(col)
-            self.params = self.params[:len(X) - 1]
 
-            for i in range(len(self.params)):
-                prior *= self.find_likelihood(X, self.params[i])
+            for x_, values in zip(X, self.params[indx]):
+                prior *= self.find_likelihood(x_, values)
 
-            self.posteriors.append(prior)
-        return self.classes[np.argmax(self.posteriors)]
+            posteriors.append(prior)
+
+        return self.classes[np.argmax(posteriors)]
 
     def find_likelihood(self, X, mean_var):
         """
@@ -94,8 +94,9 @@ class NaiveBayes:
         mean, var = mean_var
         eps = 1e-8
 
-        coeff = pow(2 * 22 / 7 * var + eps, .5)
+        coeff = pow(2 * (22 / 7) * var + eps, .5)
         exp = np.exp(
-            -((X - mean) ** 2) / 2 * var)
+            -(((X - mean) ** 2) / (2 * var + eps))
+        )
 
         return exp / coeff
