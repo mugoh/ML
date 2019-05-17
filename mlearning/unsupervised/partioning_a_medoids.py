@@ -70,3 +70,26 @@ class PartitionAMedoids:
                 closest_dist = distance
                 closest_medoid = medoid
         return self.medoids.index(closest_medoid)
+
+    def calculate_cost(self):
+        """
+            Gives distance between each sample and its medoid
+        """
+
+        cost = 0
+
+        for i, cluster in enumerate(self.clusters):
+            medoid = self.medoids[i]
+
+            for sample_idx in cluster:
+                cost += op.get_eucledian_distance(self.X[sample_idx], medoid)
+
+        return cost
+
+    def get_non_medoids(self):
+        """
+            Returns all samples that are currenly not medoids
+        """
+        non_m = [sample for sample in self.X if sample not in self.medoids]
+
+        return non_m
