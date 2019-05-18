@@ -35,6 +35,31 @@ class PartitionAMedoids:
         """
         self.init_medoids()
         self.create_clusters()
+        cost = self.calculate_cost()
+
+        while True:
+            best_medoids, lowest_cost = self.medoids, cost
+
+            for medoid in self.medoids:
+                for unvisited_smp in self.get_non_medoids():
+                    medoids_ = self.medoids.copy()
+                    medoids_[self.medoids == medoid] = unvisited_smp
+
+                    self.medoids = medoids_.copy()
+                    self.create_clusters()
+
+                    updated_cost = self.calculate_cost()
+
+                    if updated_cost < lowest_cost:
+                        lowest_cost = updated_cost
+                        best_medoids = medoids_
+            if lowest_cost < cost:
+                cost = lowest_cost
+                self.medoids = best_medoids
+            else:
+                break
+        self.create_clusters()
+    return self.getcluster_labels()
 
     def init_medoids(self):
         """
@@ -45,7 +70,7 @@ class PartitionAMedoids:
 
         self.medoids = np.zeros((self.k, self.n_features))
 
-        for i in range(self.n_samples):
+        for i in range(self.k):
             self.medoids[i] = self.X[np.random.choice(range(self.n_samples))]
 
     def create_clusters(self):
@@ -93,3 +118,15 @@ class PartitionAMedoids:
         non_m = [sample for sample in self.X if sample not in self.medoids]
 
         return non_m
+
+    def get_cluster_labels(self):
+        """
+            Labels samples from the indices of their cluster
+        """
+        y_pred = np.zeros(self.n_samples)
+
+        for clst_idx, cluster in enumerate(self.clusters):
+            for sample_idx in cluster:
+                y_pred[sample_idx] = clst_idx
+
+        return y_pred
