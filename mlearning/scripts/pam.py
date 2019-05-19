@@ -2,7 +2,7 @@
     Partitioning Around Medoids
 """
 
-from sklean import datasets
+from sklearn import datasets
 
 from ..unsupervised.partioning_a_medoids import PartitionAMedoids
 from ..helpers.utils.display import plot_dimensioner

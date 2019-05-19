@@ -59,7 +59,8 @@ class PartitionAMedoids:
             else:
                 break
         self.create_clusters()
-    return self.getcluster_labels()
+
+        return self.getcluster_labels()
 
     def init_medoids(self):
         """
@@ -89,12 +90,12 @@ class PartitionAMedoids:
         """
         closest_dist = float('inf')
 
-        for medoid in self.medoids:
+        for i, medoid in enumerate(self.medoids):
             distance = op.get_eucledian_distance(medoid, sample)
             if distance < closest_dist:
                 closest_dist = distance
-                closest_medoid = medoid
-        return self.medoids.index(closest_medoid)
+                closest_medoid_i = i
+        return closest_medoid_i
 
     def calculate_cost(self):
         """
