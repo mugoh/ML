@@ -36,14 +36,15 @@ class PartitionAMedoids:
         self.init_medoids()
         self.create_clusters()
         cost = self.calculate_cost()
+        medoids = self.medoids.copy()
 
         while True:
-            best_medoids, lowest_cost = self.medoids, cost
+            best_medoids, lowest_cost = self.medoids.copy(), cost
 
-            for medoid in self.medoids:
+            for medoid in medoids:
                 for unvisited_smp in self.get_non_medoids():
-                    medoids_ = self.medoids.copy()
-                    medoids_[self.medoids == medoid] = unvisited_smp
+                    medoids_ = medoids.copy()
+                    medoids_[medoids == medoid] = unvisited_smp
 
                     self.medoids = medoids_.copy()
                     self.create_clusters()
@@ -60,7 +61,7 @@ class PartitionAMedoids:
                 break
         self.create_clusters()
 
-        return self.getcluster_labels()
+        return self.get_cluster_labels()
 
     def init_medoids(self):
         """
