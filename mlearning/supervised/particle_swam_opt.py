@@ -7,6 +7,8 @@ from ..helpers.deep_learning.layers import Dense, Activation
 from ..helpers.deep_learning.loss import CrossEntropyLoss
 from ..deep_learning.grad_optimizers import Adam
 
+import numpy as np
+
 
 class ParticleSwamOptimizedNN:
     """
@@ -46,6 +48,12 @@ class ParticleSwamOptimizedNN:
         self.y = y
         self.init_population()
 
+        best_individual = self.population[0]
+
+        for epoch in range(n_gens):
+            for individual in self.population:
+                self.update_weights(individual)
+
     def init_population(self):
         """
             Initializes the network forming the population
@@ -68,14 +76,56 @@ class ParticleSwamOptimizedNN:
         clf.fitness = clf.highst_fitns = clf.accuracy = 0
         clf.best_layers = clf.layers.copy()
 
-        self.init_model_velocity(clf)
-        self.model = clf
+        self.model = self.init_model_velocity(clf)
 
     def init_model_velocity(self, model):
         """
             Sets the velocity for each individual
         """
+        model.velocity = []
 
         for layer in model.layers:
             velocity = {'w': 0, 'w_o': 0}
-            if hasattr(layer, 'weights'):
+            if hasattr(layer, 'weight'):
+                velocity = {'w': np.zeros_like(
+                    layer.weights), 'w_o': np.zeros_like(layer.weight_out)}
+                model.velocity.append(velocity)
+
+        return model
+
+    def update_weights(self, model):
+        """
+            Calculates new weight velocity for model, updating weights
+            in each layer
+        """
+        r1 = np.random.uniform()
+        r2 = np.random.uniform()
+
+        for i in len(model.layers):
+            if not hasattr(model.layers[i], 'weight'):
+                continue
+            first_term_w = self.intertia_w * model.velocity[i]['w']
+            second_term_w = self.cognitive_w * r1 * \
+                (model.best_layers[i].weight - model.layers[i].weight)
+            third_term_w = self.social_w * r2 * \
+                (self.best_individual.layers[i].weight -
+                 model.layers[i].weight)
+
+            velocity_ = first_term_w + second_term_w + third_term_w
+            model.velocity[i]['w'] = np.clip(
+                velocity_, self.min_v, self.max_v)
+
+            # Bias weight velocity
+            first_term_w_o = self.intertia_w * model.velocity[i]['w_o']
+            sec_term_w_o = self.cognitive_w * r1 * \
+                (model.best_layers[i].weight_out - model.layers[i].weight_out)
+            third_term_w_o = self.social_w * r2 * \
+                (self.best_individual.layers[i].weight_out -
+                 model.layers[i].weight_out)
+
+            velocity_ = first_term_w_o + sec_term_w_o + third_term_w_o
+            model.velocity[i]['w_o'] = np.clip(
+                velocity_, self.min_v, self.max_v)
+
+            model.layers[i].weight += model.velocity[i].get('w')
+            model.layers[i].weight_out += model.velocity[i].get('w_o')
