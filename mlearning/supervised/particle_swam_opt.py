@@ -8,6 +8,7 @@ from ..helpers.deep_learning.loss import CrossEntropyLoss
 from ..deep_learning.grad_optimizers import Adam
 
 import numpy as np
+import copy
 
 
 class ParticleSwamOptimizedNN:
@@ -48,11 +49,23 @@ class ParticleSwamOptimizedNN:
         self.y = y
         self.init_population()
 
-        best_individual = self.population[0]
+        self.best_individual = self.population[0]
 
         for epoch in range(n_gens):
             for individual in self.population:
                 self.update_weights(individual)
+                self.find_fitness(individual)
+
+                if individual.fitness > individual.highst_fitns:
+                    individual.best_layers = copy.copy(individual.layers)
+                    individual.highst_fitns = individual.fitness
+
+                elif individual.fitness > self.best_individual.fitness:
+                    self.best_individual = copy.copy(individual)
+
+            print(f'[{epoch} Best Individual - ID {individual.id_} Fitness : {individual.fitness}]' +
+                  f'Accuracy : {100* individual.accuracy:.2f}')
+        return best_individual
 
     def init_population(self):
         """
@@ -129,3 +142,12 @@ class ParticleSwamOptimizedNN:
 
             model.layers[i].weight += model.velocity[i].get('w')
             model.layers[i].weight_out += model.velocity[i].get('w_o')
+
+    def find_fitness(self, model):
+        """
+            Evaluates the individual on the best set for
+            fitness scores
+        """
+
+        loss, model.accuracy = model.test_on_batch(self.X, self.y)
+        model.fitness = 1 / (loss + 1e-8)
