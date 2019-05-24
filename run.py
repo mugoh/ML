@@ -10,7 +10,7 @@ from mlearning.scripts.k_means import cluster
 from mlearning.scripts.svm import cluster_svm
 #from mlearning.scripts.naive_bayes import classify_nv_bayes
 from mlearning.scripts.pam import cluster_pam
-
+from mlearning.scripts.particle_swam_opt import evolve_pso
 
 if __name__ == '__main__':
     # regress_polynomial()
@@ -24,5 +24,5 @@ if __name__ == '__main__':
     # cluster()
     # cluster_svm()
     # classify_nv_bayes()
-    cluster_pam()
-
+    # cluster_pam()
+    evolve_pso()

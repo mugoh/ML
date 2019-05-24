@@ -57,15 +57,17 @@ class ParticleSwamOptimizedNN:
                 self.find_fitness(individual)
 
                 if individual.fitness > individual.highst_fitns:
-                    individual.best_layers = copy.copy(individual.layers)
+                    individual.best_layers = copy.copy(individual.input_layers)
                     individual.highst_fitns = individual.fitness
 
                 elif individual.fitness > self.best_individual.fitness:
                     self.best_individual = copy.copy(individual)
 
-            print(f'[{epoch} Best Individual - ID {individual.id_} Fitness : {individual.fitness}]' +
-                  f'Accuracy : {100* individual.accuracy:.2f}')
-        return best_individual
+            print(f'[{epoch} Best Individual - ID {self.best_individual.id_}' +
+                  f' Fitness : {self.best_individual.fitness:.5f} ' +
+                  f'Accuracy : {100* self.best_individual.accuracy:.2f}]')
+
+        return self.best_individual
 
     def init_population(self):
         """
@@ -80,16 +82,16 @@ class ParticleSwamOptimizedNN:
             Creates a new individual
         """
         clf = Neural_Network(optimizer=Adam(), loss=CrossEntropyLoss)
-        clf.add_layer(Dense(units=16, input_shape=(self.X[1], )))
-        clf.add_layer(Activation('relu'))
+        clf.add_layer(Dense(units=16, input_shape=(self.X.shape[1], )))
+        clf.add_layer(Activation('ReLu'))
         clf.add_layer(Dense(units=self.y.shape[1]))
         clf.add_layer(Activation('softmax'))
 
         clf.id_ = id_
         clf.fitness = clf.highst_fitns = clf.accuracy = 0
-        clf.best_layers = clf.layers.copy()
+        clf.best_layers = copy.copy(clf.input_layers.copy())
 
-        self.model = self.init_model_velocity(clf)
+        return self.init_model_velocity(clf)
 
     def init_model_velocity(self, model):
         """
@@ -97,12 +99,12 @@ class ParticleSwamOptimizedNN:
         """
         model.velocity = []
 
-        for layer in model.layers:
+        for layer in model.input_layers:
             velocity = {'w': 0, 'w_o': 0}
             if hasattr(layer, 'weight'):
                 velocity = {'w': np.zeros_like(
-                    layer.weights), 'w_o': np.zeros_like(layer.weight_out)}
-                model.velocity.append(velocity)
+                    layer.weight), 'w_o': np.zeros_like(layer.weight_out)}
+            model.velocity.append(velocity)
 
         return model
 
@@ -114,34 +116,36 @@ class ParticleSwamOptimizedNN:
         r1 = np.random.uniform()
         r2 = np.random.uniform()
 
-        for i in len(model.layers):
-            if not hasattr(model.layers[i], 'weight'):
+        for i in range(len(model.input_layers)):
+            if not hasattr(model.input_layers[i], 'weight'):
                 continue
-            first_term_w = self.intertia_w * model.velocity[i]['w']
+            first_term_w = self.inertia_w * model.velocity[i]['w']
             second_term_w = self.cognitive_w * r1 * \
-                (model.best_layers[i].weight - model.layers[i].weight)
+                (model.best_layers[i].weight - model.input_layers[i].weight)
             third_term_w = self.social_w * r2 * \
-                (self.best_individual.layers[i].weight -
-                 model.layers[i].weight)
+                (self.best_individual.input_layers[i].weight -
+                 model.input_layers[i].weight)
 
             velocity_ = first_term_w + second_term_w + third_term_w
             model.velocity[i]['w'] = np.clip(
                 velocity_, self.min_v, self.max_v)
 
             # Bias weight velocity
-            first_term_w_o = self.intertia_w * model.velocity[i]['w_o']
+            first_term_w_o = self.inertia_w * model.velocity[i]['w_o']
             sec_term_w_o = self.cognitive_w * r1 * \
-                (model.best_layers[i].weight_out - model.layers[i].weight_out)
+                (model.best_layers[i].weight_out -
+                 model.input_layers[i].weight_out)
             third_term_w_o = self.social_w * r2 * \
-                (self.best_individual.layers[i].weight_out -
-                 model.layers[i].weight_out)
+                (self.best_individual.input_layers[i].weight_out -
+                 model.input_layers[i].weight_out)
 
             velocity_ = first_term_w_o + sec_term_w_o + third_term_w_o
             model.velocity[i]['w_o'] = np.clip(
                 velocity_, self.min_v, self.max_v)
 
-            model.layers[i].weight += model.velocity[i].get('w')
-            model.layers[i].weight_out += model.velocity[i].get('w_o')
+            model.input_layers[i].weight += model.velocity[i].get('w')
+            model.input_layers[i].weight_out += model.velocity[i].get(
+                'w_o')
 
     def find_fitness(self, model):
         """
