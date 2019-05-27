@@ -1,5 +1,5 @@
 """
-    Deep Convolitional Generative Adversarial Network
+    Deep Convolutional Generative Adversarial Network
 """
 
 from ..helpers.deep_learning.network import Neural_Network
@@ -11,7 +11,7 @@ from ..deep_learning.grad_optimizers import Adam
 
 class DCGAN:
     """
-            Models a Deep Convolitional Generative Adversarial Network
+            Models a Deep Convolutional Generative Adversarial Network
 
     """
 
@@ -25,7 +25,7 @@ class DCGAN:
         self.build_discriminator(optimizer, loss_function)
         self.build_gen(optimizer, loss_function)
 
-    def build_disctiminator(self, optimizer, loss_function
+    def build_discriminator(self, optimizer, loss_function
                             ):
         """
             Creates the network discriminator
@@ -39,22 +39,50 @@ class DCGAN:
         model.add_layer(DropOut(p=.25))
         model.add_layer(ConvolutionTwoD(64, filter_shape=(3, 3), stride=2))
         model.add_layer(ZerosPadding2D(padding=((0, 1), (0, 1))))
-        model.add_layer(Activation('reaky_relu'))
+        model.add_layer(Activation('leaky_relu'))
         model.add_layer(DropOut(.25))
 
         model.add_layer(BatchNormalization(momentum=.8))
         model.add_layer(ConvolutionTwoD(128,
                                         filter_shape=(3, 3), stride=2))
-        model.add_layer(Activation('reaky_relu'))
+        model.add_layer(Activation('leaky_relu'))
         model.add_layer(DropOut(0.25))
 
         model.add_layer(BatchNormalization(momentum=.8))
         model.add_layer(ConvolutionTwoD(256, filter_shape=(3, 3),
                                         stride=1))
-        model.add_layer(Activation('reaky_relu'))
+        model.add_layer(Activation('leaky_relu'))
         model.add_layer(DropOut(0.25))
         model.add_layer(Flatten())
         model.add_layer(Dense(units=2))
         model.add_layer(Activation('softmax'))
+
+        return model
+
+    def build_gen(self, optimizer, loss_function):
+        """
+            Builds the model discriminator
+        """
+
+        model = Neural_Network(optimizer=optimizer, loss=loss_function)
+
+        model.add_layer(Dense(units=128 * 7 * 7, input_shape=(100,)))
+        model.add_layer('leaky_relu')
+        model.add_layer(Reshape((128, 7, 7)))
+        model.add_layer(BatchNormalization(momentum=0.8))
+        model.add_layer(UpSampling2D())
+
+        model.add_layer(ConvolutionTwoD(
+            no_of_filters=128, filter_shape=(3, 3)))
+        model.add_layer(Activation('leaky_relu'))
+        model.add_layer(BatchNormalization(.8))
+        model.add_layer(UpSampling2D())
+
+        model.add_layer(ConvolutionTwoD(64, filter_shape=(3, 3)))
+        model.add_layer(Activation('leaky_relu'))
+        model.add_layer(BatchNormalization(.8))
+        model.add_layer(ConvolutionTwoD(no_of_filters=1,
+                                        filter_shape=(3, 3)))
+        model.add_layer(Activation('tanh'))
 
         return model
