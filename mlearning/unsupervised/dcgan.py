@@ -9,6 +9,9 @@ from ..helpers.deep_learning.layers import (
 from ..deep_learning.grad_optimizers import Adam
 
 
+import numpy as np
+
+
 class DCGAN:
     """
             Models a Deep Convolutional Generative Adversarial Network
@@ -22,8 +25,8 @@ class DCGAN:
         self.latent_dims = 100
         self.img_shape = [self.channels, self.image_rows, self.image_cols]
 
-        self.build_discriminator(optimizer, loss_function)
-        self.build_gen(optimizer, loss_function)
+        self.discriminator = self.build_discriminator(optimizer, loss_function)
+        self.gen = self.build_gen(optimizer, loss_function)
 
     def build_discriminator(self, optimizer, loss_function
                             ):
@@ -86,3 +89,35 @@ class DCGAN:
         model.add_layer(Activation('tanh'))
 
         return model
+
+    def train(self, X, y, epochs, batch_size, save_interval):
+        """
+            Trains the model
+        """
+
+        self.X = X
+        self.y = y
+
+        for epoch in range(epochs):
+            self.train_discriminator(batch_size / 2)
+
+    def train_discriminator(self, half_batch):
+        """
+            Trains the discriminator
+        """
+        self.discriminator.set_trainable(True)
+
+        # Random half batch of images
+        idx = np.random.randint(0, self.X.shape[0], half_batch)
+        images = self.X[idx]
+
+        # Sample noise for use as generator input
+        noise = np.random.normal(size=(half_batch, 100))
+
+        # Generate a half batch of images
+        gen_images = self.gen.make_prediction(noise)
+
+        valid = np.concatenate(
+            (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
+        fake = np.concatenate(
+            (np.zeros((half_batch, 1)), np.ones((half_batch, 1))), axis=1)
