@@ -90,7 +90,7 @@ class DCGAN:
 
         return model
 
-    def train(self, X, y, epochs, batch_size, save_interval):
+    def train(self, X, y, epochs, batch_size=128, save_interval=50):
         """
             Trains the model
         """
@@ -100,6 +100,14 @@ class DCGAN:
 
         for epoch in range(epochs):
             self.train_discriminator(batch_size / 2)
+            disp = f'{epoch}  [Discriminator: loss -' + \
+                f' {self.d_loss}] acc - {self.d_acc * 100:.2f}]' + \
+                f' [Generator: loss - {self.g_loss},' + \
+                '  acc - {self.g_acc * 100:.2f}'
+            print(disp)
+
+            if not epoch % save_interval:
+                self.save(epoch)
 
     def train_discriminator(self, half_batch):
         """
@@ -121,3 +129,18 @@ class DCGAN:
             (np.ones((half_batch, 1)), np.zeros((half_batch, 1))), axis=1)
         fake = np.concatenate(
             (np.zeros((half_batch, 1)), np.ones((half_batch, 1))), axis=1)
+
+        loss_real, acc_real = self.discriminator.train_on_batch(images, valid)
+        loss_fake, acc_fake = self.discriminator.train_on_batch(images, fake)
+
+        self.d_loss = (loss_real + loss_fake) / 2
+        self.d_acc = (acc_fake + acc_real) / 2
+
+        self.train_gen(noise, valid)
+
+    def train_gen(self, noise, valid):
+        """
+            Finds the loss and accuracy of the combined model
+        """
+
+        self.g_loss, self.g_acc = self.combined.train_on_batch(noise, valid)
