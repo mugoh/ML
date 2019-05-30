@@ -10,6 +10,7 @@ from ..deep_learning.grad_optimizers import Adam
 
 
 import numpy as np
+from matplolib import pyplot as plt
 
 
 class DCGAN:
@@ -27,6 +28,9 @@ class DCGAN:
 
         self.discriminator = self.build_discriminator(optimizer, loss_function)
         self.gen = self.build_gen(optimizer, loss_function)
+        self.combined = Neural_Network(optimizer, loss_function)
+
+        self.extend_layers()
 
     def build_discriminator(self, optimizer, loss_function
                             ):
@@ -61,6 +65,14 @@ class DCGAN:
         model.add_layer(Activation('softmax'))
 
         return model
+
+    def extend_layers(self):
+        """
+            Combines the model generator and discriminator layers
+        """
+
+        layers = self.generator.layers + self.discriminator.layers
+        self.combined.layers += layers
 
     def build_gen(self, optimizer, loss_function):
         """
@@ -144,3 +156,26 @@ class DCGAN:
         """
 
         self.g_loss, self.g_acc = self.combined.train_on_batch(noise, valid)
+
+    def save(self, epoch):
+        """
+            Saves the generated images
+        """
+        row, col = 5, 5
+        noise = np.random.uniform(0, 1 (row * col, 100))
+
+        gen_images = self.gen.make_prediction(noise)
+
+        # Rescale images [0 -1] from -[1 -1]
+        gen_images = 0.5 * (gen_images + 1)
+        fig, axis = plt.subplots(row, col)
+        plt.suptitle('Deep Convolutional Generative Adversarial Network')
+
+        count = 0
+        for i in range(row):
+            for j in range(col):
+                axis.imshow(gen_images[count, 0, :, :], cmap='gray')
+                axis.axis('off')
+                count += 1
+        fig.save_fig(f'mnist_{epoch}')
+        plt.close()
