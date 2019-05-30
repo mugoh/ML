@@ -5,7 +5,8 @@
 from ..helpers.deep_learning.network import Neural_Network
 from ..helpers.deep_learning.loss import CrossEntropyLoss
 from ..helpers.deep_learning.layers import (
-    ConvolutionTwoD, Activation, DropOut, BatchNormalization, Dense, Flatten)
+    ConvolutionTwoD, Activation, DropOut, BatchNormalization, Dense, Flatten,
+    ZeroPadding2D)
 from ..deep_learning.grad_optimizers import Adam
 
 
@@ -45,7 +46,7 @@ class DCGAN:
         model.add_layer(Activation('leaky_relu'))
         model.add_layer(DropOut(p=.25))
         model.add_layer(ConvolutionTwoD(64, filter_shape=(3, 3), stride=2))
-        model.add_layer(ZerosPadding2D(padding=((0, 1), (0, 1))))
+        model.add_layer(ZeroPadding2D(padding=((0, 1), (0, 1))))
         model.add_layer(Activation('leaky_relu'))
         model.add_layer(DropOut(.25))
 
@@ -166,7 +167,7 @@ class DCGAN:
 
         gen_images = self.gen.make_prediction(noise)
 
-        # Rescale images [0 -1] from -[1 -1]
+        # Rescale images [0 - 1] from [-1 - 1]
         gen_images = 0.5 * (gen_images + 1)
         fig, axis = plt.subplots(row, col)
         plt.suptitle('Deep Convolutional Generative Adversarial Network')

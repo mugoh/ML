@@ -573,6 +573,77 @@ class Dense(Layer):
         return accumulated_grad.dot(weight_.T)
 
 
+class ZeroPadding2D(Layer):
+    """
+        Adds zero values rows and columns to the input
+
+        Parameters
+        ----------
+        padding: tuple
+            Input padding along the height, width dimension
+
+            - (pad_h, pad_w): Applies same symmetric padding
+
+            - ((padh_0, padh_1), (padw_0, padw_1)) Different paddings applied
+             for height and width
+    """
+
+    def __init__(self, padding, **kwargs):
+        self.padding = padding
+
+        if isinstance(padding[0], int):
+            self.padding = ((padding[0], padding[0]), padding[1])
+        elif instance(padding[0], (padding[1], padding[1]))
+
+        self.pad_value = 0
+        super(ZeroPadding2D, self).__init__(*args, **kwargs)
+
+
+class Upsampling2D(Layer):
+    """
+        Upsamples the input with the nearest neighbours.
+        Repeats rows of the data by size[0] and  columns by size[1]
+
+        Parameters
+        ----------
+        size: sequence
+            (size_x, size_y): Number of times to repeat each axis
+        input_shape: sequence (defaults None)
+            Shape of the input
+    """
+
+    def __init__(self, size=[2, 2], input_shape=None, ** kwargs):
+        self.trainable = True
+        self.size = size
+        self.input_shape = input_shape
+        super(Upsampling2D, self).__init__(*args, **kwargs)
+
+    def forward_pass(self, X, training=True):
+        """
+            Repeats axes of dataset X by specified size
+        """
+
+        self.previous_shape = X.shape
+
+        return X.repeat(self.size[0], axis=2).repeat(self.size[1], axis=3)
+
+    def backward_pass(self, accumulated_grad):
+        """
+            Downsamples the input to the previous shape
+        """
+
+        return accumulated_grad[:, :, :: self.size[0], ::self.size[1]]
+
+    def output_shape(self):
+        """
+            Gives the output shape of the repeated input
+        """
+
+        channels, height, width = self.input_shape
+
+        return channels, height * self.shape[0], width * self.shape[0]
+
+
 activation_functions = {
     'ReLu': Rectified_Linear_Units,
     'sigmoid': Sigmoid,
