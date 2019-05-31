@@ -20,7 +20,7 @@ class DCGAN:
 
     """
 
-    def __init__(self, optimizer, loss_function):
+    def __init__(self, optimizer=Adam(), loss_function=CrossEntropyLoss):
         self.image_rows = 28
         self.image_cols = 28
         self.channels = 1

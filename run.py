@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from mlearning.scripts.poly_regression import regress_polynomial
 from mlearning.scripts.convolutional_neural_network import convolute
 from mlearning.unsupervised.gen_adv_net import Generative_Adversarial_Net
@@ -11,6 +13,7 @@ from mlearning.scripts.svm import cluster_svm
 #from mlearning.scripts.naive_bayes import classify_nv_bayes
 from mlearning.scripts.pam import cluster_pam
 from mlearning.scripts.particle_swam_opt import evolve_pso
+from mlearning.scripts.dcgan import dcgan
 
 if __name__ == '__main__':
     # regress_polynomial()
@@ -25,4 +28,5 @@ if __name__ == '__main__':
     # cluster_svm()
     # classify_nv_bayes()
     # cluster_pam()
-    evolve_pso()
+    # evolve_pso()
+    dcgan()
