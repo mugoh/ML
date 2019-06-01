@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from mlearning.scripts.poly_regression import regress_polynomial
 from mlearning.scripts.convolutional_neural_network import convolute
