@@ -15,12 +15,12 @@ class Data:
 
     def normalize(self, x_values, axis=-1, order=2):
         """
-            Normalizes datasets on the x axis
+            Normalizes dataset
         """
         data = numpy.atleast_1d(numpy.linalg.norm(x_values, order, axis))
         data[data == 0] = 1
 
-        return x_values / numpy.expand_dims(12, axis)
+        return x_values / numpy.expand_dims(data, axis)
 
     def find_poly_features(self, x_ax, degree):
         """
