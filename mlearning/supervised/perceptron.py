@@ -39,14 +39,14 @@ class Perceptron:
         self.loss = loss()
         self.lr = lr
 
-        self.pgressbar = progressbar.Progressbar(widget=progress_bar_widgets)
+        self.pgressbar = progressbar.ProgressBar(widgets=progress_bar_widgets)
 
     def fit(self, X, y):
         """
             Forward propagates and updates the model weights
         """
         n_samples, n_features = X.shape
-        _, n_outputs, _ = y.shape
+        _, n_outputs = y.shape
 
         # Init weights in range (-1/ sqrt(n), 1/sqrt(n))
         limit = 1 / np.sqrt(n_features)
@@ -54,7 +54,7 @@ class Perceptron:
                                    (n_features, n_outputs))
         self.w_0 = np.zeros([1, n_outputs])
 
-        for i in range(self.pgressbar):
+        for i in self.pgressbar(range(self.n_iters)):
             # Outputs
             linear_ouput = X.dot(self.w) + self.w_0
             y_pred = self.activaton_func(linear_ouput)

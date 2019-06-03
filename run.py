@@ -14,6 +14,7 @@ from mlearning.scripts.svm import cluster_svm
 from mlearning.scripts.pam import cluster_pam
 from mlearning.scripts.particle_swam_opt import evolve_pso
 from mlearning.scripts.dcgan import dcgan
+from mlearning.scripts.perceptron import perceptron
 
 if __name__ == '__main__':
     # regress_polynomial()
@@ -29,4 +30,5 @@ if __name__ == '__main__':
     # classify_nv_bayes()
     # cluster_pam()
     # evolve_pso()
-    dcgan()
+    # dcgan()
+    perceptron()

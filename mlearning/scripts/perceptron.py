@@ -22,7 +22,7 @@ def perceptron():
     y = data_helper.categorize(data.target)
 
     X_train, X_test, y_train, y_test = data_helper.split_train_test(
-        X, y, test_size=1 / 3, seed=1)
+        X, y, test_size=.33, seed=1)
 
     clf = Perceptron(n_iters=50000,
                      loss=CrossEntropyLoss,
