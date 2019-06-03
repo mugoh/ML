@@ -593,10 +593,11 @@ class ZeroPadding2D(Layer):
 
         if isinstance(padding[0], int):
             self.padding = ((padding[0], padding[0]), padding[1])
-        elif instance(padding[0], (padding[1], padding[1]))
-
+        elif isinstance(padding[1], int):
+            self.padding = padding[0], (padding[1], padding[1])
         self.pad_value = 0
-        super(ZeroPadding2D, self).__init__(*args, **kwargs)
+
+        super(ZeroPadding2D, self).__init__(**kwargs)
 
 
 class Upsampling2D(Layer):

@@ -11,7 +11,7 @@ from ..deep_learning.grad_optimizers import Adam
 
 
 import numpy as np
-from matplolib import pyplot as plt
+from matplotlib import pyplot as plt
 
 
 class DCGAN:
