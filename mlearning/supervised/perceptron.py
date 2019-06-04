@@ -69,10 +69,10 @@ class Perceptron:
             self.w -= self.lr * grad_w
             self.w_0 -= self.lr * grad_w_0
 
-        def predict(self, X, y_test):
-            """
-                Predict labels using trained model
-            """
-            y_pred = self.activaton_func(X.dot(self.w) + self.w_0)
-            acc = self.loss.get_acc_score(y_test, y_pred)
-            return y_pred, acc
+    def predict(self, X, y_test):
+        """
+            Predict labels using trained model
+        """
+        y_pred = self.activaton_func(X.dot(self.w) + self.w_0)
+        acc = self.loss.get_acc_score(y_test, y_pred)
+        return y_pred, acc

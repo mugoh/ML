@@ -30,7 +30,7 @@ def perceptron():
     clf.fit(X_train, y_train)
 
     y_pred, acc = clf.predict(X_test, y_test)
+    y_pred = np.argmax(y_pred, axis=1)
 
     plot_dimensioner.plot_in_two_d(
-        X_test, y_pred, title='Perceptron', accuracy=acc,
-        legend_labels=np.unique(y))
+        X_test, y_pred, title='Perceptron', accuracy=acc)
