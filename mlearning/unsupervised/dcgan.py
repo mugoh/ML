@@ -83,7 +83,7 @@ class DCGAN:
         model = Neural_Network(optimizer=optimizer, loss=loss_function)
 
         model.add_layer(Dense(units=128 * 7 * 7, input_shape=(100,)))
-        model.add_layer('leaky_relu')
+        model.add_layer(Activation('leaky_relu'))
         model.add_layer(Reshape((128, 7, 7)))
         model.add_layer(BatchNormalization(momentum=0.8))
         model.add_layer(UpSampling2D())

@@ -598,7 +598,7 @@ class ConstantPadding2D(Layer):
 
         self._set_padding(padding)
 
-    def set_padding(self, padding):
+    def _set_padding(self, padding):
         """
             Assigns the padding value from the given pad parameter
         """
@@ -643,7 +643,7 @@ class ConstantPadding2D(Layer):
         return self.input_shape[0], new_height, new_width
 
 
-class ZeroPadding2D(Layer):
+class ZeroPadding2D(ConstantPadding2D):
     """
         Adds zero values rows and columns to the input
 
@@ -667,7 +667,7 @@ class ZeroPadding2D(Layer):
             self.padding = padding[0], (padding[1], padding[1])
         self.pad_value = 0
 
-        super(ZeroPadding2D, self).__init__(**kwargs)
+        super(ZeroPadding2D, self).__init__(padding, **kwargs)
 
 
 class Upsampling2D(Layer):
