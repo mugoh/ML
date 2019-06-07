@@ -667,10 +667,8 @@ class ZeroPadding2D(ConstantPadding2D):
             self.padding = padding[0], (padding[1], padding[1])
         self.pad_value = 0
 
-        super(ZeroPadding2D, self).__init__(padding, **kwargs)
 
-
-class Upsampling2D(Layer):
+class UpSampling2D(Layer):
     """
         Upsamples the input with the nearest neighbours.
         Repeats rows of the data by size[0] and  columns by size[1]
@@ -683,11 +681,11 @@ class Upsampling2D(Layer):
             Shape of the input
     """
 
-    def __init__(self, size=[2, 2], input_shape=None, ** kwargs):
+    def __init__(self, size=(2, 2), input_shape=None, *args, ** kwargs):
         self.trainable = True
+        self.previous_shape = None
         self.size = size
         self.input_shape = input_shape
-        super(Upsampling2D, self).__init__(*args, **kwargs)
 
     def forward_pass(self, X, training=True):
         """
@@ -712,7 +710,44 @@ class Upsampling2D(Layer):
 
         channels, height, width = self.input_shape
 
-        return channels, height * self.shape[0], width * self.shape[0]
+        return channels, self.size[0] * height, self.size[1] * width
+
+
+class Reshape(Layer):
+    """
+        Rehapes the input to a specified shape
+
+        Parameters
+        ----------
+        shape: tuple
+            Shape to give the input tensor
+    """
+
+    def __init__(self, shape, input_shape=None, *args, **kwargs):
+        self.previous_shape = None
+        self.trainable = True
+        self.shape = shape
+        self.input_shape = input_shape
+
+    def forward_pass(self, X, training=True):
+        """
+            Reshapes input
+        """
+        self.previous_shape = X.shape
+        return X.reshape((X.shape[0],) + self.shape)
+
+    def backward_pass(self, accumulated_grad):
+        """
+            Reshapes input to previous shape
+        """
+        return accumulated_grad.reshape(self.previous_shape)
+
+    def output_shape(self):
+        """
+            Returns dimensions of shape used in reshaping of
+            input tensors
+        """
+        return self.shape
 
 
 activation_functions = {
