@@ -9,9 +9,12 @@ from ..helpers.deep_learning.layers import (
     ZeroPadding2D, Reshape, UpSampling2D)
 from ..deep_learning.grad_optimizers import Adam
 
+from ..helpers.utils.display import progress_bar_widgets
 
 import numpy as np
 from matplotlib import pyplot as plt
+
+import progressbar
 
 
 class DCGAN:
@@ -26,6 +29,8 @@ class DCGAN:
         self.channels = 1
         self.latent_dims = 100
         self.img_shape = (self.channels, self.image_rows, self.image_cols)
+
+        self.pgrbar = progressbar.ProgressBar(widgets=progress_bar_widgets)
 
         optimizer = optimizer(learning_rate=0.0002, beta1=.5)
 
@@ -127,9 +132,9 @@ class DCGAN:
             self.train_discriminator(batch_size // 2)
             self.train_gen(batch_size)
             disp = f'{epoch}  [Discriminator: loss -' + \
-                f' {self.d_loss}] acc - {self.d_acc * 100:.2f}]' + \
-                f' [Generator: loss - {self.g_loss},' + \
-                '  acc - {self.g_acc * 100:.2f}'
+                f' {self.d_loss:.4f}] acc - {self.d_acc * 100:.2f}]' + \
+                f' [Generator: loss - {self.g_loss:.4f},' + \
+                f'  acc - {self.g_acc * 100:.2f}'
             print(disp)
 
             if not epoch % save_interval:
@@ -171,8 +176,8 @@ class DCGAN:
         self.discriminator.set_trainable(False)
         noise = np.random.normal(size=(batch_size, self.latent_dims))
         valid = np.concatenate(
-            np.ones((batch_size, 1)),
-            np.zeros((batch_size, 1)),
+            (np.ones((batch_size, 1)),
+             np.zeros((batch_size, 1))),
             axis=1)
 
         self.g_loss, self.g_acc = self.combined.train_on_batch(noise, valid)
@@ -182,7 +187,7 @@ class DCGAN:
             Saves the generated images
         """
         row, col = 5, 5
-        noise = np.random.uniform(0, 1 (row * col, 100))
+        noise = np.random.uniform(0, 1, (row * col, 100))
 
         gen_images = self.gen.make_prediction(noise)
 
@@ -194,8 +199,8 @@ class DCGAN:
         count = 0
         for i in range(row):
             for j in range(col):
-                axis.imshow(gen_images[count, 0, :, :], cmap='gray')
-                axis.axis('off')
+                axis[i, j].imshow(gen_images[count, 0, :, :], cmap='gray')
+                axis[i, j].axis('off')
                 count += 1
-        fig.save_fig(f'mnist_{epoch}')
+        fig.savefig(f'mnist_{epoch}.png')
         plt.close()

@@ -614,8 +614,8 @@ class ConstantPadding2D(Layer):
         """
 
         return np.pad(X,
-                      pad_width=(((0, 0),
-                                  (0, 0)),
+                      pad_width=((0, 0),
+                                 (0, 0),
                                  self.padding[0],
                                  self.padding[1]),
                       mode='constant',
@@ -660,12 +660,12 @@ class ZeroPadding2D(ConstantPadding2D):
 
     def __init__(self, padding, **kwargs):
         self.padding = padding
+        super().__init__(padding)
 
         if isinstance(padding[0], int):
             self.padding = ((padding[0], padding[0]), padding[1])
         elif isinstance(padding[1], int):
             self.padding = padding[0], (padding[1], padding[1])
-        self.pad_value = 0
 
 
 class UpSampling2D(Layer):
