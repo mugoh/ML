@@ -573,7 +573,77 @@ class Dense(Layer):
         return accumulated_grad.dot(weight_.T)
 
 
-class ZeroPadding2D(Layer):
+class ConstantPadding2D(Layer):
+    """
+        Pads the input with rows and columns of constant values
+
+        Parameters
+        ----------
+        padding: iter
+
+            Input padding along the height, width dimension
+
+            - (pad_h, pad_w): Applies same symmetric padding
+
+            - ((padh_0, padh_1), (padw_0, padw_1)) Different paddings applied
+             for height and width
+        pad_value: int
+            Value added as padding
+    """
+
+    def __init__(self, padding, pad_value=0):
+        self.padding = padding
+        self.trainable = True
+        self.pad_value = pad_value
+
+        self._set_padding(padding)
+
+    def _set_padding(self, padding):
+        """
+            Assigns the padding value from the given pad parameter
+        """
+
+        if not isinstance(padding[0], tuple):
+            self.padding = ((padding[0], padding[0]), padding[1])
+        if not isinstance(padding[1], tuple):
+            self.padding = (padding[0], (padding[1], padding[1]))
+
+    def forward_pass(self, X, training=True):
+        """
+            Repeats axes of dataset X by specified size
+        """
+
+        return np.pad(X,
+                      pad_width=((0, 0),
+                                 (0, 0),
+                                 self.padding[0],
+                                 self.padding[1]),
+                      mode='constant',
+                      constant_values=self.pad_value)
+
+    def backward_pass(self, accumulated_grad):
+        """
+            Downsamples the input to the previous shape
+        """
+        pad_top, pad_left = self.padding[0][0], self.padding[1][0]
+        height, width = self.input_shape[1], self.input_shape[2]
+
+        accumulated_grad = accumulated_grad[:, :, pad_top:pad_top + height,
+                                            pad_left:pad_left + width]
+
+        return accumulated_grad
+
+    def output_shape(self):
+        """
+            Gives the output shape of the repeated input
+        """
+        new_height = self.input_shape[1] + np.sum(self.padding[0])
+        new_width = self.input_shape[2] + np.sum(self.padding[1])
+
+        return self.input_shape[0], new_height, new_width
+
+
+class ZeroPadding2D(ConstantPadding2D):
     """
         Adds zero values rows and columns to the input
 
@@ -590,17 +660,15 @@ class ZeroPadding2D(Layer):
 
     def __init__(self, padding, **kwargs):
         self.padding = padding
+        super().__init__(padding)
 
         if isinstance(padding[0], int):
             self.padding = ((padding[0], padding[0]), padding[1])
         elif isinstance(padding[1], int):
             self.padding = padding[0], (padding[1], padding[1])
-        self.pad_value = 0
-
-        super(ZeroPadding2D, self).__init__(**kwargs)
 
 
-class Upsampling2D(Layer):
+class UpSampling2D(Layer):
     """
         Upsamples the input with the nearest neighbours.
         Repeats rows of the data by size[0] and  columns by size[1]
@@ -613,11 +681,11 @@ class Upsampling2D(Layer):
             Shape of the input
     """
 
-    def __init__(self, size=[2, 2], input_shape=None, ** kwargs):
+    def __init__(self, size=(2, 2), input_shape=None, *args, ** kwargs):
         self.trainable = True
+        self.previous_shape = None
         self.size = size
         self.input_shape = input_shape
-        super(Upsampling2D, self).__init__(*args, **kwargs)
 
     def forward_pass(self, X, training=True):
         """
@@ -642,7 +710,44 @@ class Upsampling2D(Layer):
 
         channels, height, width = self.input_shape
 
-        return channels, height * self.shape[0], width * self.shape[0]
+        return channels, self.size[0] * height, self.size[1] * width
+
+
+class Reshape(Layer):
+    """
+        Rehapes the input to a specified shape
+
+        Parameters
+        ----------
+        shape: tuple
+            Shape to give the input tensor
+    """
+
+    def __init__(self, shape, input_shape=None, *args, **kwargs):
+        self.previous_shape = None
+        self.trainable = True
+        self.shape = shape
+        self.input_shape = input_shape
+
+    def forward_pass(self, X, training=True):
+        """
+            Reshapes input
+        """
+        self.previous_shape = X.shape
+        return X.reshape((X.shape[0],) + self.shape)
+
+    def backward_pass(self, accumulated_grad):
+        """
+            Reshapes input to previous shape
+        """
+        return accumulated_grad.reshape(self.previous_shape)
+
+    def output_shape(self):
+        """
+            Returns dimensions of shape used in reshaping of
+            input tensors
+        """
+        return self.shape
 
 
 activation_functions = {
