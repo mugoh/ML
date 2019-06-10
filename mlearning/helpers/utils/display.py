@@ -25,6 +25,22 @@ progress_bar_widgets = [
 ]
 
 
+def get_progress_bar(process='Training'):
+    """
+        Creates a progressbar widget for a display of
+        a running process.
+
+        Parameters
+        ----------
+        process: str
+            Name of the process
+    """
+    widget = progress_bar_widgets[:]
+    widget[0] = process if process else widget[0]
+
+    return widget
+
+
 class Plot:
     """
         A data plot dimension-transformation class.
