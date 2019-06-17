@@ -1,9 +1,11 @@
 """
-    Determines frequent items in a transactional dataset
+    Data Mining: Determines frequent items in a transactional dataset
 """
 from dataclasses import dataclass, field
 
+from typing import Any
 import itertools
+import operator
 
 
 @dataclass
@@ -14,17 +16,13 @@ class FPGrowth:
 
         Parameters
         ----------
-        min_count: float
+        min_support: float
             Minimum transaction ratio to deem an item as frequent
     """
-    min_count:
-        float = 0.333333
-    tree:
-        object = None
-    prefixes:
-        dict = {}
-    frequent_items:
-        list = []
+    min_support: float = 0.333333
+    tree: object = None
+    prefixes: dict = {}
+    frequent_items: list = []
 
     def find_frequents(self, transactions, suffix=None):
         """
@@ -42,7 +40,7 @@ class FPGrowth:
 
     def __get_frequents_list(self, db: 'list') -> list:
         """
-            Gives a list of items whose occurence meets the min_count
+            Gives a list of items whose occurence meets the min_support
         """
         uniques = set(itertools.chain(*db))
         transactions_count = [
@@ -51,8 +49,14 @@ class FPGrowth:
         ]
 
         fq_items = [
-            transaction[0] for transaction in transactions_count
-            if transactions_count[1] >= self.min_count]
+            transaction for transaction in transactions_count
+            if transactions_count[1] >= self.min_support]
+
+        fq_items = [fq_item[0] for fq_item in sorted(
+            fq_items,
+            key=operator.itemgetter(1),
+            reverse=True)
+        ]
 
         return fq_items
 
@@ -67,6 +71,31 @@ class FPGrowth:
 
         return len(holding_transactions)
 
+    def create_tree(self, transactions, fq_items):
+        """
+            Creates the F Pattern growth tree
+        """
+        self.root = FPTreeNode()
+
+        for transaction in transactions:
+            transac = [item for item in transaction if item in fq_items]
+            transac.sort(key=operator.itemgetter(fq_items))
+            self.insert_node(self.root, transac)
+
+
+def insert_node(self, parent, nodes):
+    """
+        Inserts nodes to tree
+    """
+    child_ = nodes[0]
+    child = FPTreeNode(item=child_)
+
+    if child_ in parent.children:
+        child_.children[child.node].support += 1
+    else:
+        child_.chidren[child.node] = child
+        self.insert_node(parent.children[child.node], nodes[1:])
+
 
 @dataclass
 class FPTreeNode:
@@ -77,14 +106,11 @@ class FPTreeNode:
         ----------
         node: float
             Value of the node
-        frequency: float
+        support: float
             No. of occurrence in the transaction
         children: dict
             Child nodes in the growth tree
     """
-    nodes:
-        float = field(default=None)
-    support:
-        int = {}
-    children:
-        dict = {}
+    node: Any = field(default=None)
+    support: int = 1
+    children: dict = {}
