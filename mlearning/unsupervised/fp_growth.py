@@ -23,6 +23,7 @@ class FPGrowth:
     tree: object = None
     prefixes: dict = {}
     frequent_items: list = []
+    prefixes: dict = field(default={}, init=False)
 
     def find_frequents(self, transactions, suffix=None):
         """
@@ -37,6 +38,10 @@ class FPGrowth:
             Finds and updates frequent items from the conditional database
         """
         freq_items = self.__get_frequents_list(self)
+
+        for item_set in freq_items:
+            self.get_prefixes(item_set, self.root)
+            conditional_db_ = []
 
     def __get_frequents_list(self, db: 'list') -> list:
         """
@@ -59,6 +64,31 @@ class FPGrowth:
         ]
 
         return fq_items
+
+    def get_prefixes(self, itemset, node, prefixes=None):
+        """
+            Adds prefixes to the item set by traversing the
+            growth tree
+        """
+        prefixes = [] if not prefixes else prefixes
+
+        if self.is_prefix(itemset, node):
+            set_key = self.get_item_keys(itemset)
+
+            try:
+                self.prefixes[set_key].append(
+                    {
+                        'prefix': prefixes,
+                        'support': node.children[itemset[0]].support
+                    }
+                )
+            except AttributeError:
+                self.prefixes[set_key] = []
+
+        for child in node.children:
+            child = node.children[child]
+
+            self.get_prefixes(itemset, child, prefixes + child.node)
 
     def get_transactions_count(self, item, trans):
         """
@@ -88,13 +118,14 @@ def insert_node(self, parent, nodes):
         Inserts nodes to tree
     """
     child_ = nodes[0]
-    child = FPTreeNode(item=child_)
+    child = FPTreeNode(node=child_)
 
     if child_ in parent.children:
         child_.children[child.node].support += 1
     else:
         child_.chidren[child.node] = child
-        self.insert_node(parent.children[child.node], nodes[1:])
+
+    self.insert_node(parent.children[child.node], nodes[1:])
 
 
 @dataclass
