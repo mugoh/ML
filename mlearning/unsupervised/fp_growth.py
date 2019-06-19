@@ -43,6 +43,14 @@ class FPGrowth:
             self.get_prefixes(item_set, self.root)
             conditional_db_ = []
 
+            item_set_key = self.get_itemset_key(itemset)
+
+    def get_itemset_key(self, itset):
+        """
+            Joins contents of lists with more than a single item
+        """
+        return '-'.join(itset)
+
     def __get_frequents_list(self, db: 'list') -> list:
         """
             Gives a list of items whose occurence meets the min_support
@@ -88,7 +96,7 @@ class FPGrowth:
         for child in node.children:
             child = node.children[child]
 
-            self.get_prefixes(itemset, child, prefixes + child.node)
+            self.get_prefixes(itemset, child, prefixes + [child.node])
 
     def get_transactions_count(self, item, trans):
         """
