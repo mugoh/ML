@@ -21,7 +21,6 @@ class FPGrowth:
     """
     min_support: float = 0.333333
     tree: object = None
-    prefixes: dict = {}
     frequent_items: list = []
     prefixes: dict = field(default={}, init=False)
 
@@ -31,6 +30,7 @@ class FPGrowth:
         """
 
         self.transactions = transactions
+        self.summarize(self.create_tree(transactions))
         self.determine_frequent_item_sets(transactions, suffix=suffix)
 
     def determine_frequent_item_sets(self, conditional_db, suffix=None):
@@ -43,7 +43,16 @@ class FPGrowth:
             self.get_prefixes(item_set, self.root)
             conditional_db_ = []
 
-            item_set_key = self.get_itemset_key(itemset)
+            item_set_key = self.get_itemset_key(item_set)
+            try:
+                for elmnt in self.prefixes.get(item_set_key):
+                    for i in range(elmnt['support']):
+                        conditional_db_.append(elmnt['prefix'])
+            except AttributeError:
+                pass
+            else:
+                new_suffix = item_set + suffix if suffix else item_set
+                self.determine_frequent_item_sets(conditional_db_, new_suffix)
 
     def get_itemset_key(self, itset):
         """
@@ -81,7 +90,7 @@ class FPGrowth:
         prefixes = [] if not prefixes else prefixes
 
         if self.is_prefix(itemset, node):
-            set_key = self.get_item_keys(itemset)
+            set_key = self.get_itemset_key(itemset)
 
             try:
                 self.prefixes[set_key].append(
@@ -109,6 +118,17 @@ class FPGrowth:
 
         return len(holding_transactions)
 
+    def is_prefix(itemset, node):
+        """
+            Asserts the element in the set is a child of the node
+            and that all elements are acceisble through the first
+        """
+        for item in itemset:
+            if item not in node.children:
+                return False
+            node = node.children[item]
+        return True
+
     def create_tree(self, transactions, fq_items):
         """
             Creates the F Pattern growth tree
@@ -134,6 +154,18 @@ def insert_node(self, parent, nodes):
         child_.chidren[child.node] = child
 
     self.insert_node(parent.children[child.node], nodes[1:])
+
+
+def summarize(self, node=None, indent=4):
+    """
+        Displayes the FP growth tree
+    """
+    node = self.root if not node else node
+    indent_ = ' ' * indent
+    print(f'{indent_} {node.node} {node.support}')
+
+    for child in node.children:
+        self.summarize(node.children[child], indent + 1)
 
 
 @dataclass
