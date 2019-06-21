@@ -2,6 +2,7 @@
     Data Mining: Determines frequent items in a transactional dataset
 """
 from dataclasses import dataclass, field
+from terminaltables import AsciiTable
 
 from typing import Any
 import itertools
@@ -156,14 +157,14 @@ def insert_node(self, parent, nodes):
     self.insert_node(parent.children[child.node], nodes[1:])
 
 
-def summarize(self, node=None, indent=4):
+def summarize(self, node=None, indent=2):
     """
         Displayes the FP growth tree
     """
+    print(AsciiTable('FP Growth Tree').table)
     node = self.root if not node else node
-    indent_ = ' ' * indent
-    print(f'{indent_} {node.node} {node.support}')
-
+    display = [[' ' * indent, node.node, node.support]]
+    print(AsciiTable(display).table)
     for child in node.children:
         self.summarize(node.children[child], indent + 1)
 
