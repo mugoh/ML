@@ -11,11 +11,12 @@ def grow_frequent_pattern():
         transactions
     """
     transactions = np.array(
-        ['sawdust', 'porcupines', 'butter', 'uneven'],
-        ['sawdust', 'uneven', 'butter'],
-        ['sawdust', 'uneven', 'marcaroni'],
-        ['sawdust', 'butter', 'diapers', 'marcaroni'],
-        ['sawdust', 'marcaroni', 'porcupines'])
+        [
+            ['sawdust', 'porcupines', 'butter', 'uneven'],
+            ['sawdust', 'uneven', 'butter'],
+            ['sawdust', 'uneven', 'marcaroni'],
+            ['sawdust', 'butter', 'diapers', 'marcaroni'],
+            ['sawdust', 'marcaroni', 'porcupines']])
 
     fp_growth = FPGrowth(min_support=3)
     print(AsciiTable([['Transactions']]).table)

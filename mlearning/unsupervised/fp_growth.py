@@ -4,7 +4,7 @@
 from dataclasses import dataclass, field
 from terminaltables import AsciiTable
 
-from typing import Any
+from typing import Any, List
 import itertools
 import operator
 
@@ -22,8 +22,8 @@ class FPGrowth:
     """
     min_support: float = 0.333333
     tree: object = None
-    frequent_items: list = []
-    prefixes: dict = field(default={}, init=False)
+    frequent_items: List[int] = field(default_factory=list)
+    prefixes: None = field(default_factory=dict, init=False)
 
     def find_frequents(self, transactions, suffix=None):
         """
@@ -31,14 +31,17 @@ class FPGrowth:
         """
 
         self.transactions = transactions
-        self.summarize(self.create_tree(transactions))
+        self.__get_frequents_list(transactions)
+
+
+        self.summarize(self.create_tree(transactions, fq_items=self.frequent_items))
         self.determine_frequent_item_sets(transactions, suffix=suffix)
 
     def determine_frequent_item_sets(self, conditional_db, suffix=None):
         """
             Finds and updates frequent items from the conditional database
         """
-        freq_items = self.__get_frequents_list(self)
+        freq_items = self.frequent_items[:]
 
         for item_set in freq_items:
             self.get_prefixes(item_set, self.root)
@@ -81,7 +84,7 @@ class FPGrowth:
             reverse=True)
         ]
 
-        return fq_items
+        self.frequent_items=fq_items
 
     def get_prefixes(self, itemset, node, prefixes=None):
         """
@@ -141,32 +144,30 @@ class FPGrowth:
             transac.sort(key=operator.itemgetter(fq_items))
             self.insert_node(self.root, transac)
 
+    def insert_node(self, parent, nodes):
+        """
+            Inserts nodes to tree
+        """
+        child_ = nodes[0]
+        child = FPTreeNode(node=child_)
 
-def insert_node(self, parent, nodes):
-    """
-        Inserts nodes to tree
-    """
-    child_ = nodes[0]
-    child = FPTreeNode(node=child_)
+        if child_ in parent.children:
+            child_.children[child.node].support += 1
+        else:
+            child_.chidren[child.node] = child
 
-    if child_ in parent.children:
-        child_.children[child.node].support += 1
-    else:
-        child_.chidren[child.node] = child
+        self.insert_node(parent.children[child.node], nodes[1:])
 
-    self.insert_node(parent.children[child.node], nodes[1:])
-
-
-def summarize(self, node=None, indent=2):
-    """
-        Displayes the FP growth tree
-    """
-    print(AsciiTable('FP Growth Tree').table)
-    node = self.root if not node else node
-    display = [[' ' * indent, node.node, node.support]]
-    print(AsciiTable(display).table)
-    for child in node.children:
-        self.summarize(node.children[child], indent + 1)
+    def summarize(self, node=None, indent=2):
+        """
+            Displayes the FP growth tree
+        """
+        print(AsciiTable('FP Growth Tree').table)
+        node = self.root if not node else node
+        display = [[' ' * indent, node.node, node.support]]
+        print(AsciiTable(display).table)
+        for child in node.children:
+            self.summarize(node.children[child], indent + 1)
 
 
 @dataclass
@@ -185,4 +186,4 @@ class FPTreeNode:
     """
     node: Any = field(default=None)
     support: int = 1
-    children: dict = {}
+    children: Any = field(default_factory=dict)
