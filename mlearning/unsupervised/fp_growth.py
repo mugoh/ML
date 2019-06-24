@@ -33,8 +33,8 @@ class FPGrowth:
         self.transactions = transactions
         self.__get_frequents_list(transactions)
 
-
-        self.summarize(self.create_tree(transactions, fq_items=self.frequent_items))
+        self.summarize(self.create_tree(
+            transactions, fq_items=self.frequent_items))
         self.determine_frequent_item_sets(transactions, suffix=suffix)
 
     def determine_frequent_item_sets(self, conditional_db, suffix=None):
@@ -75,8 +75,8 @@ class FPGrowth:
         ]
 
         fq_items = [
-            transaction for transaction in transactions_count
-            if transactions_count[1] >= self.min_support]
+            (item, count) for item, count in transactions_count
+            if count >= self.min_support]
 
         fq_items = [fq_item[0] for fq_item in sorted(
             fq_items,
@@ -84,7 +84,7 @@ class FPGrowth:
             reverse=True)
         ]
 
-        self.frequent_items=fq_items
+        self.frequent_items = fq_items
 
     def get_prefixes(self, itemset, node, prefixes=None):
         """
@@ -141,22 +141,26 @@ class FPGrowth:
 
         for transaction in transactions:
             transac = [item for item in transaction if item in fq_items]
-            transac.sort(key=operator.itemgetter(fq_items))
+            transac.sort(key=lambda item: fq_items.index(item))
             self.insert_node(self.root, transac)
 
     def insert_node(self, parent, nodes):
         """
             Inserts nodes to tree
         """
-        child_ = nodes[0]
-        child = FPTreeNode(node=child_)
-
-        if child_ in parent.children:
-            child_.children[child.node].support += 1
+        try:
+            child_ = nodes[0]
+        except IndexError:
+            return
         else:
-            child_.chidren[child.node] = child
+            child = FPTreeNode(node=child_)
 
-        self.insert_node(parent.children[child.node], nodes[1:])
+            if child_ in parent.children:
+                parent.children[child.node].support += 1
+            else:
+                parent.children[child.node] = child
+
+            self.insert_node(parent.children[child.node], nodes[1:])
 
     def summarize(self, node=None, indent=2):
         """
