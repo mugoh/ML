@@ -122,7 +122,7 @@ class FPGrowth:
 
         return len(holding_transactions)
 
-    def is_prefix(itemset, node):
+    def is_prefix(self, itemset, node):
         """
             Asserts the element in the set is a child of the node
             and that all elements are acceisble through the first
@@ -162,16 +162,18 @@ class FPGrowth:
 
             self.insert_node(parent.children[child.node], nodes[1:])
 
-    def summarize(self, node=None, indent=2):
+    def summarize(self, node=None, indent=2, first_call=True):
         """
             Displayes the FP growth tree
         """
-        print(AsciiTable('FP Growth Tree').table)
+        if first_call:
+            print(AsciiTable([['FP Growth Tree']]).table)
+
         node = self.root if not node else node
-        display = [[' ' * indent, node.node, node.support]]
-        print(AsciiTable(display).table)
+        display = f' ' * indent + f'{node.node}, {node.support}\n'
+        print(display)
         for child in node.children:
-            self.summarize(node.children[child], indent + 1)
+            self.summarize(node.children[child], indent + 1, False)
 
 
 @dataclass

@@ -56,7 +56,7 @@ class Data:
             testing data.
         """
         no_of_samples = len(Y)
-        remainder_data = []
+        remainder_data = {}
         data_sets = []
         no_of_untouched = no_of_samples % set_count
 
