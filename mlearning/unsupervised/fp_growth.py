@@ -41,10 +41,15 @@ class FPGrowth:
         """
             Finds and updates frequent items from the conditional database
         """
-        freq_items = self.frequent_items[:]
+        freq_items = self.__get_frequents_list(conditional_db)
+        tree = self.root
+
+        if suffix:
+            tree = self.create_tree(conditional_db, freq_items)
+            self.frequent_items += (element + suffix for element in freq_items)
 
         for item_set in freq_items:
-            self.get_prefixes(item_set, self.root)
+            self.get_prefixes(item_set, tree)
             conditional_db_ = []
 
             item_set_key = self.get_itemset_key(item_set)
@@ -52,7 +57,7 @@ class FPGrowth:
                 for elmnt in self.prefixes.get(item_set_key):
                     for i in range(elmnt['support']):
                         conditional_db_.append(elmnt['prefix'])
-            except AttributeError:
+            except TypeError:
                 pass
             else:
                 new_suffix = item_set + suffix if suffix else item_set
@@ -84,7 +89,7 @@ class FPGrowth:
             reverse=True)
         ]
 
-        self.frequent_items = fq_items
+        return fq_items
 
     def get_prefixes(self, itemset, node, prefixes=None):
         """
@@ -162,7 +167,7 @@ class FPGrowth:
 
             self.insert_node(parent.children[child.node], nodes[1:])
 
-    def summarize(self, node=None, indent=2, first_call=True):
+    def summarize(self, node=None, indent=0, first_call=True):
         """
             Displayes the FP growth tree
         """
@@ -170,7 +175,7 @@ class FPGrowth:
             print(AsciiTable([['FP Growth Tree']]).table)
 
         node = self.root if not node else node
-        display = f' ' * indent + f'{node.node}, {node.support}\n'
+        display = f'   ' * indent + f'{node.node}: {node.support}\n'
         print(display)
         for child in node.children:
             self.summarize(node.children[child], indent + 1, False)
