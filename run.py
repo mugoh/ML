@@ -16,6 +16,7 @@ from mlearning.scripts.particle_swam_opt import evolve_pso
 from mlearning.scripts.dcgan import dcgan
 from mlearning.scripts.perceptron import perceptron
 from mlearning.scripts.multilayer_perceptron import m_perceptron
+from mlearning.scripts.fp_growth import grow_frequent_pattern
 
 if __name__ == '__main__':
     # regress_polynomial()
@@ -33,4 +34,5 @@ if __name__ == '__main__':
     # evolve_pso()
     # dcgan()
     # perceptron()
-    m_perceptron()
+    # m_perceptron()
+    grow_frequent_pattern()
