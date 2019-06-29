@@ -20,9 +20,8 @@ def grow_frequent_pattern():
 
     fp_growth = FPGrowth(min_support=3)
     print(AsciiTable([['Transactions']]).table)
-    print('\n', *transactions, sep='\n')
+    print('\n', *transactions, '\n', sep='\n')
 
     freq_items = fp_growth.find_frequents(transactions)
-    print('almist')
     print('\n', AsciiTable([['Frequent Items']]).table)
     print(*freq_items, sep='\n')

@@ -31,17 +31,18 @@ class FPGrowth:
         """
 
         self.transactions = transactions
-        self.__get_frequents_list(transactions)
-
-        self.summarize(self.create_tree(
-            transactions, fq_items=self.frequent_items))
+        self.frequent_items = self.__get_frequents_list(transactions)
+        self.root = self.create_tree(transactions, self.frequent_items[:])
+        self.summarize()
         self.determine_frequent_item_sets(transactions, suffix=suffix)
+
+        return self.frequent_items
 
     def determine_frequent_item_sets(self, conditional_db, suffix=None):
         """
             Finds and updates frequent items from the conditional database
         """
-        freq_items = self.__get_frequents_list(conditional_db)
+        freq_items = self.frequent_items[:]
         tree = self.root
 
         if suffix:
@@ -142,12 +143,13 @@ class FPGrowth:
         """
             Creates the F Pattern growth tree
         """
-        self.root = FPTreeNode()
+        root = FPTreeNode()
 
         for transaction in transactions:
             transac = [item for item in transaction if item in fq_items]
             transac.sort(key=lambda item: fq_items.index(item))
-            self.insert_node(self.root, transac)
+            self.insert_node(root, transac)
+        return root
 
     def insert_node(self, parent, nodes):
         """
