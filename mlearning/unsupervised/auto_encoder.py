@@ -26,11 +26,11 @@ class AutoEncoder:
         self.decoder = self.build_decoder()
         self.autoencoder = Neural_Network(
             optimizer=self.optimizer, loss=self.loss_function)
+        self.extend_layers()
 
-    def build_encoder(self
-                      ):
+    def build_encoder(self):
         """
-            Creates the network discriminator
+            Creates the network encoder
         """
         model = Neural_Network(
             optimizer=self.optimizer,
@@ -46,3 +46,33 @@ class AutoEncoder:
         model.add_layer(Dense(units=self.latent_dims))
 
         return model
+
+        def build_decoder(self
+                          ):
+            """
+                Creates the network decoder
+            """
+            model = Neural_Network(
+                optimizer=self.optimizer,
+                loss=self.loss_function)
+
+            model.add_layer(Dense(units=512, input_shape=self.img_dim))
+            model.add_layer(Activation('leaky_relu'))
+            model.add_layer(BatchNormalization(momentum=.8))
+
+            model.add_layer(Dense(units=512))
+            model.add_layer(Activation('leaky_relu'))
+            model.add_layer(BatchNormalization(momentum=.8))
+            model.add_layer(Dense(units=self.img_dim))
+            model.add_layer(Activation('tanh'))
+
+            return model
+
+        def extend_layers(self):
+            """
+                Appends the encoder and decoder layers to the
+                autoencoder
+            """
+
+            self.autoencoder.layers.extend(self.encoder.layers)
+            self.autoencoder.layers.extend(self.decoder.layers)
