@@ -14,11 +14,16 @@ class AutoEncoder:
     """
         A fully connected NN encoder
     """
-    image_rows: int = 28
-    image_cols: int = 28
-    loss_function: Any = MSE
-    optimizer: Any = Adam(learning_rate=0.0002, beta1=0.5)
-    img_dim: int = field(default=image_rows * image_cols, init=False, repr=False)
+    image_rows:
+        int = 28
+    image_cols:
+        int = 28
+    loss_function:
+        Any = MSE
+    optimizer:
+        Any = Adam(learning_rate=0.0002, beta1=0.5)
+    img_dim:
+        int = field(default=image_rows * image_cols, init=False, repr=False)
 
     def __post__init__(self):
         self.latent_dims = 128  # For data embedding
@@ -76,3 +81,19 @@ class AutoEncoder:
 
             self.autoencoder.layers.extend(self.encoder.layers)
             self.autoencoder.layers.extend(self.decoder.layers)
+
+            self.autoencoder.show_model_details('Variational Autoencoder')
+
+        def train(self, X, n_epochs=49, batch_size=128, save_interval=49):
+            """
+                Trains autoencoder model
+            """
+            for epoch in range(n_epochs):
+                idx = np.random.randint(0, X.shape[0], batch_size)
+                imgs = X[idx]
+
+                loss, acc = self.autoencoder.train_on_batch(imgs, imgs)
+                print(f'[ {epoch} loss: {loss}, accuracy: {acc}]  ')
+
+                if not epoch % save_interval:
+                    self.save_imgs(epoch, X)
