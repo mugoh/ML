@@ -23,7 +23,8 @@ class AutoEncoder:
     optimizer:
         Any = Adam(learning_rate=0.0002, beta1=0.5)
     img_dim:
-        int = field(default=image_rows * image_cols, init=False, repr=False)
+        int = field(default=image_rows * image_cols,
+                    init=False, repr=False)
 
     def __post__init__(self):
         self.latent_dims = 128  # For data embedding
@@ -97,3 +98,29 @@ class AutoEncoder:
 
                 if not epoch % save_interval:
                     self.save_imgs(epoch, X)
+
+        def save_imgs(self, epoch, X):
+            """
+                Saves sample images at the save interval
+            """
+            row, col = 5, 5
+            noise = np.random.randint(0, X.shape[0], (row * col))
+
+            # Generate and reshape images
+            gen_images = self.autoencoder.make_prediction(
+                noise).reshape((-1, self.img_rows, self.img_cols))
+
+            # Rescale images: 0 - 1
+            gen_images = 0.5 * gen_images + 0.5
+
+            figure, axis = plt.subplots(row, col)
+            plt.suptitle(' Autoencoder ')
+
+            count = 0
+            for i in range(row):
+                for j in range(col):
+                    axis[i, j].imshow(gen_images[count, :, :], cmap='gray')
+                    axis[i, j].axis('off')
+                    count += 1
+            figure.savefig(f'autoenc_{epoch}.png')
+            plt.close()
