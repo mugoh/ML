@@ -12,6 +12,8 @@ from ..deep_learning.grad_optimizers import Adam
 from ..helpers.deep_learning.layers import (
     Dense, Activation, BatchNormalization)
 
+from matplotlib import pyplot as plt
+
 
 @dataclass
 class AutoEncoder:
@@ -25,7 +27,7 @@ class AutoEncoder:
     img_dim: int = field(default=image_rows * image_cols,
                          init=False, repr=False)
 
-    def __post__init__(self):
+    def __post_init__(self):
         self.latent_dims = 128  # For data embedding
         self.encoder = self.build_encoder()
         self.decoder = self.build_decoder()
@@ -41,11 +43,11 @@ class AutoEncoder:
             optimizer=self.optimizer,
             loss=self.loss_function)
 
-        model.add_layer(Dense(units=512, input_shape=self.img_dim))
+        model.add_layer(Dense(units=512, input_shape=(self.img_dim,)))
         model.add_layer(Activation('leaky_relu'))
         model.add_layer(BatchNormalization(momentum=.8))
 
-        model.add_layer(Dense(units=512))
+        model.add_layer(Dense(units=256))
         model.add_layer(Activation('leaky_relu'))
         model.add_layer(BatchNormalization(momentum=.8))
         model.add_layer(Dense(units=self.latent_dims))
@@ -61,7 +63,7 @@ class AutoEncoder:
             optimizer=self.optimizer,
             loss=self.loss_function)
 
-        model.add_layer(Dense(units=512, input_shape=self.img_dim))
+        model.add_layer(Dense(units=256, input_shape=(self.latent_dims,)))
         model.add_layer(Activation('leaky_relu'))
         model.add_layer(BatchNormalization(momentum=.8))
 
@@ -79,8 +81,8 @@ class AutoEncoder:
             autoencoder
         """
 
-        self.autoencoder.layers.extend(self.encoder.layers)
-        self.autoencoder.layers.extend(self.decoder.layers)
+        self.autoencoder.input_layers.extend(self.encoder.input_layers)
+        self.autoencoder.input_layers.extend(self.decoder.input_layers)
 
         self.autoencoder.show_model_details('Variational Autoencoder')
 
@@ -88,14 +90,14 @@ class AutoEncoder:
         """
             Trains autoencoder model
         """
-        pg_bar = progressbar.Progressbar(widgets=get_progress_bar())
+        pg_bar = progressbar.ProgressBar(widgets=get_progress_bar())
 
         for epoch in pg_bar(range(n_epochs)):
             idx = np.random.randint(0, X.shape[0], batch_size)
             imgs = X[idx]
 
             loss, acc = self.autoencoder.train_on_batch(imgs, imgs)
-            print(f'[ {epoch} loss: {loss}, accuracy: {acc}]  ')
+            print(f'[ {epoch} loss: {loss:.5f}]  ')
 
             if not epoch % save_interval:
                 self.save_imgs(epoch, X)
@@ -107,9 +109,10 @@ class AutoEncoder:
         row, col = 5, 5
         noise = np.random.randint(0, X.shape[0], (row * col))
 
+        imgs = X[noise]
         # Generate and reshape images
         gen_images = self.autoencoder.make_prediction(
-            noise).reshape((-1, self.img_rows, self.img_cols))
+            imgs).reshape((-1, self.image_rows, self.image_cols))
 
         # Rescale images: 0 - 1
         gen_images = 0.5 * gen_images + 0.5
