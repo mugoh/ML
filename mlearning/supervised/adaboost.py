@@ -29,6 +29,7 @@ class AdaBoost:
         """
 
         self.n_samples, self.n_feat = X.shape
+        self.X, self.y = X, y
 
         # Init weights to 1/n
         weights = np.full(self.n_samples, 1 / self.n_samples)
@@ -58,6 +59,33 @@ class AdaBoost:
                         clf.polarity = self.p
                         clf.threshold = threshold
                         clf.feature_idx = feat_idx
+            self.approximate_proficiency(clf, min_error, weights)
+            self._calculate_weights(clf, weights)
+            self.classifiers.append(clf)
+
+    def approximate_proficiency(self, clf, min_error):
+        """
+            Calculates the value of alpha, used in updating the
+            sample weights
+        """
+        clf.aplha = 0.5 * np.log(
+            (1 - min_error) / min_error + 1e-8)
+
+    def _calculate_weights(self, clf, weights):
+        """
+            Calculates new weights.
+            Lower for misclassified samples, and higher for samples
+            correctly classified.
+        """
+        preds = np.ones(self.y.shape)
+        # Index for sample values below threshold
+        negtv_idx = (clf.polarity *
+                     self.X[:, clf.feature_idx] < clf.polarity * clf.threshold)
+        preds[negtv_idx] = -1
+        weights *= np.exp(-clf.alpha * self.y * preds)
+
+        # Normalize to one
+        weights /= np.sum(weights)
 
     def reclassify_on_error(self, min_err):
         """
