@@ -79,8 +79,7 @@ class AdaBoost:
         """
         preds = np.ones(self.y.shape)
         # Index for sample values below threshold
-        negtv_idx = (clf.polarity *
-                     self.X[:, clf.feature_idx] < clf.polarity * clf.threshold)
+        negtv_idx = self._get_negative_index(clf)
         preds[negtv_idx] = -1
         weights *= np.exp(-clf.alpha * self.y * preds)
 
@@ -98,6 +97,30 @@ class AdaBoost:
             self.p = -1
 
         return False if not self.error < min_err else True
+
+    def predict(self, X):
+        """
+            Gives the sign of the weighted prefiction
+        """
+        n_samples = X.shape[0]
+        y_pred = np.zeros((n_samples, 1))
+
+        # Labe; samples in classifiers
+        for clf in self, classifiers:
+            preds = np.ones(y_pred.shape)  # Initialize predictions as 1
+            negative_idx = self._get_negative_index(clf)
+            preds[negative_idx] = -1
+            y_pred += clf.alpha * predictions
+
+        return np.sign(y_pred).flatten()
+
+    def _get_negative_index(self, clf):
+        """
+            Givse indexes of sample values below threshold
+        """
+        neg_idx = (clf.polarity *
+                   self.X[:, clf.feature_idx] < clf.polarity * clf.threshold)
+        return neg_idx
 
 
 @dataclass
@@ -117,7 +140,11 @@ class DecisionStump:
         threshold: int
             Threshold value against which feature is measured against
     """
-    polarity: int = 1
-    alpha: float = .02
-    feature_idx: Any = None
-    threshold: Any = None
+    polarity:
+        int = 1
+    alpha:
+        float = .02
+    feature_idx:
+        Any = None
+    threshold:
+        Any = None
