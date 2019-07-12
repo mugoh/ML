@@ -19,7 +19,7 @@ MLearning learning fables: An implementation of bare Machine Learning models and
 - Genetic Algorithm
 - Density Based Clustering
 
-##### 3 Reinforcement Learning
+##### 3 [Reinforcement Learning](https://github.com/hogum/ML/tree/master/mlearning/reinforcement_learning)
 - Deep Q Network
 
 
