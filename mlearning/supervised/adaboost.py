@@ -8,6 +8,8 @@ import numpy as np
 from dataclasses import dataclass
 from typing import Any
 
+from ..helpers.utils.operations import op
+
 
 class AdaBoost:
     """
@@ -59,17 +61,17 @@ class AdaBoost:
                         clf.polarity = self.p
                         clf.threshold = threshold
                         clf.feature_idx = feat_idx
-            self.approximate_proficiency(clf, min_error, weights)
+            clf.aplha = self.approximate_proficiency(min_error)
             self._calculate_weights(clf, weights)
             self.classifiers.append(clf)
 
-    def approximate_proficiency(self, clf, min_error):
+    def approximate_proficiency(self, min_error):
         """
             Calculates the value of alpha, used in updating the
             sample weights
         """
-        clf.aplha = 0.5 * np.log(
-            (1 - min_error) / min_error + 1e-8)
+        return 0.5 * np.log(
+            (1 - min_error) / (min_error + 1e-8))
 
     def _calculate_weights(self, clf, weights):
         """
@@ -79,47 +81,53 @@ class AdaBoost:
         """
         preds = np.ones(self.y.shape)
         # Index for sample values below threshold
-        negtv_idx = self._get_negative_index(clf)
+        negtv_idx = self._get_negative_index(clf, self.X)
         preds[negtv_idx] = -1
         weights *= np.exp(-clf.alpha * self.y * preds)
 
         # Normalize to one
         weights /= np.sum(weights)
 
-    def reclassify_on_error(self, min_err):
+    def _reclassify_on_error(self, min_err):
         """
             Flips polarity of samples based on error value
         """
         it_happens = self.error > .5
 
         if it_happens:
-            self.error = 1 - err
+            self.error = 1 - self.error
             self.p = -1
 
         return False if not self.error < min_err else True
 
-    def predict(self, X):
+    def predict(self, X, **kwargs):
         """
             Gives the sign of the weighted prefiction
         """
         n_samples = X.shape[0]
         y_pred = np.zeros((n_samples, 1))
 
-        # Labe; samples in classifiers
-        for clf in self, classifiers:
+        # Label samples in classifiers
+        for clf in self.classifiers:
             preds = np.ones(y_pred.shape)  # Initialize predictions as 1
-            negative_idx = self._get_negative_index(clf)
+            negative_idx = self._get_negative_index(clf, X)
             preds[negative_idx] = -1
-            y_pred += clf.alpha * predictions
+            y_pred += clf.alpha * preds
 
-        return np.sign(y_pred).flatten()
+        y_test = kwargs.get('y_test')
+        y_pred = np.sign(y_pred).flatten()
 
-    def _get_negative_index(self, clf):
+        if np.any(y_test):
+            acc = op.rate_accuracy(y_pred, y_test)
+            return y_pred, acc
+        return y_pred
+
+    def _get_negative_index(self, clf, X):
         """
             Givse indexes of sample values below threshold
         """
         neg_idx = (clf.polarity *
-                   self.X[:, clf.feature_idx] < clf.polarity * clf.threshold)
+                   X[:, clf.feature_idx] < clf.polarity * clf.threshold)
         return neg_idx
 
 
@@ -140,11 +148,7 @@ class DecisionStump:
         threshold: int
             Threshold value against which feature is measured against
     """
-    polarity:
-        int = 1
-    alpha:
-        float = .02
-    feature_idx:
-        Any = None
-    threshold:
-        Any = None
+    polarity: int = 1
+    alpha: float = .02
+    feature_idx: Any = None
+    threshold: Any = None
