@@ -1,9 +1,9 @@
 ### ML
 MLearning learning fables: An implementation of bare Machine Learning models and Algorithms
 
-#### Deep Learning
+#### [Deep Learning](https://github.com/hogum/ML/tree/master/mlearning/helpers/deep_learning)
 
-##### 1 Supervised Learning
+##### 1 [Supervised Learning](https://github.com/hogum/ML/tree/master/mlearning/supervised)
 - Naive Bayes Classification
 - Support Vector Machines
 - Regression : Polynomial Regression
@@ -12,14 +12,14 @@ MLearning learning fables: An implementation of bare Machine Learning models and
 - Particle-swam Optimized Neural Network
 
 
-##### 2 Unsupervised Learning
+##### 2 [Unsupervised Learning](https://github.com/hogum/ML/tree/master/mlearning/unsupervised)
 - Generative Adversarial Neural Network
 - Boltzmann Machine
 - K-Means Cluster
 - Genetic Algorithm
 - Density Based Clustering
 
-##### 3 Reinforcement Learning
+##### 3 [Reinforcement Learning](https://github.com/hogum/ML/tree/master/mlearning/reinforcement_learning)
 - Deep Q Network
 
 
