@@ -82,8 +82,8 @@ class KMeans:
             print()
             self.get_cluster_mean(clusters)
 
-            if not np.all(self.centroids - prev_centroids):
-                break  # Divergence
+            if not np.any(self.centroids - prev_centroids):
+                break  # No change: convergence
         return self.label_samples(clusters)
 
     def get_cluster_mean(self, clusters):
